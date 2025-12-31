@@ -33,13 +33,14 @@ env/
 *.swo
 *~
 
-# Model weights
+# Model weights (files only, not bahb/models/ source code)
 *.pt
 *.pth
 *.onnx
 *.engine
 *.trt
-models/
+/models/
+/data/bahb/models/
 
 # Data
 data/
