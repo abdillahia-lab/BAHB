@@ -1,4 +1,11 @@
-"""Unified inference pipeline combining all AI models."""
+"""Unified inference pipeline combining all AI models.
+
+Optimized based on research findings:
+- arXiv:2405.14458: NMS-free detection
+- arXiv:2502.15737: INT8 quantization
+- arXiv:2501.15014: Edge AI acceleration
+- arXiv:2502.07855: Adaptive VLM scheduling
+"""
 
 from __future__ import annotations
 
@@ -15,6 +22,7 @@ from numpy.typing import NDArray
 from loguru import logger
 
 from bahb.core.config import Config, ModelsConfig
+from bahb.core.edge_optimization import EdgeOptimizer, get_optimizer
 from bahb.core.types import (
     Anomaly,
     Detection,
@@ -92,6 +100,14 @@ class InferencePipeline:
         self.vlm_analysis_interval = 5  # Analyze every N frames
         self.vlm_on_anomaly = True  # Always analyze frames with anomalies
         self._frame_count = 0
+
+        # Edge optimizer for adaptive scheduling (arXiv:2502.07855)
+        self._optimizer = get_optimizer()
+        if config.optimization.adaptive_vlm_enabled:
+            self._optimizer.vlm_config.enabled = True
+            self._optimizer.vlm_config.base_interval = config.optimization.vlm_base_interval
+            self._optimizer.vlm_config.low_fps_threshold = config.optimization.vlm_low_fps_threshold
+            self._optimizer.vlm_config.low_fps_interval = config.optimization.vlm_low_fps_interval
 
     async def initialize(self) -> bool:
         """Initialize all AI models."""
@@ -268,13 +284,17 @@ class InferencePipeline:
             if self._on_anomaly:
                 self._on_anomaly(anomaly)
 
-        # Stage 5: VLM analysis (conditional)
+        # Stage 5: VLM analysis (conditional with adaptive scheduling)
         vlm_description = None
         vlm_recommendations = None
 
-        should_analyze = (
-            self._frame_count % self.vlm_analysis_interval == 0 or
-            (self.vlm_on_anomaly and any(a.severity.value >= SeverityLevel.MEDIUM.value for a in anomalies))
+        # Check for critical anomalies
+        has_critical = any(a.severity.value >= SeverityLevel.HIGH.value for a in anomalies)
+
+        # Use adaptive VLM scheduling based on current FPS (arXiv:2502.07855)
+        should_analyze = self._optimizer.should_run_vlm(
+            self._frame_count,
+            has_critical_anomaly=has_critical,
         )
 
         if self.qwen_vl and self.qwen_vl.is_loaded and should_analyze:
@@ -305,8 +325,13 @@ class InferencePipeline:
         total_time = (time.perf_counter() - start_time) * 1000
         timing["total"] = total_time
 
-        # Update metrics
+        # Update metrics (including edge optimizer)
         self._update_metrics(timing, len(detections), len(anomalies))
+        self._optimizer.update_metrics(
+            frame_time_ms=total_time,
+            yolo_time_ms=timing.get("yolo"),
+            vlm_time_ms=timing.get("qwen_vl"),
+        )
 
         # Create result
         result = InspectionResult(

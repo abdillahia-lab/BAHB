@@ -1,11 +1,13 @@
 """
 Core infrastructure modules.
 
-Architecture based on "Solving a Million-Step LLM Task with Zero Errors":
-- Validation layer with progressive gates
-- Error correction/repair mechanisms
-- State management with checkpointing
-- Ensemble voting for improved accuracy
+Architecture based on research papers:
+- "Solving a Million-Step LLM Task with Zero Errors": Validation, correction, state, ensemble
+- arXiv:2405.14458 (YOLOv10): NMS-free inference
+- arXiv:2502.15737: INT8 quantization for Orin NX
+- arXiv:2501.15014: Edge AI acceleration techniques
+- arXiv:2502.07855: VLM compression for edge
+- arXiv:2511.19495: Optimal compression ordering
 """
 
 from bahb.core.config import Config
@@ -58,6 +60,22 @@ from bahb.core.ensemble import (
     ConfidenceCalibrator,
 )
 
+from bahb.core.edge_optimization import (
+    EdgeOptimizer,
+    QuantizationLevel,
+    CompressionStage,
+    MemoryBudget,
+    InferenceMetrics,
+    NMSFreeConfig,
+    INT8CalibrationConfig,
+    StreamOverlapConfig,
+    BufferPoolConfig,
+    AdaptiveVLMConfig,
+    TensorRTOptimizer,
+    get_optimizer,
+    initialize_optimizer,
+)
+
 __all__ = [
     # Config & Engine
     "Config",
@@ -104,4 +122,19 @@ __all__ = [
     "EnsembleConfig",
     "VotingStrategy",
     "ConfidenceCalibrator",
+
+    # Edge Optimization
+    "EdgeOptimizer",
+    "QuantizationLevel",
+    "CompressionStage",
+    "MemoryBudget",
+    "InferenceMetrics",
+    "NMSFreeConfig",
+    "INT8CalibrationConfig",
+    "StreamOverlapConfig",
+    "BufferPoolConfig",
+    "AdaptiveVLMConfig",
+    "TensorRTOptimizer",
+    "get_optimizer",
+    "initialize_optimizer",
 ]

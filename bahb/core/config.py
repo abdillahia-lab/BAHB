@@ -45,27 +45,42 @@ class H30TConfig(BaseModel):
 
 
 class YOLOConfig(BaseModel):
-    """YOLOv12 model configuration."""
+    """YOLOv12 model configuration.
+
+    Optimization notes (arXiv:2502.15737):
+    - INT8 recommended for best speed/accuracy on Orin NX (65fps vs 35fps FP16)
+    - NMS-free engines reduce latency by 1.8x (arXiv:2405.14458)
+    """
     enabled: bool = True
     weights: str = "models/yolov12l-inspection.engine"
+    weights_int8: str = "models/yolov12l-inspection-int8.engine"
     input_size: tuple[int, int] = (1280, 720)
     confidence_threshold: float = 0.35
     nms_threshold: float = 0.45
     device: str = "cuda:0"
     half_precision: bool = True
+    use_int8: bool = False  # Use INT8 quantized model
     batch_size: int = 1
+    nms_free: bool = True  # Skip Python NMS if engine includes it
     classes: list[str] = Field(default_factory=list)
 
 
 class RFDETRConfig(BaseModel):
-    """RF-DETR model configuration."""
+    """RF-DETR model configuration.
+
+    Optimization notes:
+    - Transformer decoder is memory-intensive
+    - INT8 quantization supported with proper calibration
+    """
     enabled: bool = True
     weights: str = "models/rf_detr_large.engine"
+    weights_int8: str = "models/rf_detr_large-int8.engine"
     backbone: str = "resnet101"
     input_size: tuple[int, int] = (640, 640)
     num_queries: int = 300
     device: str = "cuda:0"
     half_precision: bool = True
+    use_int8: bool = False
     threshold: float = 0.5
 
 
@@ -166,13 +181,35 @@ class SafetyConfig(BaseModel):
 
 
 class OptimizationConfig(BaseModel):
-    """Edge optimization configuration."""
+    """Edge optimization configuration.
+
+    Based on research findings:
+    - arXiv:2502.15737: INT8 achieves 65fps on Orin NX
+    - arXiv:2405.14458: NMS-free inference reduces latency
+    - arXiv:2501.15014: Stream overlap increases throughput ~30%
+    - arXiv:2511.19495: Optimal order is Pruning → KD → Quantization
+    """
     tensorrt_enabled: bool = True
-    tensorrt_workspace_size: int = 4294967296
-    precision: str = "fp16"
+    tensorrt_workspace_size: int = 4294967296  # 4GB
+    precision: str = "fp16"  # Options: fp32, fp16, int8
+    int8_enabled: bool = False  # Enable INT8 quantization
+    int8_calibration_images: int = 500
     cuda_streams: int = 4
+    stream_overlap: bool = True  # Enable H2D/compute/D2H overlap
     async_inference: bool = True
     prefetch_frames: int = 2
+    # NMS-free detection (YOLOv10+ style)
+    nms_free_enabled: bool = True
+    detect_builtin_nms: bool = True
+    # Adaptive VLM scheduling (arXiv:2502.07855)
+    adaptive_vlm_enabled: bool = True
+    vlm_base_interval: int = 5
+    vlm_low_fps_threshold: float = 15.0
+    vlm_low_fps_interval: int = 15
+    # Buffer pooling for reduced allocation overhead
+    buffer_pool_enabled: bool = True
+    # Memory budget (MB) for AI models
+    memory_budget_mb: int = 12288  # 12GB for AI on 16GB Orin
 
 
 class Config(BaseSettings):

@@ -23,6 +23,8 @@ class YOLOv12Detector(BaseModel):
     - Attention-based architecture for better feature extraction
     - Multi-scale detection for varying object sizes
     - Optimized for TensorRT inference on Jetson/Orin
+    - NMS-free detection support (arXiv:2405.14458)
+    - INT8 quantization support (arXiv:2502.15737)
     """
 
     # Default detection classes for infrastructure
@@ -47,6 +49,10 @@ class YOLOv12Detector(BaseModel):
         self.conf_threshold = config.confidence_threshold
         self.nms_threshold = config.nms_threshold
         self.classes = config.classes or self.DEFAULT_CLASSES
+
+        # NMS-free detection (YOLOv10+ style, arXiv:2405.14458)
+        self.nms_free = getattr(config, 'nms_free', True)
+        self._engine_has_builtin_nms = False
 
         self._ultralytics_model = None
 
@@ -84,6 +90,11 @@ class YOLOv12Detector(BaseModel):
             self._context = self._engine.create_execution_context()
             self._stream = cuda.Stream()
             self._allocate_buffers()
+
+            # Check if engine has built-in NMS (YOLOv10+ exports)
+            self._engine_has_builtin_nms = self._check_engine_has_nms()
+            if self._engine_has_builtin_nms:
+                logger.info("Engine has built-in NMS, skipping Python NMS")
 
             self._is_loaded = True
             logger.info("YOLOv12 TensorRT engine loaded")
@@ -376,10 +387,52 @@ class YOLOv12Detector(BaseModel):
             )
             detections.append(detection)
 
-        # Apply NMS
-        detections = self._nms(detections)
+        # Apply NMS (skip if engine has built-in NMS)
+        if not self._should_skip_nms():
+            detections = self._nms(detections)
 
         return detections
+
+    def _should_skip_nms(self) -> bool:
+        """Check if Python-side NMS should be skipped.
+
+        Based on YOLOv10 NMS-free design (arXiv:2405.14458).
+        """
+        if not self.nms_free:
+            return False
+        return self._engine_has_builtin_nms
+
+    def _check_engine_has_nms(self) -> bool:
+        """Check if TensorRT engine has built-in NMS layer.
+
+        YOLOv10+ engines include NMS, avoiding double-NMS penalty.
+        """
+        try:
+            import tensorrt as trt
+
+            if not hasattr(self, '_engine') or self._engine is None:
+                return False
+
+            # Check output tensor shapes/names for NMS indicators
+            for i in range(self._engine.num_io_tensors):
+                name = self._engine.get_tensor_name(i)
+                mode = self._engine.get_tensor_mode(name)
+
+                if mode == trt.TensorIOMode.OUTPUT:
+                    # NMS-included engines have specific output patterns
+                    if "nms" in name.lower() or "detection" in name.lower():
+                        return True
+
+                    # Check shape: NMS outputs typically [batch, num_det, 6]
+                    shape = self._engine.get_tensor_shape(name)
+                    if len(shape) == 3 and shape[-1] <= 7:
+                        return True
+
+            return False
+
+        except Exception as e:
+            logger.debug(f"Could not check engine for NMS: {e}")
+            return False
 
     def _get_class_name(self, class_id: int) -> str:
         """Get class name from ID."""
