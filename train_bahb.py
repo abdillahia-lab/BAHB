@@ -128,132 +128,187 @@ def convert_to_yolo():
     print("="*60)
 
     convert_script = '''
-import json
+import xml.etree.ElementTree as ET
 import shutil
 from pathlib import Path
-from PIL import Image
 import random
 
 PROJECT_ROOT = Path.cwd()
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
 OUT_DIR = PROJECT_ROOT / "data" / "processed"
 
-# BAHB class mapping - matches your inspection targets
+# BAHB class mapping
 CLASS_MAP = {
-    # Insulators
-    "insulator": 0, "glass_insulator": 0, "polymer_insulator": 0,
-    "ceramic_insulator": 0, "insulator_string": 0,
+    # Insulators (normal)
+    "insulator": 0, "normal": 0, "good": 0,
 
     # Insulator defects
-    "broken_insulator": 1, "broken_disc": 1, "glass_loss": 1,
-    "insulator_damaged": 1, "broken": 1,
-
-    # Contamination
-    "glass_dirty": 2, "polymer_dirty": 2, "pollution_flashover": 2,
-    "contamination": 2, "flashover": 2,
-
-    # Towers/structures
-    "tower": 3, "pylon": 3, "transmission_tower": 3, "pole": 3,
-
-    # Conductors
-    "conductor": 4, "cable": 4, "power_line": 4, "wire": 4,
-    "broken_cable": 5, "damaged_cable": 5,
-
-    # Hardware
-    "damper": 6, "spacer": 7, "connector": 8,
-
-    # Substation equipment
-    "transformer": 9, "arrester": 10, "lightning_arrester": 10,
-    "breaker": 11, "circuit_breaker": 11,
-    "bushing": 12, "disconnector": 13,
-
-    # Hazards
-    "vegetation": 14, "bird_nest": 15, "nest": 15,
-    "foreign_object": 16,
+    "defect": 1, "broken": 1, "damaged": 1, "fault": 1,
+    "broken_insulator": 1, "insulator_damaged": 1,
 }
 
-def get_class_id(name):
+def get_class_id(name, default_class=0):
+    """Get class ID, with fallback to default."""
     name = name.lower().replace(" ", "_").replace("-", "_")
-    return CLASS_MAP.get(name, -1)
+    return CLASS_MAP.get(name, default_class)
 
-def convert_coco_to_yolo(coco_file, img_dir, out_images, out_labels):
-    """Convert COCO annotations to YOLO format."""
-    with open(coco_file) as f:
-        coco = json.load(f)
+def convert_voc_to_yolo(xml_file, img_dir, out_images, out_labels, start_idx, default_class=0):
+    """Convert Pascal VOC XML to YOLO format."""
+    try:
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
 
-    cat_map = {c["id"]: c["name"] for c in coco.get("categories", [])}
-    img_map = {i["id"]: i for i in coco.get("images", [])}
+        # Get image dimensions
+        size = root.find("size")
+        if size is None:
+            return 0
+        img_w = int(size.find("width").text)
+        img_h = int(size.find("height").text)
 
-    # Group annotations by image
-    ann_by_img = {}
-    for ann in coco.get("annotations", []):
-        img_id = ann["image_id"]
-        if img_id not in ann_by_img:
-            ann_by_img[img_id] = []
-        ann_by_img[img_id].append(ann)
+        if img_w == 0 or img_h == 0:
+            return 0
 
-    count = 0
-    for img_id, anns in ann_by_img.items():
-        img_info = img_map.get(img_id)
-        if not img_info:
-            continue
-
-        img_file = img_info["file_name"]
-        img_w, img_h = img_info["width"], img_info["height"]
+        # Get filename
+        filename_elem = root.find("filename")
+        if filename_elem is None:
+            return 0
+        filename = filename_elem.text
+        if not filename.endswith((".jpg", ".jpeg", ".png")):
+            filename = filename + ".jpg"
 
         # Find image file
-        src = img_dir / img_file
-        if not src.exists():
-            src = img_dir / Path(img_file).name
-        if not src.exists():
-            continue
+        img_path = img_dir / filename
+        if not img_path.exists():
+            # Try with same name as XML
+            img_path = img_dir / (xml_file.stem + ".jpg")
+        if not img_path.exists():
+            return 0
 
-        # Convert annotations
+        # Process objects
         lines = []
-        for ann in anns:
-            cat_name = cat_map.get(ann["category_id"], "")
-            cls_id = get_class_id(cat_name)
-            if cls_id < 0:
+        for obj in root.findall("object"):
+            name = obj.find("name").text if obj.find("name") is not None else ""
+            cls_id = get_class_id(name, default_class)
+
+            bbox = obj.find("bndbox")
+            if bbox is None:
                 continue
 
-            x, y, w, h = ann["bbox"]
-            cx = (x + w/2) / img_w
-            cy = (y + h/2) / img_h
-            nw = w / img_w
-            nh = h / img_h
-            lines.append(f"{cls_id} {cx:.6f} {cy:.6f} {nw:.6f} {nh:.6f}")
+            xmin = float(bbox.find("xmin").text)
+            ymin = float(bbox.find("ymin").text)
+            xmax = float(bbox.find("xmax").text)
+            ymax = float(bbox.find("ymax").text)
 
-        if lines:
-            out_name = f"img_{count:06d}"
-            shutil.copy(src, out_images / f"{out_name}{src.suffix}")
-            (out_labels / f"{out_name}.txt").write_text("\\n".join(lines))
-            count += 1
+            # Convert to YOLO format (center x, center y, width, height) normalized
+            cx = ((xmin + xmax) / 2) / img_w
+            cy = ((ymin + ymax) / 2) / img_h
+            w = (xmax - xmin) / img_w
+            h = (ymax - ymin) / img_h
 
-    return count
+            # Clamp values
+            cx = max(0, min(1, cx))
+            cy = max(0, min(1, cy))
+            w = max(0, min(1, w))
+            h = max(0, min(1, h))
 
-def convert_yolo_to_yolo(src_dir, out_images, out_labels, start_idx=0):
-    """Copy and remap YOLO format."""
-    # Find images/labels dirs
-    img_dir = src_dir / "train" / "images" if (src_dir / "train" / "images").exists() else src_dir / "images"
-    lbl_dir = src_dir / "train" / "labels" if (src_dir / "train" / "labels").exists() else src_dir / "labels"
+            lines.append(f"{cls_id} {cx:.6f} {cy:.6f} {w:.6f} {h:.6f}")
 
-    if not img_dir.exists():
+        if lines or default_class == 0:  # Include images even without annotations for normal class
+            out_name = f"img_{start_idx:06d}"
+            shutil.copy(img_path, out_images / f"{out_name}{img_path.suffix}")
+            (out_labels / f"{out_name}.txt").write_text("\\n".join(lines) if lines else "")
+            return 1
+
+        return 0
+    except Exception as e:
+        print(f"    Error processing {xml_file}: {e}")
         return 0
 
-    count = start_idx
+def convert_cplid(raw_dir, out_images, out_labels, start_idx):
+    """Convert CPLID dataset (Pascal VOC format)."""
+    cplid_dir = raw_dir / "cplid"
+    if not cplid_dir.exists():
+        print("  CPLID: Not found")
+        return 0
+
+    total = 0
+
+    # Process defective insulators (class 1 - damaged)
+    defect_dir = cplid_dir / "Defective_Insulators"
+    if defect_dir.exists():
+        img_dir = defect_dir / "images"
+        label_dirs = [
+            defect_dir / "labels" / "defect",
+            defect_dir / "labels",
+        ]
+
+        for label_dir in label_dirs:
+            if label_dir.exists():
+                for xml_file in label_dir.glob("*.xml"):
+                    n = convert_voc_to_yolo(
+                        xml_file, img_dir, out_images, out_labels,
+                        start_idx + total, default_class=1
+                    )
+                    total += n
+                break
+
+        print(f"  CPLID Defective: {total} images")
+
+    # Process normal insulators (class 0 - normal)
+    normal_dir = cplid_dir / "Normal_Insulators"
+    if normal_dir.exists():
+        img_dir = normal_dir / "images"
+        label_dir = normal_dir / "labels"
+
+        normal_count = 0
+        if label_dir.exists():
+            for xml_file in label_dir.glob("*.xml"):
+                n = convert_voc_to_yolo(
+                    xml_file, img_dir, out_images, out_labels,
+                    start_idx + total, default_class=0
+                )
+                total += n
+                normal_count += n
+
+        print(f"  CPLID Normal: {normal_count} images")
+
+    return total
+
+def convert_yolo_to_yolo(src_dir, out_images, out_labels, start_idx=0):
+    """Copy and remap YOLO format datasets."""
+    # Find images/labels dirs
+    img_dir = None
+    lbl_dir = None
+
+    for subdir in ["train", "valid", "val", ""]:
+        test_img = src_dir / subdir / "images" if subdir else src_dir / "images"
+        test_lbl = src_dir / subdir / "labels" if subdir else src_dir / "labels"
+        if test_img.exists():
+            img_dir = test_img
+            lbl_dir = test_lbl
+            break
+
+    if img_dir is None or not img_dir.exists():
+        return 0
+
+    count = 0
     for img_path in img_dir.glob("*"):
         if img_path.suffix.lower() not in [".jpg", ".jpeg", ".png"]:
             continue
 
-        lbl_path = lbl_dir / f"{img_path.stem}.txt"
-        if not lbl_path.exists():
-            continue
+        lbl_path = lbl_dir / f"{img_path.stem}.txt" if lbl_dir else None
 
-        shutil.copy(img_path, out_images / f"img_{count:06d}{img_path.suffix}")
-        shutil.copy(lbl_path, out_labels / f"img_{count:06d}.txt")
+        out_name = f"img_{start_idx + count:06d}"
+        shutil.copy(img_path, out_images / f"{out_name}{img_path.suffix}")
+
+        if lbl_path and lbl_path.exists():
+            shutil.copy(lbl_path, out_labels / f"{out_name}.txt")
+        else:
+            (out_labels / f"{out_name}.txt").write_text("")
+
         count += 1
 
-    return count - start_idx
+    return count
 
 # Process each dataset
 out_images = OUT_DIR / "images"
@@ -263,39 +318,26 @@ out_labels.mkdir(parents=True, exist_ok=True)
 
 total = 0
 
-# TTPLA (COCO format)
-ttpla_dir = RAW_DIR / "ttpla"
-for json_file in ttpla_dir.rglob("*.json"):
-    if "annotation" in json_file.name.lower() or "instances" in json_file.name.lower():
-        img_dir = json_file.parent
-        n = convert_coco_to_yolo(json_file, img_dir, out_images, out_labels)
-        print(f"  TTPLA: {n} images")
-        total += n
-
-# InsPLAD (COCO format)
-insplad_dir = RAW_DIR / "insplad"
-for json_file in insplad_dir.rglob("*.json"):
-    if "annotation" in json_file.name.lower():
-        img_dir = json_file.parent / "images" if (json_file.parent / "images").exists() else json_file.parent
-        n = convert_coco_to_yolo(json_file, img_dir, out_images, out_labels)
-        print(f"  InsPLAD: {n} images")
-        total += n
-
-# MPID (YOLO format)
-mpid_dir = RAW_DIR / "mpid"
-n = convert_yolo_to_yolo(mpid_dir, out_images, out_labels, total)
-print(f"  MPID: {n} images")
+# CPLID (Pascal VOC format) - has actual images and annotations
+n = convert_cplid(RAW_DIR, out_images, out_labels, total)
+print(f"  CPLID Total: {n} images")
 total += n
 
-# Roboflow datasets
+# Roboflow datasets (if downloaded)
 roboflow_dir = RAW_DIR / "roboflow"
-for dataset_dir in roboflow_dir.iterdir():
-    if dataset_dir.is_dir():
-        n = convert_yolo_to_yolo(dataset_dir, out_images, out_labels, total)
-        print(f"  Roboflow/{dataset_dir.name}: {n} images")
-        total += n
+if roboflow_dir.exists():
+    for dataset_dir in roboflow_dir.iterdir():
+        if dataset_dir.is_dir() and any(dataset_dir.iterdir()):
+            n = convert_yolo_to_yolo(dataset_dir, out_images, out_labels, total)
+            if n > 0:
+                print(f"  Roboflow/{dataset_dir.name}: {n} images")
+                total += n
 
 print(f"\\nTotal: {total} images converted")
+
+if total == 0:
+    print("ERROR: No images converted! Check dataset paths.")
+    exit(1)
 
 # Split into train/val
 all_images = list(out_images.glob("*"))
