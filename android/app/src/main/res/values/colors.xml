@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- BAHB Brand Colors -->
+    <color name="bahb_primary">#1565C0</color>
+    <color name="bahb_primary_dark">#0D47A1</color>
+    <color name="bahb_accent">#00BCD4</color>
+    <color name="bahb_background">#121212</color>
+
+    <!-- Status Colors - High contrast for outdoor -->
+    <color name="status_connected">#4CAF50</color>
+    <color name="status_disconnected">#F44336</color>
+    <color name="status_warning">#FF9800</color>
+
+    <!-- Severity Colors -->
+    <color name="severity_critical">#D32F2F</color>
+    <color name="severity_high">#FF5722</color>
+    <color name="severity_medium">#FFC107</color>
+    <color name="severity_low">#8BC34A</color>
+
+    <!-- Detection Colors -->
+    <color name="detection_defect">#FF5252</color>
+    <color name="detection_equipment">#00C853</color>
+    <color name="detection_other">#448AFF</color>
+
+    <!-- Thermal Colors -->
+    <color name="thermal_cold">#2196F3</color>
+    <color name="thermal_normal">#4CAF50</color>
+    <color name="thermal_warm">#FFC107</color>
+    <color name="thermal_hot">#F44336</color>
+
+    <!-- UI Elements -->
+    <color name="panel_background">#CC000000</color>
+    <color name="panel_border">#33FFFFFF</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+</resources>

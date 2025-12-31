@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BAHB Inspector</string>
+
+    <!-- Inspection Status -->
+    <string name="status_idle">Ready</string>
+    <string name="status_inspecting">Inspecting</string>
+    <string name="status_processing">Processing</string>
+    <string name="status_error">Error</string>
+
+    <!-- Connection States -->
+    <string name="drone_connected">Drone Connected</string>
+    <string name="drone_disconnected">Drone Disconnected</string>
+    <string name="manifold_connected">AI System Online</string>
+    <string name="manifold_disconnected">AI System Offline</string>
+
+    <!-- Button Labels -->
+    <string name="btn_start_inspection">Start Inspection</string>
+    <string name="btn_stop_inspection">Stop Inspection</string>
+    <string name="btn_capture">Capture</string>
+    <string name="btn_thermal_toggle">Thermal</string>
+
+    <!-- Severity Labels -->
+    <string name="severity_critical">CRITICAL</string>
+    <string name="severity_high">HIGH</string>
+    <string name="severity_medium">MEDIUM</string>
+    <string name="severity_low">LOW</string>
+
+    <!-- Panel Titles -->
+    <string name="panel_detections">Detections</string>
+    <string name="panel_anomalies">Anomalies</string>
+    <string name="panel_thermal">Thermal</string>
+    <string name="panel_stats">Statistics</string>
+</resources>
