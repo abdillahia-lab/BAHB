@@ -85,3 +85,7 @@ temp/
 # Coverage
 .coverage
 htmlcov/
+
+# Training outputs
+runs/
+_train.py
