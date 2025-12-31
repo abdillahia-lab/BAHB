@@ -1,0 +1,331 @@
+# SAM3 Nano Training Configuration for BAHB
+# Segment Anything Model 3 for Precision Segmentation
+# Target: DJI Manifold 3 (NVIDIA Orin NX)
+
+# =============================================================================
+# Model Configuration
+# =============================================================================
+model:
+  architecture: "sam3_nano"  # Lightweight SAM variant for edge deployment
+  encoder: "vit_tiny"  # Options: vit_tiny, vit_small, vit_base
+  pretrained: "sam3_nano.pth"
+  input_size: [1024, 1024]
+
+  # Encoder configuration
+  encoder_config:
+    patch_size: 16
+    embed_dim: 192
+    depth: 12
+    num_heads: 3
+    global_attn_indexes: [2, 5, 8, 11]
+    window_size: 14
+    mlp_ratio: 4.0
+
+  # Prompt encoder
+  prompt_encoder:
+    embed_dim: 256
+    image_embedding_size: [64, 64]
+    input_image_size: [1024, 1024]
+    mask_in_chans: 16
+
+  # Mask decoder
+  mask_decoder:
+    num_multimask_outputs: 3
+    transformer_dim: 256
+    transformer_depth: 2
+    transformer_heads: 8
+    mlp_dim: 2048
+    iou_head_depth: 3
+    iou_head_hidden_dim: 256
+
+# =============================================================================
+# Training Configuration
+# =============================================================================
+training:
+  epochs: 20
+  batch_size: 4
+  accumulate_grad: 4  # Effective batch size: 16
+
+  # Early stopping
+  patience: 5
+  min_delta: 0.001
+
+  # Freeze strategy (fine-tuning)
+  freeze:
+    encoder: true  # Freeze image encoder
+    prompt_encoder: true  # Freeze prompt encoder
+    mask_decoder: false  # Only train mask decoder
+
+  # Optimizer
+  optimizer:
+    type: "AdamW"
+    lr: 0.0001
+    weight_decay: 0.0001
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+
+  # Learning rate scheduler
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 1
+    min_lr: 1.0e-6
+
+  # Loss configuration
+  losses:
+    focal_weight: 20.0  # Focal loss for mask prediction
+    dice_weight: 1.0    # Dice loss for segmentation
+    iou_weight: 1.0     # IoU prediction loss
+
+    # Focal loss parameters
+    focal_alpha: 0.25
+    focal_gamma: 2.0
+
+# =============================================================================
+# Data Configuration
+# =============================================================================
+data:
+  # Dataset paths
+  train_images: "data/augmented/sam3/images/train"
+  val_images: "data/augmented/sam3/images/val"
+  train_masks: "data/augmented/sam3/masks/train"
+  val_masks: "data/augmented/sam3/masks/val"
+  train_prompts: "data/augmented/sam3/prompts/train.json"
+  val_prompts: "data/augmented/sam3/prompts/val.json"
+
+  # Prompt configuration
+  prompts:
+    # Points per image during training
+    points_per_batch: 64
+    points_per_side: 32  # For automatic mask generation
+
+    # Point sampling strategy
+    point_sampling:
+      method: "random_in_mask"  # "random", "centroid", "random_in_mask", "boundary"
+      include_background: true
+      background_ratio: 0.1
+
+    # Box prompts
+    use_boxes: true
+    box_jitter: 0.1  # Jitter box coordinates during training
+
+  # DataLoader settings
+  workers: 4
+  pin_memory: true
+
+  # Target classes for segmentation (subset of detection classes)
+  segment_classes:
+    - transformer
+    - insulator
+    - conductor
+    - switchgear
+    - server_rack
+    - hvac_unit
+    - electrical_panel
+    - hotspot
+    - damage
+    - leak
+
+# =============================================================================
+# Augmentation Configuration
+# =============================================================================
+augmentation:
+  # Geometric transforms
+  resize:
+    target_size: 1024
+    keep_aspect: true
+
+  random_crop:
+    enabled: true
+    crop_size: [800, 1024]
+    prob: 0.5
+
+  horizontal_flip: 0.5
+  vertical_flip: 0.0
+
+  rotation:
+    enabled: true
+    max_angle: 15
+    prob: 0.3
+
+  scale:
+    min_scale: 0.8
+    max_scale: 1.2
+    prob: 0.5
+
+  # Photometric transforms
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    prob: 0.5
+
+  # Normalization
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+  # Mask augmentation
+  mask_augmentation:
+    erosion_prob: 0.1
+    dilation_prob: 0.1
+    kernel_range: [3, 7]
+
+# =============================================================================
+# Validation Configuration
+# =============================================================================
+validation:
+  # Metrics
+  metrics:
+    - "iou"
+    - "boundary_iou"
+    - "dice"
+
+  # Evaluation settings
+  iou_thresholds: [0.5, 0.75, 0.9]
+  points_per_image: 32
+
+  # Validation frequency
+  val_interval: 1
+  save_best: true
+  save_period: 5
+
+  # Visualization
+  visualize:
+    enabled: true
+    num_samples: 10
+    overlay_alpha: 0.5
+
+# =============================================================================
+# Device Configuration
+# =============================================================================
+device:
+  gpu: 0
+  half_precision: true
+  deterministic: false
+  cudnn_benchmark: true
+
+  # Memory optimization
+  gradient_checkpointing: true
+  mixed_precision: true
+
+# =============================================================================
+# Logging and Checkpoints
+# =============================================================================
+logging:
+  project: "bahb-sam3"
+  name: "segmentation-nano-v1"
+  save_dir: "runs/train"
+
+  wandb:
+    enabled: true
+    entity: null
+    project: "bahb-training"
+
+  tensorboard:
+    enabled: true
+    log_images: true
+    log_masks: true
+
+  log_interval: 25
+  image_log_interval: 100
+
+# =============================================================================
+# Export Configuration
+# =============================================================================
+export:
+  # Export separate encoder and decoder for efficiency
+  split_export: true
+
+  formats:
+    - "onnx"
+    - "tensorrt"
+
+  # Encoder export
+  encoder:
+    onnx:
+      opset: 17
+      simplify: true
+      input_names: ["image"]
+      output_names: ["image_embeddings"]
+
+    tensorrt:
+      workspace: 4
+      precision: "fp16"
+      device: "orin_nx"
+
+  # Decoder export
+  decoder:
+    onnx:
+      opset: 17
+      simplify: true
+      input_names: ["image_embeddings", "point_coords", "point_labels", "mask_input", "has_mask_input"]
+      output_names: ["masks", "iou_predictions"]
+
+    tensorrt:
+      workspace: 2
+      precision: "fp16"
+      device: "orin_nx"
+
+  output_dir: "data/exports"
+
+# =============================================================================
+# Performance Targets
+# =============================================================================
+targets:
+  # Accuracy targets
+  min_iou: 0.85
+  min_boundary_iou: 0.75
+  min_dice: 0.88
+
+  # Inference targets (Orin NX)
+  encoder_inference_ms: 5.0
+  decoder_inference_ms: 3.0
+  total_inference_ms: 10.0
+  target_fps: 125
+
+  # Model size
+  encoder_size_mb: 30
+  decoder_size_mb: 10
+  total_size_mb: 50
+
+# =============================================================================
+# Interactive Segmentation Settings
+# =============================================================================
+interactive:
+  # Point prompt settings
+  point_prompts:
+    max_points: 10
+    positive_color: [0, 255, 0]  # Green
+    negative_color: [255, 0, 0]  # Red
+
+  # Box prompt settings
+  box_prompts:
+    enabled: true
+    color: [0, 0, 255]  # Blue
+
+  # Multi-mask output
+  multimask:
+    enabled: true
+    return_best: true  # Return only best mask in production
+
+  # Mask refinement
+  refinement:
+    iterations: 2
+    threshold: 0.0
+
+# =============================================================================
+# Resume and Pretrained
+# =============================================================================
+resume:
+  enabled: false
+  checkpoint: null
+
+pretrained:
+  enabled: true
+  weights: "sam3_nano.pth"
+
+  # Fine-tuning from detection
+  init_from_detection:
+    enabled: false
+    yolov12_weights: null
+    use_box_prompts: true

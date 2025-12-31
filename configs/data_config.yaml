@@ -1,0 +1,481 @@
+# BAHB Data Pipeline Configuration
+# Master class definitions and data pipeline settings
+# Aligned with bahb/core/types.py:DetectionClass
+
+# =============================================================================
+# Detection Classes (30 classes, 0-indexed)
+# =============================================================================
+classes:
+  # Substation Equipment (0-7)
+  - id: 0
+    name: "transformer"
+    supercategory: "substation"
+    description: "Power transformers (distribution, power)"
+    thermal_zone: "transformer"
+    priority: high
+
+  - id: 1
+    name: "insulator"
+    supercategory: "substation"
+    description: "Ceramic, composite, or glass insulators"
+    thermal_zone: "insulator"
+    priority: high
+
+  - id: 2
+    name: "conductor"
+    supercategory: "substation"
+    description: "Power lines, cables, bus bars"
+    thermal_zone: "conductor"
+    priority: high
+
+  - id: 3
+    name: "switchgear"
+    supercategory: "substation"
+    description: "Circuit breakers, switches, fuses"
+    thermal_zone: "switchgear"
+    priority: high
+
+  - id: 4
+    name: "circuit_breaker"
+    supercategory: "substation"
+    description: "Individual circuit breakers"
+    thermal_zone: "switchgear"
+    priority: medium
+
+  - id: 5
+    name: "disconnect_switch"
+    supercategory: "substation"
+    description: "Disconnect/isolation switches"
+    thermal_zone: "switchgear"
+    priority: medium
+
+  - id: 6
+    name: "capacitor_bank"
+    supercategory: "substation"
+    description: "Capacitor assemblies for power factor correction"
+    thermal_zone: "general"
+    priority: medium
+
+  - id: 7
+    name: "lightning_arrester"
+    supercategory: "substation"
+    description: "Surge arresters and lightning protection"
+    thermal_zone: "insulator"
+    priority: medium
+
+  # Data Center/Cooling (8-15)
+  - id: 8
+    name: "server_rack"
+    supercategory: "datacenter"
+    description: "Server cabinets and racks"
+    thermal_zone: "server"
+    priority: high
+
+  - id: 9
+    name: "hvac_unit"
+    supercategory: "datacenter"
+    description: "HVAC systems and cooling units"
+    thermal_zone: "hvac"
+    priority: high
+
+  - id: 10
+    name: "cooling_fan"
+    supercategory: "datacenter"
+    description: "Cooling fans and ventilation"
+    thermal_zone: "hvac"
+    priority: medium
+
+  - id: 11
+    name: "electrical_panel"
+    supercategory: "datacenter"
+    description: "Electrical distribution panels"
+    thermal_zone: "switchgear"
+    priority: high
+
+  - id: 12
+    name: "cable"
+    supercategory: "datacenter"
+    description: "Data and power cables"
+    thermal_zone: "conductor"
+    priority: low
+
+  - id: 13
+    name: "ups"
+    supercategory: "datacenter"
+    description: "Uninterruptible power supply units"
+    thermal_zone: "server"
+    priority: medium
+
+  - id: 14
+    name: "pdu"
+    supercategory: "datacenter"
+    description: "Power distribution units"
+    thermal_zone: "switchgear"
+    priority: medium
+
+  - id: 15
+    name: "fire_suppression"
+    supercategory: "datacenter"
+    description: "Fire suppression systems and extinguishers"
+    thermal_zone: "general"
+    priority: low
+
+  # General (16-18)
+  - id: 16
+    name: "vegetation"
+    supercategory: "general"
+    description: "Trees, bushes, vegetation encroachment"
+    thermal_zone: "general"
+    priority: medium
+
+  - id: 17
+    name: "person"
+    supercategory: "general"
+    description: "Personnel in inspection area"
+    thermal_zone: "general"
+    priority: low
+
+  - id: 18
+    name: "vehicle"
+    supercategory: "general"
+    description: "Service vehicles"
+    thermal_zone: "general"
+    priority: low
+
+  # Hazards/Defects (19-25)
+  - id: 19
+    name: "damage"
+    supercategory: "defect"
+    description: "General physical damage"
+    thermal_zone: "general"
+    priority: critical
+
+  - id: 20
+    name: "corrosion"
+    supercategory: "defect"
+    description: "Rust, oxidation, degradation"
+    thermal_zone: "general"
+    priority: high
+
+  - id: 21
+    name: "hotspot"
+    supercategory: "defect"
+    description: "Thermal anomaly / overheating"
+    thermal_zone: "general"
+    priority: critical
+
+  - id: 22
+    name: "leak"
+    supercategory: "defect"
+    description: "Oil, water, or gas leaks"
+    thermal_zone: "general"
+    priority: critical
+
+  - id: 23
+    name: "crack"
+    supercategory: "defect"
+    description: "Structural cracks and fractures"
+    thermal_zone: "general"
+    priority: high
+
+  - id: 24
+    name: "contamination"
+    supercategory: "defect"
+    description: "Surface contamination, pollution buildup"
+    thermal_zone: "general"
+    priority: medium
+
+  - id: 25
+    name: "bird_nest"
+    supercategory: "defect"
+    description: "Bird nests on equipment"
+    thermal_zone: "general"
+    priority: medium
+
+  # Reserved/Extended (26-29)
+  - id: 26
+    name: "corona_discharge"
+    supercategory: "defect"
+    description: "Electrical corona discharge patterns"
+    thermal_zone: "general"
+    priority: critical
+
+  - id: 27
+    name: "oil_stain"
+    supercategory: "defect"
+    description: "Oil stain patterns indicating leaks"
+    thermal_zone: "general"
+    priority: high
+
+  - id: 28
+    name: "missing_component"
+    supercategory: "defect"
+    description: "Missing parts or components"
+    thermal_zone: "general"
+    priority: high
+
+  - id: 29
+    name: "foreign_object"
+    supercategory: "defect"
+    description: "Foreign objects on equipment"
+    thermal_zone: "general"
+    priority: medium
+
+# =============================================================================
+# Thermal Categories
+# =============================================================================
+thermal_categories:
+  hotspot_critical:
+    id: 0
+    description: "Critical temperature anomaly requiring immediate attention"
+    delta_above_ambient: 40  # °C
+    severity: 4  # CRITICAL
+    color_rgb: [255, 0, 0]  # Red
+
+  hotspot_warning:
+    id: 1
+    description: "Warning temperature anomaly requiring scheduled inspection"
+    delta_above_ambient: 15  # °C
+    delta_max: 40
+    severity: 3  # HIGH
+    color_rgb: [255, 165, 0]  # Orange
+
+  hotspot_notice:
+    id: 2
+    description: "Notable temperature elevation for monitoring"
+    delta_above_ambient: 5  # °C
+    delta_max: 15
+    severity: 2  # MEDIUM
+    color_rgb: [255, 255, 0]  # Yellow
+
+  coldspot:
+    id: 3
+    description: "Abnormal cold area indicating potential issues"
+    delta_below_ambient: 10  # °C
+    severity: 2  # MEDIUM
+    color_rgb: [0, 191, 255]  # Light blue
+
+  normal:
+    id: 4
+    description: "Normal operating temperature range"
+    delta_range: [-5, 5]  # °C from ambient
+    severity: 0  # INFO
+    color_rgb: [0, 255, 0]  # Green
+
+# =============================================================================
+# Thermal Zones (Equipment-specific thresholds)
+# =============================================================================
+thermal_zones:
+  transformer:
+    normal_range: [20, 65]
+    warning_range: [65, 85]
+    critical_range: [85, 150]
+
+  conductor:
+    normal_range: [15, 50]
+    warning_range: [50, 75]
+    critical_range: [75, 120]
+
+  switchgear:
+    normal_range: [20, 55]
+    warning_range: [55, 75]
+    critical_range: [75, 110]
+
+  insulator:
+    normal_range: [15, 45]
+    warning_range: [45, 65]
+    critical_range: [65, 100]
+
+  server:
+    normal_range: [25, 45]
+    warning_range: [45, 60]
+    critical_range: [60, 85]
+
+  hvac:
+    normal_range: [10, 40]
+    warning_range: [40, 55]
+    critical_range: [55, 80]
+
+  general:
+    normal_range: [15, 50]
+    warning_range: [50, 70]
+    critical_range: [70, 100]
+
+# =============================================================================
+# Dataset Sources
+# =============================================================================
+datasets:
+  substation:
+    ttpla:
+      url: "https://github.com/r3ab/ttpla"
+      format: "coco"
+      classes: [0, 1, 2]  # transformer, insulator, conductor
+      license: "MIT"
+
+    cplid:
+      url: "https://data.mendeley.com/datasets/n6wrv4ry6v/6"
+      format: "voc"
+      classes: [1, 19, 23, 24]  # insulator, damage, crack, contamination
+      license: "CC BY 4.0"
+
+    insulator_defect:
+      url: "https://www.kaggle.com/datasets/insulator-defect"
+      format: "yolo"
+      classes: [1, 19, 23]
+      license: "Apache 2.0"
+
+  thermal:
+    flir_adas:
+      url: "https://www.flir.com/oem/adas/adas-dataset-form/"
+      format: "coco"
+      classes: [17, 18]  # person, vehicle
+      license: "FLIR Free"
+
+    electrical_thermal:
+      format: "custom"
+      classes: [11, 21]  # electrical_panel, hotspot
+      source: "internal"
+
+  datacenter:
+    server_thermal:
+      format: "yolo"
+      classes: [8, 9, 10, 11, 12]
+      source: "internal"
+
+# =============================================================================
+# Data Processing Settings
+# =============================================================================
+processing:
+  # Image settings
+  images:
+    valid_formats: ["jpg", "jpeg", "png", "bmp"]
+    min_resolution: [320, 240]
+    max_resolution: [8192, 8192]
+    target_colorspace: "RGB"
+
+  # Label validation
+  labels:
+    bbox_format: "normalized"  # 0.0 - 1.0
+    min_bbox_area: 0.0001  # 0.01% of image
+    max_bbox_area: 0.95  # 95% of image
+    allow_truncated: true
+    min_visibility: 0.3
+
+  # Thermal data
+  thermal:
+    bit_depth: 16
+    resolution: [640, 512]
+    temp_range: [-50, 600]  # °C
+    default_emissivity: 0.95
+
+# =============================================================================
+# Augmentation Defaults
+# =============================================================================
+augmentation:
+  geometric:
+    horizontal_flip: 0.5
+    vertical_flip: 0.0
+    rotation_range: [-15, 15]
+    scale_range: [0.8, 1.2]
+    translate_range: [-0.1, 0.1]
+
+  photometric:
+    brightness_range: [-0.2, 0.2]
+    contrast_range: [0.8, 1.2]
+    saturation_range: [0.8, 1.2]
+    hue_shift: 0.05
+
+  noise:
+    gaussian_sigma: 0.02
+    motion_blur_prob: 0.1
+    motion_blur_kernel: [3, 7]
+
+  cutout:
+    probability: 0.3
+    max_holes: 3
+    max_size_ratio: 0.1
+
+  # H30T camera simulation
+  h30t_simulation:
+    enabled: true
+    wide:
+      resolution: [4096, 2160]
+      lens_distortion: 0.02
+    zoom:
+      resolution: [3840, 2160]
+      zoom_levels: [5, 20, 50, 100, 200]
+    thermal:
+      resolution: [640, 512]
+      netd: 0.03
+      palettes: ["ironbow", "whitehot", "rainbow", "arctic"]
+
+  # Drone motion simulation
+  drone_motion:
+    vibration_freq_range: [10, 50]
+    vibration_amplitude: [0.5, 2.0]
+    motion_blur_intensity: [0.5, 3.0]
+    gimbal_jitter_prob: 0.05
+
+# =============================================================================
+# Model Input Specifications
+# =============================================================================
+model_inputs:
+  yolov12:
+    input_size: [1280, 720]
+    normalization: "0-1"
+    channels: "RGB"
+    batch_size: 16
+
+  rf_detr:
+    input_size: [640, 640]
+    normalization: "imagenet"
+    channels: "RGB"
+    batch_size: 8
+
+  sam3:
+    input_size: [1024, 1024]
+    normalization: "0-1"
+    channels: "RGB"
+    batch_size: 4
+
+  qwen_vl:
+    input_size: [448, 448]
+    normalization: "0-1"
+    channels: "RGB"
+    batch_size: 1
+
+# =============================================================================
+# Split Configuration
+# =============================================================================
+split:
+  train_ratio: 0.8
+  val_ratio: 0.2
+  test_ratio: 0.0  # Optional holdout test set
+  stratify_by_class: true
+  random_seed: 42
+  min_samples_per_class: 10
+
+# =============================================================================
+# Validation Criteria
+# =============================================================================
+validation:
+  image_checks:
+    verify_readable: true
+    check_corruption: true
+    verify_resolution: true
+
+  label_checks:
+    verify_class_range: true
+    verify_bbox_bounds: true
+    check_empty_labels: true
+    check_orphan_files: true
+
+  class_balance:
+    min_class_ratio: 0.01  # Minimum 1% per class
+    max_class_ratio: 0.25  # Maximum 25% per class
+    warn_imbalance: true
+
+  thermal_checks:
+    verify_bit_depth: true
+    verify_temp_range: true
+    check_calibration_data: true

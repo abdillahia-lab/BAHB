@@ -1,0 +1,347 @@
+# RF-DETR Training Configuration for BAHB
+# Transformer-based Detection and Segmentation Model
+# Target: DJI Manifold 3 (NVIDIA Orin NX)
+
+# =============================================================================
+# Model Configuration
+# =============================================================================
+model:
+  architecture: "rf_detr_large"
+  backbone: "resnet101"  # Options: resnet50, resnet101, swin_t, swin_s
+  pretrained: "detr-resnet-101"  # HuggingFace model ID
+  input_size: [640, 640]
+  num_queries: 300  # Detection queries
+  num_classes: 30  # BAHB inspection classes
+
+  # Transformer configuration
+  transformer:
+    hidden_dim: 256
+    num_heads: 8
+    num_encoder_layers: 6
+    num_decoder_layers: 6
+    dim_feedforward: 2048
+    dropout: 0.1
+
+  # Mask head for segmentation
+  mask_head:
+    enabled: true
+    hidden_dim: 256
+    num_heads: 8
+    resolution: 28
+
+  # Auxiliary decoding losses
+  aux_loss: true
+
+# =============================================================================
+# Training Configuration
+# =============================================================================
+training:
+  epochs: 50
+  batch_size: 8
+  accumulate_grad: 4  # Effective batch size: 32
+
+  # Early stopping
+  patience: 10
+  min_delta: 0.0005
+
+  # Optimizer
+  optimizer:
+    type: "AdamW"
+    lr: 0.0001
+    lr_backbone: 0.00001  # Lower LR for pretrained backbone
+    weight_decay: 0.0001
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+
+  # Learning rate scheduler
+  scheduler:
+    type: "step"
+    step_size: 40
+    gamma: 0.1
+    warmup_epochs: 1
+    warmup_factor: 0.001
+
+  # Gradient clipping
+  clip_max_norm: 0.1
+
+  # Loss weights (Hungarian matching)
+  losses:
+    classification_weight: 1.0
+    bbox_weight: 5.0
+    giou_weight: 2.0
+    mask_weight: 1.0  # For segmentation
+    dice_weight: 1.0  # For segmentation
+
+  # Set prediction losses
+  set_cost:
+    class_cost: 1.0
+    bbox_cost: 5.0
+    giou_cost: 2.0
+
+# =============================================================================
+# Data Configuration
+# =============================================================================
+data:
+  # Dataset paths (COCO format)
+  train_images: "data/augmented/rf_detr/train"
+  val_images: "data/augmented/rf_detr/val"
+  train_annotations: "data/augmented/rf_detr/annotations/train.json"
+  val_annotations: "data/augmented/rf_detr/annotations/val.json"
+
+  # Categories (aligned with configs/data_config.yaml)
+  categories:
+    - id: 0
+      name: transformer
+      supercategory: substation
+    - id: 1
+      name: insulator
+      supercategory: substation
+    - id: 2
+      name: conductor
+      supercategory: substation
+    - id: 3
+      name: switchgear
+      supercategory: substation
+    - id: 4
+      name: circuit_breaker
+      supercategory: substation
+    - id: 5
+      name: disconnect_switch
+      supercategory: substation
+    - id: 6
+      name: capacitor_bank
+      supercategory: substation
+    - id: 7
+      name: lightning_arrester
+      supercategory: substation
+    - id: 8
+      name: server_rack
+      supercategory: datacenter
+    - id: 9
+      name: hvac_unit
+      supercategory: datacenter
+    - id: 10
+      name: cooling_fan
+      supercategory: datacenter
+    - id: 11
+      name: electrical_panel
+      supercategory: datacenter
+    - id: 12
+      name: cable
+      supercategory: datacenter
+    - id: 13
+      name: ups
+      supercategory: datacenter
+    - id: 14
+      name: pdu
+      supercategory: datacenter
+    - id: 15
+      name: fire_suppression
+      supercategory: datacenter
+    - id: 16
+      name: vegetation
+      supercategory: general
+    - id: 17
+      name: person
+      supercategory: general
+    - id: 18
+      name: vehicle
+      supercategory: general
+    - id: 19
+      name: damage
+      supercategory: defect
+    - id: 20
+      name: corrosion
+      supercategory: defect
+    - id: 21
+      name: hotspot
+      supercategory: defect
+    - id: 22
+      name: leak
+      supercategory: defect
+    - id: 23
+      name: crack
+      supercategory: defect
+    - id: 24
+      name: contamination
+      supercategory: defect
+    - id: 25
+      name: bird_nest
+      supercategory: defect
+    - id: 26
+      name: corona_discharge
+      supercategory: defect
+    - id: 27
+      name: oil_stain
+      supercategory: defect
+    - id: 28
+      name: missing_component
+      supercategory: defect
+    - id: 29
+      name: foreign_object
+      supercategory: defect
+
+  # DataLoader settings
+  workers: 8
+  pin_memory: true
+
+  # Mask settings
+  masks:
+    enabled: true
+    format: "polygon"  # "polygon" or "rle"
+
+# =============================================================================
+# Augmentation Configuration
+# =============================================================================
+augmentation:
+  # Resize and crop
+  min_size: [480, 512, 544, 576, 608, 640]  # Multi-scale training
+  max_size: 640
+
+  # Random crop
+  random_crop:
+    enabled: true
+    crop_size: [384, 600]
+    prob: 0.5
+
+  # Color augmentation
+  color_jitter:
+    brightness: 0.25
+    contrast: 0.25
+    saturation: 0.25
+    hue: 0.1
+    prob: 0.5
+
+  # Geometric augmentation
+  horizontal_flip: 0.5
+  random_resize:
+    min_scale: 0.8
+    max_scale: 1.2
+
+  # Normalization (ImageNet)
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+  # H30T-specific
+  h30t_simulation:
+    enabled: true
+    motion_blur_prob: 0.1
+    drone_vibration_prob: 0.1
+
+# =============================================================================
+# Validation Configuration
+# =============================================================================
+validation:
+  # Evaluation settings
+  iou_thresholds: [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+  max_detections: [1, 10, 100]
+
+  # COCO evaluation
+  eval_metrics:
+    - "bbox"
+    - "segm"
+
+  # Validation frequency
+  val_interval: 1
+  save_best: true
+  save_period: 5
+
+  # Inference settings
+  score_threshold: 0.05
+  nms_threshold: 0.5
+
+# =============================================================================
+# Device Configuration
+# =============================================================================
+device:
+  gpu: 0
+  half_precision: true
+  deterministic: false
+  cudnn_benchmark: true
+
+  # Distributed training
+  distributed: false
+  world_size: 1
+  sync_bn: false
+
+# =============================================================================
+# Logging and Checkpoints
+# =============================================================================
+logging:
+  project: "bahb-rf-detr"
+  name: "segmentation-v1"
+  save_dir: "runs/train"
+
+  # Weights & Biases
+  wandb:
+    enabled: true
+    entity: null
+    project: "bahb-training"
+
+  # TensorBoard
+  tensorboard:
+    enabled: true
+    log_images: true
+
+  # Logging frequency
+  log_interval: 50
+  image_log_interval: 200
+
+# =============================================================================
+# Export Configuration
+# =============================================================================
+export:
+  formats:
+    - "onnx"
+    - "tensorrt"
+
+  onnx:
+    opset: 17
+    simplify: true
+    dynamic_axes:
+      input: {0: "batch_size"}
+      output: {0: "batch_size"}
+
+  tensorrt:
+    workspace: 4  # GB
+    precision: "fp16"
+    device: "orin_nx"
+    max_batch_size: 1
+
+    # Optimization profile
+    optimization_profile:
+      min_input_shape: [1, 3, 640, 640]
+      opt_input_shape: [1, 3, 640, 640]
+      max_input_shape: [1, 3, 640, 640]
+
+  output_dir: "data/exports"
+
+# =============================================================================
+# Performance Targets
+# =============================================================================
+targets:
+  # Accuracy targets
+  min_bbox_mAP: 0.65
+  min_segm_mAP: 0.55
+  min_mAP50: 0.75
+
+  # Inference targets (Orin NX)
+  max_inference_ms: 20.0
+  target_fps: 66
+
+  # Model size
+  max_model_size_mb: 200
+
+# =============================================================================
+# Resume and Pretrained
+# =============================================================================
+resume:
+  enabled: false
+  checkpoint: null
+
+pretrained:
+  enabled: true
+  weights: "facebook/detr-resnet-101"
+  freeze_backbone: false
+  freeze_epochs: 0

@@ -1,0 +1,271 @@
+# YOLOv12 Training Configuration for BAHB
+# Infrastructure Inspection Detection Model
+# Target: DJI Manifold 3 (NVIDIA Orin NX)
+
+# =============================================================================
+# Model Configuration
+# =============================================================================
+model:
+  architecture: "yolov12l"  # YOLOv12-Large for best accuracy/speed tradeoff
+  pretrained: "yolov12l.pt"
+  input_size: [1280, 720]  # Matches H30T wide camera aspect ratio
+  num_classes: 30  # BAHB inspection classes
+
+  # Architecture specifics
+  backbone:
+    depth_multiple: 1.0
+    width_multiple: 1.0
+    use_attention: true
+
+  # Detection head
+  head:
+    anchors_per_scale: 3
+    num_scales: 3
+
+# =============================================================================
+# Training Configuration
+# =============================================================================
+training:
+  epochs: 100
+  batch_size: 16
+  accumulate_grad: 2  # Effective batch size: 32
+
+  # Early stopping
+  patience: 15
+  min_delta: 0.001
+
+  # Optimizer
+  optimizer:
+    type: "AdamW"
+    lr: 0.001
+    lr0: 0.01  # Initial learning rate
+    lrf: 0.01  # Final learning rate factor
+    momentum: 0.937
+    weight_decay: 0.0005
+    nesterov: true
+
+  # Learning rate scheduler
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 3
+    warmup_momentum: 0.8
+    warmup_bias_lr: 0.1
+
+  # Loss weights
+  loss:
+    box_weight: 7.5
+    cls_weight: 0.5
+    dfl_weight: 1.5
+    obj_weight: 1.0
+
+  # Regularization
+  regularization:
+    label_smoothing: 0.0
+    dropout: 0.0
+
+# =============================================================================
+# Data Configuration
+# =============================================================================
+data:
+  # Dataset paths
+  train: "data/augmented/yolov12/images/train"
+  val: "data/augmented/yolov12/images/val"
+  test: null  # Optional test set
+
+  # Class names (aligned with configs/data_config.yaml)
+  names:
+    0: transformer
+    1: insulator
+    2: conductor
+    3: switchgear
+    4: circuit_breaker
+    5: disconnect_switch
+    6: capacitor_bank
+    7: lightning_arrester
+    8: server_rack
+    9: hvac_unit
+    10: cooling_fan
+    11: electrical_panel
+    12: cable
+    13: ups
+    14: pdu
+    15: fire_suppression
+    16: vegetation
+    17: person
+    18: vehicle
+    19: damage
+    20: corrosion
+    21: hotspot
+    22: leak
+    23: crack
+    24: contamination
+    25: bird_nest
+    26: corona_discharge
+    27: oil_stain
+    28: missing_component
+    29: foreign_object
+
+  # DataLoader settings
+  workers: 8
+  cache: "ram"  # "ram", "disk", or false
+  rect: false  # Rectangular training
+  single_cls: false
+
+  # Class weights for imbalanced data
+  class_weights:
+    enabled: true
+    method: "effective_samples"  # "inverse", "effective_samples", "focal"
+    beta: 0.999  # For effective samples
+
+# =============================================================================
+# Augmentation Configuration
+# =============================================================================
+augmentation:
+  # Geometric
+  hsv_h: 0.015  # Hue
+  hsv_s: 0.7    # Saturation
+  hsv_v: 0.4    # Value
+
+  # Spatial
+  degrees: 15.0      # Rotation
+  translate: 0.1     # Translation
+  scale: 0.5         # Scale
+  shear: 0.0         # Shear
+  perspective: 0.0   # Perspective
+
+  # Flip
+  flipud: 0.0       # Vertical flip (disabled for infrastructure)
+  fliplr: 0.5       # Horizontal flip
+
+  # Mosaic and Mixup
+  mosaic: 1.0       # Mosaic probability
+  mixup: 0.1        # Mixup probability
+  copy_paste: 0.1   # Copy-paste probability
+
+  # Cutout/Erasing
+  erasing: 0.3      # Random erasing probability
+
+  # H30T-specific augmentation
+  h30t_simulation:
+    enabled: true
+    motion_blur_prob: 0.15
+    motion_blur_kernel: [3, 7]
+    vibration_prob: 0.1
+    lens_distortion: 0.02
+
+# =============================================================================
+# Validation Configuration
+# =============================================================================
+validation:
+  # Evaluation metrics
+  metrics:
+    - "mAP50"
+    - "mAP50-95"
+    - "precision"
+    - "recall"
+    - "f1"
+
+  # Confidence thresholds
+  conf_threshold: 0.001
+  iou_threshold: 0.6
+  max_det: 300
+
+  # Validation frequency
+  val_interval: 1  # Validate every epoch
+  save_best: true
+  save_period: 10  # Save checkpoint every N epochs
+
+# =============================================================================
+# Device Configuration
+# =============================================================================
+device:
+  gpu: 0  # GPU device ID
+  half_precision: true  # FP16 training
+  deterministic: false
+  benchmark: true
+
+  # Multi-GPU (if available)
+  multi_gpu: false
+  sync_bn: false
+
+# =============================================================================
+# Logging and Checkpoints
+# =============================================================================
+logging:
+  project: "bahb-yolov12"
+  name: "inspection-v1"
+  save_dir: "runs/train"
+
+  # Weights & Biases
+  wandb:
+    enabled: true
+    entity: null  # Your W&B entity
+    project: "bahb-training"
+
+  # TensorBoard
+  tensorboard:
+    enabled: true
+    log_images: true
+    log_histograms: true
+
+  # Logging frequency
+  log_interval: 100  # Log every N batches
+  image_log_interval: 500
+
+# =============================================================================
+# Export Configuration
+# =============================================================================
+export:
+  # Export formats
+  formats:
+    - "onnx"
+    - "tensorrt"
+
+  # ONNX settings
+  onnx:
+    opset: 17
+    simplify: true
+    dynamic: false
+
+  # TensorRT settings
+  tensorrt:
+    workspace: 4  # GB
+    precision: "fp16"  # "fp32", "fp16", "int8"
+    device: "orin_nx"
+
+    # INT8 quantization (if using INT8)
+    int8_calibration:
+      enabled: false
+      calibration_images: 1000
+      calibration_batch_size: 8
+
+  # Output paths
+  output_dir: "data/exports"
+
+# =============================================================================
+# Performance Targets
+# =============================================================================
+targets:
+  # Accuracy targets
+  min_mAP50: 0.75
+  min_mAP50_95: 0.55
+
+  # Inference targets (Orin NX)
+  max_inference_ms: 3.0
+  target_fps: 500
+
+  # Model size
+  max_model_size_mb: 100
+
+# =============================================================================
+# Resume and Pretrained
+# =============================================================================
+resume:
+  enabled: false
+  checkpoint: null  # Path to checkpoint to resume from
+
+pretrained:
+  enabled: true
+  weights: "yolov12l.pt"  # Ultralytics pretrained
+  freeze_backbone: false
+  freeze_epochs: 0  # Epochs to freeze backbone
