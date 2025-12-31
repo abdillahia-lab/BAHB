@@ -427,8 +427,8 @@ def train_yolov12():
         base_weights = list(weights_dir.glob("*.pt"))[0]
         print(f"  Using existing weights: {base_weights}")
     else:
-        # Use YOLOv8 as base (YOLOv12 uses same ultralytics interface)
-        base_weights = "yolov8l.pt"
+        # Use YOLOv11 as base (latest available in ultralytics)
+        base_weights = "yolo11l.pt"
         print(f"  Using base weights: {base_weights}")
 
     # Training command
