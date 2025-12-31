@@ -443,7 +443,10 @@ class YOLOv12Detector(BaseModel):
                 box = boxes.xyxy[i].cpu().numpy()
                 conf = float(boxes.conf[i].cpu().numpy())
                 cls_id = int(boxes.cls[i].cpu().numpy())
-                track_id = int(boxes.id[i].cpu().numpy()) if boxes.id is not None else None
+                # Safely access track_id - check if id tensor exists and has valid index
+                track_id = None
+                if boxes.id is not None and len(boxes.id) > i:
+                    track_id = int(boxes.id[i].cpu().numpy())
 
                 detection = Detection(
                     class_id=cls_id,

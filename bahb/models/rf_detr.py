@@ -145,9 +145,16 @@ class RFDETRSegmenter(BaseModel):
 
     def unload(self) -> None:
         """Unload model resources."""
-        self._model = None
-        self._processor = None
-        self._engine = None
+        if hasattr(self, '_model'):
+            self._model = None
+        if hasattr(self, '_processor'):
+            self._processor = None
+        if hasattr(self, '_engine'):
+            self._engine = None
+        if hasattr(self, '_context'):
+            self._context = None
+        if hasattr(self, '_stream'):
+            self._stream = None
         self._is_loaded = False
 
     def preprocess(self, image: NDArray) -> dict:

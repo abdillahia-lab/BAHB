@@ -95,6 +95,8 @@ class QwenVLAnalyzer(BaseModel):
         self._model = None
         self._processor = None
         self._tokenizer = None
+        self._use_blip_fallback = False
+        self._use_template_fallback = False
 
     def load(self) -> bool:
         """Load Qwen2.5-VL model."""
@@ -183,8 +185,12 @@ class QwenVLAnalyzer(BaseModel):
 
     def unload(self) -> None:
         """Unload model resources."""
-        self._model = None
-        self._processor = None
+        if hasattr(self, '_model'):
+            self._model = None
+        if hasattr(self, '_processor'):
+            self._processor = None
+        if hasattr(self, '_tokenizer'):
+            self._tokenizer = None
         self._is_loaded = False
 
     def preprocess(self, image: NDArray) -> dict:
@@ -322,6 +328,9 @@ class QwenVLAnalyzer(BaseModel):
             )
 
         response = self._processor.decode(outputs[0], skip_special_tokens=True)
+        # BLIP includes the prompt in output - strip it
+        if "Answer:" in response:
+            response = response.split("Answer:")[-1]
         return response.strip()
 
     def _template_analysis(self, image: NDArray, prompt_type: str) -> str:

@@ -40,10 +40,14 @@ class SAM3NanoSegmenter(BaseModel):
         # Image encoder
         self._encoder = None
         self._decoder = None
+        self._predictor = None
+        self._use_opencv_fallback = False
 
         # Cached embeddings
         self._image_embeddings = None
         self._current_image_hash = None
+        self._current_image = None
+        self._original_shape = None
 
     def load(self) -> bool:
         """Load SAM3 Nano encoder and decoder."""
@@ -294,7 +298,12 @@ class SAM3NanoSegmenter(BaseModel):
 
     def set_image(self, image: NDArray) -> None:
         """Set image and compute embeddings for subsequent segmentation."""
-        image_hash = hash(image.tobytes())
+        # Use a faster hash - hash shape + subset of data
+        sample_size = min(1000, image.size)
+        flat = image.flat
+        sample_indices = range(0, image.size, max(1, image.size // sample_size))
+        sample_data = bytes([flat[i] % 256 for i in list(sample_indices)[:sample_size]])
+        image_hash = hash((image.shape, sample_data))
 
         if image_hash != self._current_image_hash:
             self._current_image = image
@@ -526,12 +535,17 @@ class SAM3NanoSegmenter(BaseModel):
         for detection in detections:
             masks = self.segment_with_box(detection.bbox, multimask_output=False)
             if masks:
-                # Update class info from detection
+                # Create new Segmentation with detection's class info (avoid mutating dataclass)
                 seg = masks[0]
-                seg.class_id = detection.class_id
-                seg.class_name = detection.class_name
-                seg.confidence = detection.confidence * seg.confidence
-                segmentations.append(seg)
+                updated_seg = Segmentation(
+                    mask=seg.mask,
+                    class_id=detection.class_id,
+                    class_name=detection.class_name,
+                    confidence=detection.confidence * seg.confidence,
+                    area=seg.area,
+                    centroid=seg.centroid,
+                )
+                segmentations.append(updated_seg)
 
         return segmentations
 

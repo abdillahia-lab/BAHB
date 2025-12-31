@@ -78,6 +78,10 @@ class InspectionEngine:
         self._start_time: Optional[datetime] = None
         self._anomaly_counts = {level: 0 for level in SeverityLevel}
 
+        # Frame queue for async processing
+        self._frame_queue: asyncio.Queue[FrameData] = asyncio.Queue(maxsize=30)
+        self._processing_task: Optional[asyncio.Task] = None
+
     async def initialize(self) -> bool:
         """Initialize all engine components."""
         logger.info("Initializing BAHB Inspection Engine...")
@@ -167,7 +171,7 @@ class InspectionEngine:
 
         # Start processing loop
         self._running = True
-        asyncio.create_task(self._processing_loop())
+        self._processing_task = asyncio.create_task(self._processing_loop())
 
         return session_id
 
@@ -284,14 +288,25 @@ class InspectionEngine:
 
     async def _wait_for_frame(self, timeout: float = 0.1) -> Optional[FrameData]:
         """Wait for next frame with timeout."""
-        # Simplified - actual implementation would use asyncio.Queue
-        await asyncio.sleep(1.0 / 30)  # Target 30 FPS
-        return None
+        try:
+            return await asyncio.wait_for(
+                self._frame_queue.get(),
+                timeout=timeout
+            )
+        except asyncio.TimeoutError:
+            return None
 
     def _on_camera_frame(self, frame_data: FrameData) -> None:
         """Callback for camera frames."""
         if self._on_frame:
             self._on_frame(frame_data)
+
+        # Add frame to processing queue (non-blocking)
+        try:
+            self._frame_queue.put_nowait(frame_data)
+        except asyncio.QueueFull:
+            # Drop frame if queue is full (backpressure)
+            pass
 
     def _handle_detections(self, detections: list[Detection]) -> None:
         """Handle detection events."""
@@ -435,16 +450,16 @@ async def run_inspection(
     engine = InspectionEngine(config)
 
     # Setup signal handlers
-    loop = asyncio.get_event_loop()
-
     def signal_handler():
         logger.info("Received shutdown signal")
         asyncio.create_task(engine.stop_inspection())
 
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, signal_handler)
-
     try:
+        # Setup signal handlers inside async context
+        loop = asyncio.get_running_loop()
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, signal_handler)
+
         # Initialize
         if not await engine.initialize():
             logger.error("Engine initialization failed")

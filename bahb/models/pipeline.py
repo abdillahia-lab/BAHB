@@ -118,17 +118,25 @@ class InferencePipeline:
             self.qwen_vl = QwenVLAnalyzer(self.models_config.qwen_vl)
             load_tasks.append(("Qwen-VL", self.qwen_vl))
 
-        # Load each model
-        for name, model in load_tasks:
+        # Load models using thread pool for parallelism where possible
+        def load_model(name_model_tuple):
+            name, model = name_model_tuple
             try:
                 logger.info(f"Loading {name}...")
                 if model.load():
                     logger.info(f"{name} loaded successfully")
+                    return (name, True)
                 else:
                     logger.warning(f"{name} failed to load")
-                    success = False
+                    return (name, False)
             except Exception as e:
                 logger.error(f"Error loading {name}: {e}")
+                return (name, False)
+
+        # Load models concurrently for faster startup
+        results = list(self._executor.map(load_model, load_tasks))
+        for name, loaded in results:
+            if not loaded:
                 success = False
 
         # Warmup models
@@ -363,7 +371,7 @@ class InferencePipeline:
         if thermal and thermal.hotspot_locations:
             equipment_classes = {"transformer", "insulator", "switchgear", "conductor"}
             for det in detections:
-                if det.class_name in equipment_classes:
+                if det.class_name in equipment_classes and det not in candidates:
                     # Check if any hotspot is within detection bbox
                     for hx, hy in thermal.hotspot_locations:
                         if (det.bbox.x1 <= hx <= det.bbox.x2 and
@@ -371,7 +379,7 @@ class InferencePipeline:
                             candidates.append(det)
                             break
 
-        return list(set(candidates))
+        return candidates
 
     def _detect_anomalies(
         self,

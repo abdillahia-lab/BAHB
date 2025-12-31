@@ -113,7 +113,8 @@ class BoundingBox:
 
     @property
     def area(self) -> float:
-        return self.width * self.height
+        """Calculate area, ensuring non-negative result."""
+        return max(0.0, self.width) * max(0.0, self.height)
 
     def to_xyxy(self) -> tuple[float, float, float, float]:
         return (self.x1, self.y1, self.x2, self.y2)
