@@ -431,17 +431,22 @@ def train_yolov12():
         base_weights = "yolo11l.pt"
         print(f"  Using base weights: {base_weights}")
 
-    # Training command
+    # Training command - auto-detect GPU or fall back to CPU
     train_cmd = f"""
+import torch
 from ultralytics import YOLO
+
+# Auto-detect device
+device = "0" if torch.cuda.is_available() else "cpu"
+print(f"Training on device: {{device}}")
 
 model = YOLO("{base_weights}")
 results = model.train(
     data="{dataset_yaml}",
     epochs=100,
     imgsz=1280,
-    batch=8,
-    device=0,
+    batch=8 if device != "cpu" else 4,  # Smaller batch for CPU
+    device=device,
     project="{PROJECT_ROOT / 'runs' / 'yolov12'}",
     name="bahb_infrastructure",
     patience=20,
