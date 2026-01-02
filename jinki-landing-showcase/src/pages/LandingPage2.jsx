@@ -1,47 +1,138 @@
 import { Link } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useRef, Suspense } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Float, Environment, MeshDistortMaterial, Sphere, OrbitControls } from '@react-three/drei'
+import { motion, useScroll, useTransform, useSpring, AnimatePresence, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Lenis from '@studio-freight/lenis'
 import {
-  ArrowLeft, ArrowRight, ArrowUpRight, Sun, Moon,
-  Hexagon, Satellite, Shield, Leaf, Scan,
-  Cpu, Database, Layers, Workflow, Activity,
-  Play, Sparkles, Zap, Globe, Lock, Eye
+  ArrowLeft, ArrowRight, Sun, Moon, Play, ArrowUpRight,
+  Scan, Thermometer, Map, Shield, Leaf, Cpu, Zap,
+  Radio, Target, Layers, BarChart3, Globe, Lock,
+  Satellite, Eye, Activity, ChevronDown, ExternalLink
 } from 'lucide-react'
 import './LandingPage2.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// 3D Drone Component
+function AnimatedDrone({ mouse }) {
+  const meshRef = useRef()
+  const groupRef = useRef()
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.elapsedTime * 0.3
+      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.3
+    }
+    if (groupRef.current) {
+      groupRef.current.rotation.x = mouse.y * 0.1
+      groupRef.current.rotation.y = mouse.x * 0.1
+    }
+  })
+
+  return (
+    <group ref={groupRef}>
+      {/* Central Body */}
+      <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+        <mesh ref={meshRef}>
+          <octahedronGeometry args={[1, 0]} />
+          <MeshDistortMaterial
+            color="#06b6d4"
+            attach="material"
+            distort={0.2}
+            speed={2}
+            roughness={0.2}
+            metalness={0.8}
+          />
+        </mesh>
+      </Float>
+
+      {/* Orbiting Rings */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[2, 0.02, 16, 100]} />
+        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={0.5} />
+      </mesh>
+      <mesh rotation={[Math.PI / 3, Math.PI / 4, 0]}>
+        <torusGeometry args={[2.5, 0.015, 16, 100]} />
+        <meshStandardMaterial color="#06b6d4" emissive="#06b6d4" emissiveIntensity={0.3} />
+      </mesh>
+      <mesh rotation={[Math.PI / 4, Math.PI / 2, Math.PI / 6]}>
+        <torusGeometry args={[3, 0.01, 16, 100]} />
+        <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.3} />
+      </mesh>
+
+      {/* Data Points */}
+      {[...Array(8)].map((_, i) => (
+        <Float key={i} speed={1.5 + i * 0.2} floatIntensity={0.3}>
+          <mesh position={[
+            Math.cos(i * Math.PI / 4) * 3.5,
+            Math.sin(i * Math.PI / 4) * 0.5,
+            Math.sin(i * Math.PI / 4) * 3.5
+          ]}>
+            <sphereGeometry args={[0.08, 16, 16]} />
+            <meshStandardMaterial
+              color={i % 2 === 0 ? "#06b6d4" : "#8b5cf6"}
+              emissive={i % 2 === 0 ? "#06b6d4" : "#8b5cf6"}
+              emissiveIntensity={1}
+            />
+          </mesh>
+        </Float>
+      ))}
+    </group>
+  )
+}
+
+// Thermal Visualization Component
+function ThermalSphere() {
+  const meshRef = useRef()
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x = state.clock.elapsedTime * 0.2
+      meshRef.current.rotation.y = state.clock.elapsedTime * 0.3
+    }
+  })
+
+  return (
+    <Sphere ref={meshRef} args={[2, 64, 64]}>
+      <MeshDistortMaterial
+        color="#ff6b35"
+        attach="material"
+        distort={0.4}
+        speed={3}
+        roughness={0.1}
+        metalness={0.9}
+      />
+    </Sphere>
+  )
+}
+
+// Scene Component
+function Scene({ mouse }) {
+  return (
+    <>
+      <ambientLight intensity={0.2} />
+      <pointLight position={[10, 10, 10]} intensity={1} color="#06b6d4" />
+      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8b5cf6" />
+      <spotLight position={[0, 10, 0]} intensity={0.5} color="#10b981" />
+      <AnimatedDrone mouse={mouse} />
+      <Environment preset="night" />
+    </>
+  )
+}
+
 function LandingPage2() {
   const [isDark, setIsDark] = useState(true)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [cursorVariant, setCursorVariant] = useState('default')
+  const [activeService, setActiveService] = useState(0)
   const containerRef = useRef(null)
   const heroRef = useRef(null)
-  const capabilitiesRef = useRef(null)
-  const techRef = useRef(null)
+  const servicesRef = useRef(null)
 
-  // Smooth scroll with Lenis
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      smoothWheel: true,
-    })
+  const isServicesInView = useInView(servicesRef, { once: false, amount: 0.3 })
 
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-    requestAnimationFrame(raf)
-
-    return () => lenis.destroy()
-  }, [])
-
-  // Mouse tracking for parallax
+  // Mouse tracking
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
@@ -53,56 +144,55 @@ function LandingPage2() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  // GSAP ScrollTrigger animations
+  // Auto-rotate services
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveService(prev => (prev + 1) % 4)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // GSAP Animations
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero text reveal
-      gsap.fromTo('.hero-title-word',
-        { y: 120, opacity: 0, rotateX: -90 },
-        {
-          y: 0, opacity: 1, rotateX: 0,
-          duration: 1.2,
-          stagger: 0.08,
-          ease: 'power4.out',
-          delay: 0.3
-        }
-      )
-
-      // Capability cards stagger
-      gsap.fromTo('.capability-card',
-        { y: 100, opacity: 0, scale: 0.9 },
-        {
-          y: 0, opacity: 1, scale: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.capabilities-grid',
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      )
-
-      // Tech features parallax
-      gsap.to('.floating-orb', {
-        y: -100,
+      // Parallax on scroll
+      gsap.to('.hero-3d-container', {
+        y: 200,
         scrollTrigger: {
-          trigger: '.lp2-technology',
-          start: 'top bottom',
+          trigger: '.lp2-hero',
+          start: 'top top',
           end: 'bottom top',
           scrub: 1
         }
       })
 
-      // Horizontal text scroll
-      gsap.to('.marquee-track', {
-        xPercent: -50,
-        ease: 'none',
-        duration: 20,
-        repeat: -1
+      // Stats counter animation
+      gsap.from('.stat-number', {
+        textContent: 0,
+        duration: 2,
+        ease: 'power1.out',
+        snap: { textContent: 1 },
+        scrollTrigger: {
+          trigger: '.stats-bar',
+          start: 'top 80%',
+        }
       })
 
+      // Bento cards stagger
+      gsap.fromTo('.bento-card',
+        { y: 60, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.bento-grid',
+            start: 'top 75%'
+          }
+        }
+      )
     }, containerRef)
 
     return () => ctx.revert()
@@ -110,497 +200,439 @@ function LandingPage2() {
 
   const { scrollYProgress } = useScroll()
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-  const heroOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0])
-  const heroScale = useTransform(smoothProgress, [0, 0.2], [1, 0.95])
 
-  const capabilities = [
+  const services = [
     {
-      icon: <Satellite size={28} />,
+      id: 'aerial',
       title: 'Aerial Intelligence',
-      description: 'Multi-spectral drone surveys with centimeter precision.',
-      metric: '0.02m',
-      metricLabel: 'Accuracy',
-      gradient: 'from-cyan-500 to-blue-600'
+      subtitle: 'Topographic Mapping & Surveying',
+      description: 'Capture high-resolution orthomosaics and 3D terrain models with centimeter-level accuracy. From construction sites to mining operations.',
+      icon: <Map size={32} />,
+      color: '#06b6d4',
+      stats: { accuracy: '2cm', coverage: '500ha/day', models: '3D/4D' },
+      visual: 'topography'
     },
     {
-      icon: <Scan size={28} />,
-      title: 'Thermal Analysis',
-      description: 'AI-powered predictive maintenance detection.',
-      metric: '99.8%',
-      metricLabel: 'Detection',
-      gradient: 'from-orange-500 to-red-600'
+      id: 'thermal',
+      title: 'Thermal Scanning',
+      subtitle: 'Predictive Infrastructure Analysis',
+      description: 'AI-powered thermal imaging detects anomalies before failures occur. Solar panels, power lines, industrial equipment.',
+      icon: <Thermometer size={32} />,
+      color: '#f97316',
+      stats: { detection: '99.8%', temp: '±0.1°C', range: '50m' },
+      visual: 'thermal'
     },
     {
-      icon: <Shield size={28} />,
+      id: 'cyber',
       title: 'Cyber Defense',
-      description: 'Zero-trust architecture for enterprise systems.',
-      metric: '24/7',
-      metricLabel: 'Monitoring',
-      gradient: 'from-purple-500 to-violet-600'
+      subtitle: 'AI Security & Threat Detection',
+      description: 'Zero-trust architecture protects your data and AI models. Continuous monitoring, penetration testing, compliance.',
+      icon: <Shield size={32} />,
+      color: '#8b5cf6',
+      stats: { uptime: '99.99%', response: '<1min', threats: '0 day' },
+      visual: 'cyber'
     },
     {
-      icon: <Leaf size={28} />,
+      id: 'agri',
       title: 'AgriTech Analytics',
-      description: 'Precision agriculture with yield optimization.',
-      metric: '+34%',
-      metricLabel: 'Yield',
-      gradient: 'from-green-500 to-emerald-600'
+      subtitle: 'Precision Crop Intelligence',
+      description: 'NDVI analysis, irrigation optimization, and yield prediction. Transform farming with data-driven insights.',
+      icon: <Leaf size={32} />,
+      color: '#10b981',
+      stats: { yield: '+34%', water: '-40%', roi: '300%' },
+      visual: 'agriculture'
     }
   ]
 
-  const stats = [
-    { value: '2.4M+', label: 'Data Points Daily' },
-    { value: '<50ms', label: 'Latency' },
-    { value: '150+', label: 'Deployments' },
-    { value: '99.99%', label: 'Uptime' }
-  ]
-
-  const techStack = [
-    { name: 'YOLOv12', desc: 'Object Detection', icon: <Eye size={20} /> },
-    { name: 'SAM 3.0', desc: 'Segmentation', icon: <Layers size={20} /> },
-    { name: 'RF-DETR', desc: 'Real-time', icon: <Zap size={20} /> },
-    { name: 'Qwen-VL', desc: 'Vision Language', icon: <Sparkles size={20} /> },
-    { name: 'Edge AI', desc: 'On-device', icon: <Cpu size={20} /> },
-    { name: 'Fusion', desc: 'Multi-modal', icon: <Globe size={20} /> }
+  const techCapabilities = [
+    { icon: <Cpu />, label: 'Edge AI', desc: '<50ms latency' },
+    { icon: <Eye />, label: 'Computer Vision', desc: 'YOLOv12 + SAM3' },
+    { icon: <Radio />, label: 'Multi-Spectral', desc: 'RGB + Thermal + NIR' },
+    { icon: <Target />, label: 'RTK GPS', desc: '2cm precision' },
+    { icon: <Layers />, label: '3D Modeling', desc: 'Point clouds' },
+    { icon: <Lock />, label: 'Zero Trust', desc: 'E2E encrypted' }
   ]
 
   return (
-    <div
-      ref={containerRef}
-      className={`lp2 ${isDark ? 'dark' : 'light'}`}
-      data-theme={isDark ? 'dark' : 'light'}
-    >
-      {/* Custom Cursor */}
-      <motion.div
-        className="custom-cursor"
-        animate={{
-          x: mousePosition.x * 20,
-          y: mousePosition.y * 20,
-        }}
-        transition={{ type: 'spring', stiffness: 500, damping: 28 }}
-      />
-
-      {/* Animated Background */}
-      <div className="lp2-bg">
-        <div className="noise-overlay" />
-        <div className="gradient-orbs">
-          <motion.div
-            className="orb orb-1"
-            animate={{
-              x: mousePosition.x * 30,
-              y: mousePosition.y * 30,
-            }}
-            transition={{ type: 'spring', stiffness: 50, damping: 20 }}
-          />
-          <motion.div
-            className="orb orb-2"
-            animate={{
-              x: mousePosition.x * -20,
-              y: mousePosition.y * -20,
-            }}
-            transition={{ type: 'spring', stiffness: 30, damping: 20 }}
-          />
-          <motion.div
-            className="orb orb-3"
-            animate={{
-              x: mousePosition.x * 15,
-              y: mousePosition.y * -25,
-            }}
-            transition={{ type: 'spring', stiffness: 40, damping: 20 }}
-          />
-        </div>
-        <div className="grid-pattern" />
-      </div>
-
-      {/* Progress Bar */}
-      <motion.div
-        className="scroll-progress"
-        style={{ scaleX: smoothProgress }}
-      />
-
-      {/* Back Button */}
-      <Link to="/" className="back-btn">
-        <motion.div
-          whileHover={{ x: -4 }}
-          whileTap={{ scale: 0.95 }}
-          className="back-btn-inner"
-        >
-          <ArrowLeft size={18} />
-          <span>Directory</span>
-        </motion.div>
-      </Link>
-
-      {/* Theme Toggle */}
-      <motion.button
-        className="theme-toggle"
-        onClick={() => setIsDark(!isDark)}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <AnimatePresence mode="wait">
-          {isDark ? (
-            <motion.div
-              key="sun"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Sun size={20} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="moon"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Moon size={20} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+    <div ref={containerRef} className={`lp2 ${isDark ? 'dark' : 'light'}`}>
+      {/* Scroll Progress */}
+      <motion.div className="scroll-progress" style={{ scaleX: smoothProgress }} />
 
       {/* Navigation */}
       <motion.nav
-        className="lp2-nav"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        className="nav"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="container">
-          <div className="nav-content">
-            <motion.div
-              className="logo"
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="logo-mark">
-                <Hexagon size={32} strokeWidth={1} />
-                <span>J</span>
-              </div>
-              <div className="logo-text">
-                <span className="logo-name">JINKI</span>
-                <span className="logo-tagline">Intelligence</span>
-              </div>
-            </motion.div>
+        <Link to="/" className="nav-back">
+          <ArrowLeft size={18} />
+          <span>Directory</span>
+        </Link>
 
-            <div className="nav-links">
-              {['Capabilities', 'Technology', 'Platform', 'Contact'].map((item, i) => (
-                <motion.a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="nav-link"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * i + 0.3 }}
-                  whileHover={{ y: -2 }}
-                >
-                  <span className="link-index">0{i + 1}</span>
-                  <span>{item}</span>
-                </motion.a>
-              ))}
-            </div>
-
-            <motion.button
-              className="nav-cta"
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span>Get Started</span>
-              <ArrowUpRight size={16} />
-            </motion.button>
+        <div className="nav-logo">
+          <div className="logo-icon">
+            <Satellite size={20} />
           </div>
+          <span className="logo-text">JINKI</span>
+        </div>
+
+        <div className="nav-actions">
+          <motion.button
+            className="theme-toggle"
+            onClick={() => setIsDark(!isDark)}
+            whileTap={{ scale: 0.9 }}
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </motion.button>
+          <motion.button
+            className="nav-cta"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span>Get Demo</span>
+            <ArrowUpRight size={16} />
+          </motion.button>
         </div>
       </motion.nav>
 
       {/* Hero Section */}
-      <motion.section
-        ref={heroRef}
-        className="lp2-hero"
-        style={{ opacity: heroOpacity, scale: heroScale }}
-      >
-        <div className="container">
-          <div className="hero-content">
-            <motion.div
-              className="hero-badge"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Activity size={14} className="badge-icon" />
-              <span>Systems Online</span>
-              <span className="badge-divider" />
-              <span>All Modules Operational</span>
-            </motion.div>
-
-            <h1 className="hero-title">
-              <div className="title-line">
-                {'NEXT-GEN'.split('').map((char, i) => (
-                  <span key={i} className="hero-title-word">{char}</span>
-                ))}
-              </div>
-              <div className="title-line title-accent">
-                {'INTELLIGENCE'.split('').map((char, i) => (
-                  <span key={i} className="hero-title-word">{char}</span>
-                ))}
-              </div>
-              <div className="title-line">
-                {'SYSTEMS'.split('').map((char, i) => (
-                  <span key={i} className="hero-title-word">{char}</span>
-                ))}
-              </div>
-            </h1>
-
-            <motion.p
-              className="hero-description"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-            >
-              Advanced AI-powered surveillance, analysis, and security solutions
-              for mission-critical operations. Built for precision. Designed for scale.
-            </motion.p>
-
-            <motion.div
-              className="hero-actions"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: 0.8 }}
-            >
-              <motion.button
-                className="btn-primary"
-                whileHover={{ scale: 1.02, y: -3 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span>Start Free Trial</span>
-                <ArrowRight size={18} />
-              </motion.button>
-              <motion.button
-                className="btn-secondary"
-                whileHover={{ scale: 1.02, y: -3 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Play size={18} />
-                <span>Watch Demo</span>
-              </motion.button>
-            </motion.div>
-          </div>
-
-          {/* 3D-like Visual */}
+      <section ref={heroRef} className="lp2-hero">
+        <div className="hero-content">
           <motion.div
-            className="hero-visual"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="hero-badge"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
           >
-            <div className="visual-wrapper">
-              <motion.div
-                className="visual-sphere"
-                animate={{
-                  rotateY: 360,
-                }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="sphere-ring sphere-ring-1" />
-                <div className="sphere-ring sphere-ring-2" />
-                <div className="sphere-ring sphere-ring-3" />
-                <div className="sphere-core">
-                  <Hexagon size={40} strokeWidth={1} />
-                </div>
-              </motion.div>
+            <Activity size={14} />
+            <span>Trusted by 150+ enterprises</span>
+          </motion.div>
 
-              {/* Floating Elements */}
-              <motion.div
-                className="floating-element fe-1"
-                animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <Satellite size={24} />
-                <span>UAV-01</span>
-              </motion.div>
-              <motion.div
-                className="floating-element fe-2"
-                animate={{ y: [0, 12, 0], rotate: [0, -5, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              >
-                <Shield size={24} />
-                <span>Secure</span>
-              </motion.div>
-              <motion.div
-                className="floating-element fe-3"
-                animate={{ y: [0, -10, 0], rotate: [0, 3, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              >
-                <Cpu size={24} />
-                <span>AI Core</span>
-              </motion.div>
-            </div>
+          <motion.h1
+            className="hero-title"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            Intelligence
+            <br />
+            <span className="title-gradient">From Above</span>
+          </motion.h1>
+
+          <motion.p
+            className="hero-subtitle"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            Drone surveying, thermal imaging, and AI analytics
+            for industries that demand precision.
+          </motion.p>
+
+          <motion.div
+            className="hero-cta"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <motion.button
+              className="btn-primary"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>Start Project</span>
+              <ArrowRight size={18} />
+            </motion.button>
+            <motion.button
+              className="btn-glass"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Play size={18} />
+              <span>See it in action</span>
+            </motion.button>
+          </motion.div>
+
+          <motion.div
+            className="scroll-indicator"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+          >
+            <span>Explore</span>
+            <ChevronDown size={20} className="bounce" />
           </motion.div>
         </div>
 
-        {/* Stats Marquee */}
-        <div className="stats-marquee">
-          <div className="marquee-track">
-            {[...stats, ...stats, ...stats, ...stats].map((stat, i) => (
-              <div key={i} className="stat-item">
-                <span className="stat-value">{stat.value}</span>
-                <span className="stat-label">{stat.label}</span>
-                <span className="stat-divider">◆</span>
-              </div>
-            ))}
-          </div>
+        {/* 3D Canvas */}
+        <div className="hero-3d-container">
+          <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+            <Suspense fallback={null}>
+              <Scene mouse={mousePosition} />
+            </Suspense>
+          </Canvas>
+          <div className="hero-3d-overlay" />
         </div>
-      </motion.section>
 
-      {/* Capabilities Section */}
-      <section ref={capabilitiesRef} className="lp2-capabilities" id="capabilities">
+        {/* Floating Stats */}
+        <div className="hero-stats">
+          <motion.div
+            className="stat-card"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1 }}
+          >
+            <Scan size={20} />
+            <div>
+              <span className="stat-value">2.4M+</span>
+              <span className="stat-label">Acres Mapped</span>
+            </div>
+          </motion.div>
+          <motion.div
+            className="stat-card"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.2 }}
+          >
+            <Zap size={20} />
+            <div>
+              <span className="stat-value">&lt;50ms</span>
+              <span className="stat-label">AI Latency</span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="stats-bar">
         <div className="container">
-          <div className="section-header">
-            <motion.span
-              className="section-tag"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              01 — Capabilities
-            </motion.span>
-            <motion.h2
-              className="section-title"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              Mission-Critical
-              <br />
-              <span className="title-accent">Solutions</span>
-            </motion.h2>
-          </div>
-
-          <div className="capabilities-grid">
-            {capabilities.map((cap, i) => (
-              <motion.div
-                key={i}
-                className="capability-card"
-                whileHover={{ y: -8, scale: 1.02 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              >
-                <div className="card-glow" />
-                <div className="card-content">
-                  <div className={`card-icon bg-gradient-to-br ${cap.gradient}`}>
-                    {cap.icon}
-                  </div>
-                  <h3 className="card-title">{cap.title}</h3>
-                  <p className="card-description">{cap.description}</p>
-                  <div className="card-metric">
-                    <span className="metric-value">{cap.metric}</span>
-                    <span className="metric-label">{cap.metricLabel}</span>
-                  </div>
-                </div>
-                <div className="card-border" />
-              </motion.div>
-            ))}
+          <div className="stats-grid">
+            <div className="stat-item">
+              <span className="stat-number" data-value="99.8">99.8</span>
+              <span className="stat-unit">%</span>
+              <span className="stat-desc">Detection Accuracy</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number" data-value="150">150</span>
+              <span className="stat-unit">+</span>
+              <span className="stat-desc">Enterprise Clients</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number" data-value="500">500</span>
+              <span className="stat-unit">ha/day</span>
+              <span className="stat-desc">Mapping Capacity</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number" data-value="24">24</span>
+              <span className="stat-unit">/7</span>
+              <span className="stat-desc">Support Available</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Technology Section */}
-      <section ref={techRef} className="lp2-technology" id="technology">
-        <div className="floating-orb fo-1" />
-        <div className="floating-orb fo-2" />
-
+      {/* Services Showcase */}
+      <section ref={servicesRef} className="services-section">
         <div className="container">
-          <div className="tech-layout">
-            <div className="tech-content">
-              <motion.span
-                className="section-tag"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-              >
-                02 — Technology
-              </motion.span>
-              <motion.h2
-                className="section-title"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                Powered by
-                <br />
-                <span className="title-accent">Cutting-Edge AI</span>
-              </motion.h2>
-              <motion.p
-                className="tech-description"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-              >
-                Our proprietary AI stack combines state-of-the-art computer vision,
-                natural language processing, and edge computing to deliver real-time
-                intelligence where it matters most.
-              </motion.p>
+          <div className="section-header">
+            <span className="section-tag">What We Do</span>
+            <h2 className="section-title">
+              Four Pillars of
+              <span className="title-gradient"> Intelligence</span>
+            </h2>
+          </div>
 
-              <div className="tech-features">
-                {[
-                  { icon: <Cpu size={20} />, title: 'Edge Processing', desc: 'Sub-50ms latency' },
-                  { icon: <Database size={20} />, title: 'Secure Storage', desc: 'E2E encrypted' },
-                  { icon: <Workflow size={20} />, title: 'Automation', desc: 'Smart workflows' },
-                  { icon: <Lock size={20} />, title: 'Zero Trust', desc: 'Enterprise grade' }
-                ].map((feature, i) => (
-                  <motion.div
-                    key={i}
-                    className="tech-feature"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i }}
-                    whileHover={{ x: 8 }}
-                  >
-                    <div className="feature-icon">{feature.icon}</div>
-                    <div className="feature-text">
-                      <span className="feature-title">{feature.title}</span>
-                      <span className="feature-desc">{feature.desc}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+          <div className="services-showcase">
+            {/* Service Tabs */}
+            <div className="services-tabs">
+              {services.map((service, i) => (
+                <motion.button
+                  key={service.id}
+                  className={`service-tab ${activeService === i ? 'active' : ''}`}
+                  onClick={() => setActiveService(i)}
+                  whileHover={{ x: 8 }}
+                  style={{ '--accent': service.color }}
+                >
+                  <div className="tab-icon">{service.icon}</div>
+                  <div className="tab-content">
+                    <span className="tab-title">{service.title}</span>
+                    <span className="tab-subtitle">{service.subtitle}</span>
+                  </div>
+                  <ArrowRight size={18} className="tab-arrow" />
+                </motion.button>
+              ))}
             </div>
 
-            <motion.div
-              className="tech-stack-visual"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="stack-header">
-                <span className="stack-label">// AI_STACK</span>
-                <div className="stack-status">
-                  <span className="status-dot" />
-                  <span>Active</span>
+            {/* Active Service Display */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeService}
+                className="service-display"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5 }}
+                style={{ '--accent': services[activeService].color }}
+              >
+                <div className="display-visual">
+                  {services[activeService].visual === 'thermal' && (
+                    <div className="thermal-visual">
+                      <div className="thermal-grid">
+                        {[...Array(100)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="thermal-cell"
+                            style={{
+                              animationDelay: `${i * 0.02}s`,
+                              '--heat': Math.random()
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <div className="thermal-overlay" />
+                      <div className="thermal-hotspot" />
+                    </div>
+                  )}
+                  {services[activeService].visual === 'topography' && (
+                    <div className="topo-visual">
+                      <svg viewBox="0 0 400 300" className="topo-lines">
+                        {[...Array(12)].map((_, i) => (
+                          <path
+                            key={i}
+                            d={`M0,${150 + i * 10} Q100,${130 + i * 10 + Math.sin(i) * 20} 200,${150 + i * 10} T400,${150 + i * 10}`}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1"
+                            opacity={0.3 + i * 0.05}
+                            className="topo-line"
+                            style={{ animationDelay: `${i * 0.1}s` }}
+                          />
+                        ))}
+                      </svg>
+                      <div className="topo-marker" />
+                      <div className="topo-drone" />
+                    </div>
+                  )}
+                  {services[activeService].visual === 'cyber' && (
+                    <div className="cyber-visual">
+                      <div className="cyber-grid">
+                        {[...Array(50)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="cyber-node"
+                            style={{
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                              animationDelay: `${Math.random() * 2}s`
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <div className="cyber-shield" />
+                    </div>
+                  )}
+                  {services[activeService].visual === 'agriculture' && (
+                    <div className="agri-visual">
+                      <div className="agri-grid">
+                        {[...Array(64)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="agri-cell"
+                            style={{
+                              '--health': 0.4 + Math.random() * 0.6,
+                              animationDelay: `${i * 0.03}s`
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <div className="agri-overlay" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="display-content">
+                  <h3>{services[activeService].title}</h3>
+                  <p>{services[activeService].description}</p>
+                  <div className="display-stats">
+                    {Object.entries(services[activeService].stats).map(([key, value]) => (
+                      <div key={key} className="display-stat">
+                        <span className="ds-value">{value}</span>
+                        <span className="ds-label">{key}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <motion.button
+                    className="display-cta"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span>Learn More</span>
+                    <ExternalLink size={16} />
+                  </motion.button>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Capabilities - Bento Grid */}
+      <section className="capabilities-section">
+        <div className="container">
+          <div className="section-header center">
+            <span className="section-tag">Technology</span>
+            <h2 className="section-title">
+              Built on
+              <span className="title-gradient"> Cutting-Edge Stack</span>
+            </h2>
+          </div>
+
+          <div className="bento-grid">
+            <motion.div className="bento-card bento-large" whileHover={{ y: -8 }}>
+              <div className="bento-icon">
+                <Canvas style={{ width: 120, height: 120 }}>
+                  <ambientLight intensity={0.5} />
+                  <pointLight position={[5, 5, 5]} />
+                  <Float speed={2}>
+                    <Sphere args={[1, 32, 32]}>
+                      <MeshDistortMaterial color="#06b6d4" distort={0.3} speed={2} />
+                    </Sphere>
+                  </Float>
+                </Canvas>
+              </div>
+              <h3>Real-Time AI Processing</h3>
+              <p>On-device inference with YOLOv12, SAM3, and custom models. Sub-50ms latency for mission-critical operations.</p>
+              <div className="bento-tags">
+                <span>Edge AI</span>
+                <span>Computer Vision</span>
+                <span>ML Ops</span>
+              </div>
+            </motion.div>
+
+            {techCapabilities.slice(0, 4).map((cap, i) => (
+              <motion.div
+                key={i}
+                className="bento-card"
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
+                <div className="bento-card-icon">{cap.icon}</div>
+                <h4>{cap.label}</h4>
+                <span className="bento-desc">{cap.desc}</span>
+              </motion.div>
+            ))}
+
+            <motion.div className="bento-card bento-wide" whileHover={{ y: -8 }}>
+              <div className="bento-visual">
+                <div className="data-stream">
+                  {[...Array(20)].map((_, i) => (
+                    <div key={i} className="stream-line" style={{ animationDelay: `${i * 0.1}s` }} />
+                  ))}
                 </div>
               </div>
-              <div className="stack-grid">
-                {techStack.map((tech, i) => (
-                  <motion.div
-                    key={i}
-                    className="stack-item"
-                    whileHover={{ scale: 1.05, y: -4 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                  >
-                    <div className="stack-icon">{tech.icon}</div>
-                    <div className="stack-info">
-                      <span className="stack-name">{tech.name}</span>
-                      <span className="stack-desc">{tech.desc}</span>
-                    </div>
-                  </motion.div>
-                ))}
+              <div className="bento-info">
+                <h3>Multi-Modal Data Fusion</h3>
+                <p>RGB, thermal, multispectral, and LiDAR data combined for comprehensive insights.</p>
               </div>
             </motion.div>
           </div>
@@ -608,38 +640,43 @@ function LandingPage2() {
       </section>
 
       {/* CTA Section */}
-      <section className="lp2-cta" id="contact">
+      <section className="cta-section">
         <div className="container">
           <motion.div
             className="cta-card"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
           >
             <div className="cta-content">
-              <h2>Ready to Deploy?</h2>
-              <p>Connect with our solutions team to discuss your operational requirements.</p>
-              <div className="cta-actions">
+              <h2>Ready to see your data from above?</h2>
+              <p>Book a demo flight or consultation with our team.</p>
+              <div className="cta-buttons">
                 <motion.button
                   className="btn-primary"
-                  whileHover={{ scale: 1.02, y: -3 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span>Schedule Briefing</span>
-                  <ArrowUpRight size={18} />
-                </motion.button>
-                <motion.button
-                  className="btn-ghost"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <span>View Documentation</span>
+                  <span>Schedule Demo</span>
+                  <ArrowRight size={18} />
+                </motion.button>
+                <motion.button
+                  className="btn-outline"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span>Contact Sales</span>
                 </motion.button>
               </div>
             </div>
-            <div className="cta-visual">
-              <div className="cta-orb" />
+            <div className="cta-3d">
+              <Canvas>
+                <ambientLight intensity={0.3} />
+                <pointLight position={[5, 5, 5]} color="#06b6d4" />
+                <Float speed={1.5}>
+                  <ThermalSphere />
+                </Float>
+              </Canvas>
             </div>
           </motion.div>
         </div>
@@ -648,51 +685,39 @@ function LandingPage2() {
       {/* Footer */}
       <footer className="lp2-footer">
         <div className="container">
-          <div className="footer-content">
+          <div className="footer-grid">
             <div className="footer-brand">
-              <div className="logo">
-                <div className="logo-mark">
-                  <Hexagon size={28} strokeWidth={1} />
-                  <span>J</span>
+              <div className="nav-logo">
+                <div className="logo-icon">
+                  <Satellite size={20} />
                 </div>
-                <div className="logo-text">
-                  <span className="logo-name">JINKI</span>
-                  <span className="logo-tagline">Intelligence</span>
-                </div>
+                <span className="logo-text">JINKI</span>
               </div>
-              <p>Next-generation intelligence systems for mission-critical operations.</p>
+              <p>Intelligent aerial solutions for the enterprises that move the world.</p>
             </div>
             <div className="footer-links">
-              <div className="links-column">
-                <h4>Solutions</h4>
-                <a href="#">Aerial Surveying</a>
-                <a href="#">Thermal Inspections</a>
-                <a href="#">Cyber Security</a>
-                <a href="#">AgriTech</a>
-              </div>
-              <div className="links-column">
-                <h4>Platform</h4>
-                <a href="#">Command Center</a>
-                <a href="#">API Access</a>
-                <a href="#">Documentation</a>
-                <a href="#">Status</a>
-              </div>
-              <div className="links-column">
-                <h4>Company</h4>
-                <a href="#">About</a>
-                <a href="#">Careers</a>
-                <a href="#">Press</a>
-                <a href="#">Contact</a>
-              </div>
+              <h4>Solutions</h4>
+              <a href="#">Aerial Mapping</a>
+              <a href="#">Thermal Inspection</a>
+              <a href="#">Cyber Security</a>
+              <a href="#">AgriTech</a>
             </div>
-          </div>
-          <div className="footer-bottom">
-            <p>© 2024 Jinki Intelligence. All rights reserved.</p>
-            <div className="footer-legal">
+            <div className="footer-links">
+              <h4>Company</h4>
+              <a href="#">About</a>
+              <a href="#">Careers</a>
+              <a href="#">Blog</a>
+              <a href="#">Contact</a>
+            </div>
+            <div className="footer-links">
+              <h4>Legal</h4>
               <a href="#">Privacy</a>
               <a href="#">Terms</a>
               <a href="#">Security</a>
             </div>
+          </div>
+          <div className="footer-bottom">
+            <span>© 2026 Jinki Intelligence. All rights reserved.</span>
           </div>
         </div>
       </footer>
