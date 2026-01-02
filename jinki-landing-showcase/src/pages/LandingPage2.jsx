@@ -1,401 +1,608 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Hexagon, Crosshair, Radar, Satellite, Database, Cpu, Workflow, Layers, Shield, Leaf, Plane, Scan, Activity, Terminal, Binary, Network, ArrowUpRight } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from 'framer-motion'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from '@studio-freight/lenis'
+import {
+  ArrowLeft, ArrowRight, ArrowUpRight, Sun, Moon,
+  Hexagon, Satellite, Shield, Leaf, Scan,
+  Cpu, Database, Layers, Workflow, Activity,
+  Play, Sparkles, Zap, Globe, Lock, Eye
+} from 'lucide-react'
 import './LandingPage2.css'
 
+gsap.registerPlugin(ScrollTrigger)
+
 function LandingPage2() {
+  const [isDark, setIsDark] = useState(true)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [cursorVariant, setCursorVariant] = useState('default')
+  const containerRef = useRef(null)
+  const heroRef = useRef(null)
+  const capabilitiesRef = useRef(null)
+  const techRef = useRef(null)
+
+  // Smooth scroll with Lenis
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+    })
+
+    function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+    requestAnimationFrame(raf)
+
+    return () => lenis.destroy()
+  }, [])
+
+  // Mouse tracking for parallax
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth - 0.5) * 2,
+        y: (e.clientY / window.innerHeight - 0.5) * 2
+      })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  // GSAP ScrollTrigger animations
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero text reveal
+      gsap.fromTo('.hero-title-word',
+        { y: 120, opacity: 0, rotateX: -90 },
+        {
+          y: 0, opacity: 1, rotateX: 0,
+          duration: 1.2,
+          stagger: 0.08,
+          ease: 'power4.out',
+          delay: 0.3
+        }
+      )
+
+      // Capability cards stagger
+      gsap.fromTo('.capability-card',
+        { y: 100, opacity: 0, scale: 0.9 },
+        {
+          y: 0, opacity: 1, scale: 1,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.capabilities-grid',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      )
+
+      // Tech features parallax
+      gsap.to('.floating-orb', {
+        y: -100,
+        scrollTrigger: {
+          trigger: '.lp2-technology',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1
+        }
+      })
+
+      // Horizontal text scroll
+      gsap.to('.marquee-track', {
+        xPercent: -50,
+        ease: 'none',
+        duration: 20,
+        repeat: -1
+      })
+
+    }, containerRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  const { scrollYProgress } = useScroll()
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+  const heroOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0])
+  const heroScale = useTransform(smoothProgress, [0, 0.2], [1, 0.95])
+
   const capabilities = [
     {
-      icon: <Satellite size={32} />,
+      icon: <Satellite size={28} />,
       title: 'Aerial Intelligence',
-      description: 'Multi-spectral drone surveys with centimeter-level precision for topographic mapping and asset monitoring.',
+      description: 'Multi-spectral drone surveys with centimeter precision.',
       metric: '0.02m',
-      metricLabel: 'Accuracy'
+      metricLabel: 'Accuracy',
+      gradient: 'from-cyan-500 to-blue-600'
     },
     {
-      icon: <Scan size={32} />,
-      title: 'Thermal Inspections',
-      description: 'AI-powered thermal analysis for predictive maintenance across industrial and energy infrastructure.',
+      icon: <Scan size={28} />,
+      title: 'Thermal Analysis',
+      description: 'AI-powered predictive maintenance detection.',
       metric: '99.8%',
-      metricLabel: 'Detection Rate'
+      metricLabel: 'Detection',
+      gradient: 'from-orange-500 to-red-600'
     },
     {
-      icon: <Shield size={32} />,
+      icon: <Shield size={28} />,
       title: 'Cyber Defense',
-      description: 'Zero-trust security architecture and AI model protection for enterprise systems.',
+      description: 'Zero-trust architecture for enterprise systems.',
       metric: '24/7',
-      metricLabel: 'Monitoring'
+      metricLabel: 'Monitoring',
+      gradient: 'from-purple-500 to-violet-600'
     },
     {
-      icon: <Leaf size={32} />,
+      icon: <Leaf size={28} />,
       title: 'AgriTech Analytics',
-      description: 'Precision agriculture with NDVI analysis, irrigation optimization, and yield forecasting.',
+      description: 'Precision agriculture with yield optimization.',
       metric: '+34%',
-      metricLabel: 'Yield Increase'
+      metricLabel: 'Yield',
+      gradient: 'from-green-500 to-emerald-600'
     }
   ]
 
-  const techStack = [
-    { name: 'YOLOv12', category: 'Object Detection' },
-    { name: 'SAM 3.0', category: 'Segmentation' },
-    { name: 'RF-DETR', category: 'Real-time Analysis' },
-    { name: 'Qwen-VL', category: 'Vision Language' },
-    { name: 'Custom Models', category: 'Domain Specific' },
-    { name: 'Edge AI', category: 'On-device' }
+  const stats = [
+    { value: '2.4M+', label: 'Data Points Daily' },
+    { value: '<50ms', label: 'Latency' },
+    { value: '150+', label: 'Deployments' },
+    { value: '99.99%', label: 'Uptime' }
   ]
 
-  const metrics = [
-    { value: '2.4M+', label: 'Data Points Processed Daily' },
-    { value: '<50ms', label: 'Real-time Latency' },
-    { value: '150+', label: 'Enterprise Deployments' },
-    { value: '99.99%', label: 'Platform Uptime' }
+  const techStack = [
+    { name: 'YOLOv12', desc: 'Object Detection', icon: <Eye size={20} /> },
+    { name: 'SAM 3.0', desc: 'Segmentation', icon: <Layers size={20} /> },
+    { name: 'RF-DETR', desc: 'Real-time', icon: <Zap size={20} /> },
+    { name: 'Qwen-VL', desc: 'Vision Language', icon: <Sparkles size={20} /> },
+    { name: 'Edge AI', desc: 'On-device', icon: <Cpu size={20} /> },
+    { name: 'Fusion', desc: 'Multi-modal', icon: <Globe size={20} /> }
   ]
 
   return (
-    <div className="lp2">
-      <Link to="/" className="back-to-directory">
-        <ArrowLeft size={18} />
-        <span>Back to Directory</span>
-      </Link>
+    <div
+      ref={containerRef}
+      className={`lp2 ${isDark ? 'dark' : 'light'}`}
+      data-theme={isDark ? 'dark' : 'light'}
+    >
+      {/* Custom Cursor */}
+      <motion.div
+        className="custom-cursor"
+        animate={{
+          x: mousePosition.x * 20,
+          y: mousePosition.y * 20,
+        }}
+        transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+      />
 
-      {/* Background Effects */}
+      {/* Animated Background */}
       <div className="lp2-bg">
-        <div className="hex-grid" />
-        <div className="scan-line" />
-        <div className="glow-orb glow-orb-1" />
-        <div className="glow-orb glow-orb-2" />
-        <div className="glow-orb glow-orb-3" />
+        <div className="noise-overlay" />
+        <div className="gradient-orbs">
+          <motion.div
+            className="orb orb-1"
+            animate={{
+              x: mousePosition.x * 30,
+              y: mousePosition.y * 30,
+            }}
+            transition={{ type: 'spring', stiffness: 50, damping: 20 }}
+          />
+          <motion.div
+            className="orb orb-2"
+            animate={{
+              x: mousePosition.x * -20,
+              y: mousePosition.y * -20,
+            }}
+            transition={{ type: 'spring', stiffness: 30, damping: 20 }}
+          />
+          <motion.div
+            className="orb orb-3"
+            animate={{
+              x: mousePosition.x * 15,
+              y: mousePosition.y * -25,
+            }}
+            transition={{ type: 'spring', stiffness: 40, damping: 20 }}
+          />
+        </div>
+        <div className="grid-pattern" />
       </div>
 
+      {/* Progress Bar */}
+      <motion.div
+        className="scroll-progress"
+        style={{ scaleX: smoothProgress }}
+      />
+
+      {/* Back Button */}
+      <Link to="/" className="back-btn">
+        <motion.div
+          whileHover={{ x: -4 }}
+          whileTap={{ scale: 0.95 }}
+          className="back-btn-inner"
+        >
+          <ArrowLeft size={18} />
+          <span>Directory</span>
+        </motion.div>
+      </Link>
+
+      {/* Theme Toggle */}
+      <motion.button
+        className="theme-toggle"
+        onClick={() => setIsDark(!isDark)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <AnimatePresence mode="wait">
+          {isDark ? (
+            <motion.div
+              key="sun"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Sun size={20} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="moon"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Moon size={20} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
+
       {/* Navigation */}
-      <nav className="lp2-nav">
+      <motion.nav
+        className="lp2-nav"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="container">
           <div className="nav-content">
-            <div className="logo">
-              <div className="logo-hex">
-                <Hexagon size={36} strokeWidth={1.5} />
-                <span className="logo-letter">J</span>
+            <motion.div
+              className="logo"
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="logo-mark">
+                <Hexagon size={32} strokeWidth={1} />
+                <span>J</span>
               </div>
               <div className="logo-text">
                 <span className="logo-name">JINKI</span>
-                <span className="logo-tagline">INTELLIGENCE</span>
+                <span className="logo-tagline">Intelligence</span>
               </div>
-            </div>
+            </motion.div>
 
             <div className="nav-links">
-              <a href="#capabilities" className="nav-link">
-                <span className="link-number">01</span>
-                <span>Capabilities</span>
-              </a>
-              <a href="#technology" className="nav-link">
-                <span className="link-number">02</span>
-                <span>Technology</span>
-              </a>
-              <a href="#platform" className="nav-link">
-                <span className="link-number">03</span>
-                <span>Platform</span>
-              </a>
-              <a href="#contact" className="nav-link">
-                <span className="link-number">04</span>
-                <span>Contact</span>
-              </a>
-            </div>
-
-            <div className="nav-actions">
-              <button className="btn btn-ghost">
-                <Terminal size={18} />
-                <span>Portal</span>
-              </button>
-              <button className="btn btn-primary">
-                <span>Request Access</span>
-                <ArrowUpRight size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="lp2-hero">
-        <div className="container">
-          <div className="hero-content">
-            <div className="hero-status">
-              <Activity size={14} />
-              <span>SYSTEM ONLINE</span>
-              <span className="status-divider">/</span>
-              <span>ALL MODULES OPERATIONAL</span>
-            </div>
-
-            <h1 className="hero-title">
-              <span className="title-line">NEXT-GEN</span>
-              <span className="title-line title-accent">INTELLIGENCE</span>
-              <span className="title-line">SYSTEMS</span>
-            </h1>
-
-            <p className="hero-description">
-              Advanced AI-powered surveillance, analysis, and security solutions
-              for mission-critical operations. Built for precision. Designed for scale.
-            </p>
-
-            <div className="hero-actions">
-              <button className="btn btn-primary btn-lg">
-                <Crosshair size={20} />
-                <span>Initiate Consultation</span>
-              </button>
-              <button className="btn btn-outline btn-lg">
-                <span>View Capabilities</span>
-                <ArrowRight size={20} />
-              </button>
-            </div>
-
-            <div className="hero-metrics">
-              {metrics.map((metric, i) => (
-                <div key={i} className="metric-item">
-                  <span className="metric-value">{metric.value}</span>
-                  <span className="metric-label">{metric.label}</span>
-                </div>
+              {['Capabilities', 'Technology', 'Platform', 'Contact'].map((item, i) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="nav-link"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * i + 0.3 }}
+                  whileHover={{ y: -2 }}
+                >
+                  <span className="link-index">0{i + 1}</span>
+                  <span>{item}</span>
+                </motion.a>
               ))}
             </div>
-          </div>
 
-          <div className="hero-visual">
-            <div className="visual-container">
-              <div className="radar-ring radar-ring-1" />
-              <div className="radar-ring radar-ring-2" />
-              <div className="radar-ring radar-ring-3" />
-              <div className="radar-sweep" />
-              <div className="radar-center">
-                <Radar size={48} />
-              </div>
-
-              <div className="data-point data-point-1">
-                <div className="point-pulse" />
-                <span>UAV-01</span>
-              </div>
-              <div className="data-point data-point-2">
-                <div className="point-pulse" />
-                <span>THERMAL</span>
-              </div>
-              <div className="data-point data-point-3">
-                <div className="point-pulse" />
-                <span>SENSOR-A</span>
-              </div>
-            </div>
-
-            <div className="visual-sidebar">
-              <div className="sidebar-module">
-                <div className="module-header">
-                  <Binary size={16} />
-                  <span>LIVE FEED</span>
-                </div>
-                <div className="module-content">
-                  <div className="feed-line" />
-                  <div className="feed-line" />
-                  <div className="feed-line" />
-                </div>
-              </div>
-              <div className="sidebar-module">
-                <div className="module-header">
-                  <Network size={16} />
-                  <span>NETWORK</span>
-                </div>
-                <div className="module-stats">
-                  <div className="stat-bar">
-                    <span>Bandwidth</span>
-                    <div className="bar-fill" style={{width: '78%'}} />
-                  </div>
-                  <div className="stat-bar">
-                    <span>Latency</span>
-                    <div className="bar-fill" style={{width: '23%'}} />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <motion.button
+              className="nav-cta"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>Get Started</span>
+              <ArrowUpRight size={16} />
+            </motion.button>
           </div>
         </div>
-      </section>
+      </motion.nav>
+
+      {/* Hero Section */}
+      <motion.section
+        ref={heroRef}
+        className="lp2-hero"
+        style={{ opacity: heroOpacity, scale: heroScale }}
+      >
+        <div className="container">
+          <div className="hero-content">
+            <motion.div
+              className="hero-badge"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Activity size={14} className="badge-icon" />
+              <span>Systems Online</span>
+              <span className="badge-divider" />
+              <span>All Modules Operational</span>
+            </motion.div>
+
+            <h1 className="hero-title">
+              <div className="title-line">
+                {'NEXT-GEN'.split('').map((char, i) => (
+                  <span key={i} className="hero-title-word">{char}</span>
+                ))}
+              </div>
+              <div className="title-line title-accent">
+                {'INTELLIGENCE'.split('').map((char, i) => (
+                  <span key={i} className="hero-title-word">{char}</span>
+                ))}
+              </div>
+              <div className="title-line">
+                {'SYSTEMS'.split('').map((char, i) => (
+                  <span key={i} className="hero-title-word">{char}</span>
+                ))}
+              </div>
+            </h1>
+
+            <motion.p
+              className="hero-description"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+            >
+              Advanced AI-powered surveillance, analysis, and security solutions
+              for mission-critical operations. Built for precision. Designed for scale.
+            </motion.p>
+
+            <motion.div
+              className="hero-actions"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1, duration: 0.8 }}
+            >
+              <motion.button
+                className="btn-primary"
+                whileHover={{ scale: 1.02, y: -3 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span>Start Free Trial</span>
+                <ArrowRight size={18} />
+              </motion.button>
+              <motion.button
+                className="btn-secondary"
+                whileHover={{ scale: 1.02, y: -3 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Play size={18} />
+                <span>Watch Demo</span>
+              </motion.button>
+            </motion.div>
+          </div>
+
+          {/* 3D-like Visual */}
+          <motion.div
+            className="hero-visual"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="visual-wrapper">
+              <motion.div
+                className="visual-sphere"
+                animate={{
+                  rotateY: 360,
+                }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              >
+                <div className="sphere-ring sphere-ring-1" />
+                <div className="sphere-ring sphere-ring-2" />
+                <div className="sphere-ring sphere-ring-3" />
+                <div className="sphere-core">
+                  <Hexagon size={40} strokeWidth={1} />
+                </div>
+              </motion.div>
+
+              {/* Floating Elements */}
+              <motion.div
+                className="floating-element fe-1"
+                animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Satellite size={24} />
+                <span>UAV-01</span>
+              </motion.div>
+              <motion.div
+                className="floating-element fe-2"
+                animate={{ y: [0, 12, 0], rotate: [0, -5, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              >
+                <Shield size={24} />
+                <span>Secure</span>
+              </motion.div>
+              <motion.div
+                className="floating-element fe-3"
+                animate={{ y: [0, -10, 0], rotate: [0, 3, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              >
+                <Cpu size={24} />
+                <span>AI Core</span>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Stats Marquee */}
+        <div className="stats-marquee">
+          <div className="marquee-track">
+            {[...stats, ...stats, ...stats, ...stats].map((stat, i) => (
+              <div key={i} className="stat-item">
+                <span className="stat-value">{stat.value}</span>
+                <span className="stat-label">{stat.label}</span>
+                <span className="stat-divider">◆</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
 
       {/* Capabilities Section */}
-      <section className="lp2-capabilities" id="capabilities">
+      <section ref={capabilitiesRef} className="lp2-capabilities" id="capabilities">
         <div className="container">
           <div className="section-header">
-            <div className="section-tag">
-              <span className="tag-number">01</span>
-              <span className="tag-line" />
-              <span className="tag-text">CAPABILITIES</span>
-            </div>
-            <h2 className="section-title">MISSION-CRITICAL SOLUTIONS</h2>
-            <p className="section-subtitle">
-              Integrated intelligence systems engineered for precision, reliability, and actionable insights.
-            </p>
+            <motion.span
+              className="section-tag"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              01 — Capabilities
+            </motion.span>
+            <motion.h2
+              className="section-title"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              Mission-Critical
+              <br />
+              <span className="title-accent">Solutions</span>
+            </motion.h2>
           </div>
 
           <div className="capabilities-grid">
             {capabilities.map((cap, i) => (
-              <div key={i} className="capability-card">
-                <div className="card-index">0{i + 1}</div>
-                <div className="card-icon">{cap.icon}</div>
-                <h3 className="card-title">{cap.title}</h3>
-                <p className="card-description">{cap.description}</p>
-                <div className="card-metric">
-                  <span className="metric-value">{cap.metric}</span>
-                  <span className="metric-label">{cap.metricLabel}</span>
+              <motion.div
+                key={i}
+                className="capability-card"
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                <div className="card-glow" />
+                <div className="card-content">
+                  <div className={`card-icon bg-gradient-to-br ${cap.gradient}`}>
+                    {cap.icon}
+                  </div>
+                  <h3 className="card-title">{cap.title}</h3>
+                  <p className="card-description">{cap.description}</p>
+                  <div className="card-metric">
+                    <span className="metric-value">{cap.metric}</span>
+                    <span className="metric-label">{cap.metricLabel}</span>
+                  </div>
                 </div>
                 <div className="card-border" />
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Technology Section */}
-      <section className="lp2-technology" id="technology">
+      <section ref={techRef} className="lp2-technology" id="technology">
+        <div className="floating-orb fo-1" />
+        <div className="floating-orb fo-2" />
+
         <div className="container">
-          <div className="tech-grid">
+          <div className="tech-layout">
             <div className="tech-content">
-              <div className="section-tag">
-                <span className="tag-number">02</span>
-                <span className="tag-line" />
-                <span className="tag-text">TECHNOLOGY</span>
-              </div>
-              <h2 className="section-title">POWERED BY CUTTING-EDGE AI</h2>
-              <p className="tech-description">
+              <motion.span
+                className="section-tag"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                02 — Technology
+              </motion.span>
+              <motion.h2
+                className="section-title"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                Powered by
+                <br />
+                <span className="title-accent">Cutting-Edge AI</span>
+              </motion.h2>
+              <motion.p
+                className="tech-description"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
                 Our proprietary AI stack combines state-of-the-art computer vision,
                 natural language processing, and edge computing to deliver real-time
                 intelligence where it matters most.
-              </p>
+              </motion.p>
 
               <div className="tech-features">
-                <div className="tech-feature">
-                  <Cpu size={24} />
-                  <div>
-                    <h4>Edge Processing</h4>
-                    <p>On-device inference with sub-50ms latency</p>
-                  </div>
-                </div>
-                <div className="tech-feature">
-                  <Workflow size={24} />
-                  <div>
-                    <h4>Pipeline Automation</h4>
-                    <p>Automated data processing and analysis workflows</p>
-                  </div>
-                </div>
-                <div className="tech-feature">
-                  <Database size={24} />
-                  <div>
-                    <h4>Secure Storage</h4>
-                    <p>End-to-end encrypted data management</p>
-                  </div>
-                </div>
-                <div className="tech-feature">
-                  <Layers size={24} />
-                  <div>
-                    <h4>Multi-Modal Fusion</h4>
-                    <p>Integrated visual, thermal, and sensor data</p>
-                  </div>
-                </div>
+                {[
+                  { icon: <Cpu size={20} />, title: 'Edge Processing', desc: 'Sub-50ms latency' },
+                  { icon: <Database size={20} />, title: 'Secure Storage', desc: 'E2E encrypted' },
+                  { icon: <Workflow size={20} />, title: 'Automation', desc: 'Smart workflows' },
+                  { icon: <Lock size={20} />, title: 'Zero Trust', desc: 'Enterprise grade' }
+                ].map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    className="tech-feature"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 * i }}
+                    whileHover={{ x: 8 }}
+                  >
+                    <div className="feature-icon">{feature.icon}</div>
+                    <div className="feature-text">
+                      <span className="feature-title">{feature.title}</span>
+                      <span className="feature-desc">{feature.desc}</span>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
 
-            <div className="tech-stack">
+            <motion.div
+              className="tech-stack-visual"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
               <div className="stack-header">
-                <span>// AI_MODELS</span>
+                <span className="stack-label">// AI_STACK</span>
+                <div className="stack-status">
+                  <span className="status-dot" />
+                  <span>Active</span>
+                </div>
               </div>
               <div className="stack-grid">
                 {techStack.map((tech, i) => (
-                  <div key={i} className="stack-item">
-                    <span className="stack-name">{tech.name}</span>
-                    <span className="stack-category">{tech.category}</span>
-                  </div>
+                  <motion.div
+                    key={i}
+                    className="stack-item"
+                    whileHover={{ scale: 1.05, y: -4 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className="stack-icon">{tech.icon}</div>
+                    <div className="stack-info">
+                      <span className="stack-name">{tech.name}</span>
+                      <span className="stack-desc">{tech.desc}</span>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
-              <div className="stack-footer">
-                <span className="footer-text">+ Custom domain-specific models</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Platform Section */}
-      <section className="lp2-platform" id="platform">
-        <div className="container">
-          <div className="section-header centered">
-            <div className="section-tag">
-              <span className="tag-number">03</span>
-              <span className="tag-line" />
-              <span className="tag-text">PLATFORM</span>
-            </div>
-            <h2 className="section-title">UNIFIED COMMAND CENTER</h2>
-            <p className="section-subtitle">
-              A single platform to orchestrate all your aerial, ground, and cyber intelligence operations.
-            </p>
-          </div>
-
-          <div className="platform-visual">
-            <div className="platform-screen">
-              <div className="screen-header">
-                <div className="window-controls">
-                  <span /><span /><span />
-                </div>
-                <span className="screen-title">JINKI COMMAND v3.2.1</span>
-                <div className="screen-status">
-                  <span className="status-indicator" />
-                  <span>CONNECTED</span>
-                </div>
-              </div>
-              <div className="screen-content">
-                <div className="content-sidebar">
-                  <div className="sidebar-item active">
-                    <Radar size={18} />
-                    <span>Live Monitor</span>
-                  </div>
-                  <div className="sidebar-item">
-                    <Satellite size={18} />
-                    <span>Fleet Status</span>
-                  </div>
-                  <div className="sidebar-item">
-                    <Activity size={18} />
-                    <span>Analytics</span>
-                  </div>
-                  <div className="sidebar-item">
-                    <Shield size={18} />
-                    <span>Security</span>
-                  </div>
-                </div>
-                <div className="content-main">
-                  <div className="main-header">
-                    <h4>Active Operations</h4>
-                    <span className="operation-count">12 ACTIVE</span>
-                  </div>
-                  <div className="operations-grid">
-                    <div className="operation-card">
-                      <div className="op-status live" />
-                      <div className="op-info">
-                        <span className="op-name">Site Survey - Alpha</span>
-                        <span className="op-type">Aerial Mapping</span>
-                      </div>
-                      <span className="op-progress">78%</span>
-                    </div>
-                    <div className="operation-card">
-                      <div className="op-status live" />
-                      <div className="op-info">
-                        <span className="op-name">Thermal Scan - Grid 7</span>
-                        <span className="op-type">Infrastructure</span>
-                      </div>
-                      <span className="op-progress">45%</span>
-                    </div>
-                    <div className="operation-card">
-                      <div className="op-status processing" />
-                      <div className="op-info">
-                        <span className="op-name">Security Audit</span>
-                        <span className="op-type">Cyber Analysis</span>
-                      </div>
-                      <span className="op-progress">92%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -403,29 +610,38 @@ function LandingPage2() {
       {/* CTA Section */}
       <section className="lp2-cta" id="contact">
         <div className="container">
-          <div className="cta-content">
-            <div className="cta-text">
-              <h2>READY TO DEPLOY?</h2>
-              <p>
-                Connect with our solutions team to discuss your operational requirements
-                and explore custom integration options.
-              </p>
+          <motion.div
+            className="cta-card"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="cta-content">
+              <h2>Ready to Deploy?</h2>
+              <p>Connect with our solutions team to discuss your operational requirements.</p>
+              <div className="cta-actions">
+                <motion.button
+                  className="btn-primary"
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span>Schedule Briefing</span>
+                  <ArrowUpRight size={18} />
+                </motion.button>
+                <motion.button
+                  className="btn-ghost"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span>View Documentation</span>
+                </motion.button>
+              </div>
             </div>
-            <div className="cta-actions">
-              <button className="btn btn-primary btn-lg">
-                <span>Schedule Briefing</span>
-                <ArrowUpRight size={20} />
-              </button>
-              <button className="btn btn-outline btn-lg">
-                <span>Download Specs</span>
-              </button>
+            <div className="cta-visual">
+              <div className="cta-orb" />
             </div>
-          </div>
-          <div className="cta-decoration">
-            <div className="deco-line deco-line-1" />
-            <div className="deco-line deco-line-2" />
-            <div className="deco-line deco-line-3" />
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -435,53 +651,43 @@ function LandingPage2() {
           <div className="footer-content">
             <div className="footer-brand">
               <div className="logo">
-                <div className="logo-hex">
-                  <Hexagon size={28} strokeWidth={1.5} />
-                  <span className="logo-letter">J</span>
+                <div className="logo-mark">
+                  <Hexagon size={28} strokeWidth={1} />
+                  <span>J</span>
                 </div>
                 <div className="logo-text">
                   <span className="logo-name">JINKI</span>
-                  <span className="logo-tagline">INTELLIGENCE</span>
+                  <span className="logo-tagline">Intelligence</span>
                 </div>
               </div>
-              <p className="footer-description">
-                Next-generation intelligence systems for aerial, industrial, cyber, and agricultural operations.
-              </p>
+              <p>Next-generation intelligence systems for mission-critical operations.</p>
             </div>
-
-            <div className="footer-links-grid">
-              <div className="footer-links">
+            <div className="footer-links">
+              <div className="links-column">
                 <h4>Solutions</h4>
-                <ul>
-                  <li><a href="#">Aerial Surveying</a></li>
-                  <li><a href="#">Thermal Inspections</a></li>
-                  <li><a href="#">Cyber Security</a></li>
-                  <li><a href="#">AgriTech</a></li>
-                </ul>
+                <a href="#">Aerial Surveying</a>
+                <a href="#">Thermal Inspections</a>
+                <a href="#">Cyber Security</a>
+                <a href="#">AgriTech</a>
               </div>
-              <div className="footer-links">
+              <div className="links-column">
                 <h4>Platform</h4>
-                <ul>
-                  <li><a href="#">Command Center</a></li>
-                  <li><a href="#">API Access</a></li>
-                  <li><a href="#">Documentation</a></li>
-                  <li><a href="#">Status</a></li>
-                </ul>
+                <a href="#">Command Center</a>
+                <a href="#">API Access</a>
+                <a href="#">Documentation</a>
+                <a href="#">Status</a>
               </div>
-              <div className="footer-links">
+              <div className="links-column">
                 <h4>Company</h4>
-                <ul>
-                  <li><a href="#">About</a></li>
-                  <li><a href="#">Careers</a></li>
-                  <li><a href="#">Contact</a></li>
-                  <li><a href="#">Press</a></li>
-                </ul>
+                <a href="#">About</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+                <a href="#">Contact</a>
               </div>
             </div>
           </div>
-
           <div className="footer-bottom">
-            <p>&copy; 2024 Jinki Intelligence. All rights reserved.</p>
+            <p>© 2024 Jinki Intelligence. All rights reserved.</p>
             <div className="footer-legal">
               <a href="#">Privacy</a>
               <a href="#">Terms</a>
