@@ -89,3 +89,8 @@ htmlcov/
 # Training outputs
 runs/
 _train.py
+# Generated adversarial test images (too large for git)
+adversarial_test_images/
+
+# External datasets (download using script)
+external_datasets/
