@@ -1,6 +1,6 @@
 /* ============================================
-   JINKI INTELLIGENCE - PREMIUM PLATINUM V5
-   WebGL Fluid + Spline 3D + GSAP + Lenis
+   JINKI INTELLIGENCE - PLATINUM V6
+   iOS Liquid Glass + Thermal + LiDAR + Contours
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -19,6 +19,8 @@
   --border: rgba(255, 255, 255, 0.08);
   --glow: 0 0 60px rgba(0, 212, 255, 0.3);
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 *, *::before, *::after {
@@ -63,6 +65,95 @@ body {
 }
 
 /* ============================================
+   iOS LIQUID GLASS EFFECT
+   ============================================ */
+.glass-nav {
+  background: rgba(5, 5, 12, 0.6) !important;
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 212, 255, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-badge {
+  background: rgba(0, 212, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ============================================
+   ANIMATED LOGO
+   ============================================ */
+.logo-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-text {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+
+.logo-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: logoShimmer 3s ease-in-out infinite;
+}
+
+@keyframes logoShimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+.logo-sub {
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: var(--text-muted);
+  margin-top: -3px;
+  display: block;
+}
+
+/* ============================================
    NAVIGATION
    ============================================ */
 .nav {
@@ -72,8 +163,6 @@ body {
   right: 0;
   z-index: 1000;
   padding: 20px 0;
-  background: linear-gradient(180deg, rgba(5, 5, 12, 0.95) 0%, rgba(5, 5, 12, 0.8) 50%, transparent 100%);
-  backdrop-filter: blur(20px);
 }
 
 .nav__inner {
@@ -91,23 +180,6 @@ body {
   flex-direction: column;
 }
 
-.nav__logo-text {
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.nav__logo-sub {
-  font-size: 9px;
-  letter-spacing: 5px;
-  color: var(--text-muted);
-  margin-top: -3px;
-}
-
 .nav__links {
   display: flex;
   gap: 48px;
@@ -118,14 +190,15 @@ body {
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
   position: relative;
+  padding: 8px 0;
 }
 
 .nav__links a::after {
   content: '';
   position: absolute;
-  bottom: -6px;
+  bottom: 0;
   left: 0;
   width: 0;
   height: 2px;
@@ -156,6 +229,25 @@ body {
   cursor: pointer;
   will-change: transform;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mag-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mag-btn:hover::before {
+  opacity: 1;
 }
 
 .mag-btn--primary {
@@ -166,12 +258,14 @@ body {
 
 .mag-btn--primary:hover {
   box-shadow: 0 0 80px rgba(0, 212, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 .mag-btn--secondary {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text);
   border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
 }
 
 .mag-btn--secondary:hover {
@@ -214,7 +308,6 @@ body {
   align-items: center;
   gap: 12px;
   padding: 10px 20px;
-  background: rgba(0, 212, 255, 0.08);
   border: 1px solid rgba(0, 212, 255, 0.2);
   border-radius: 100px;
   font-size: 13px;
@@ -229,6 +322,7 @@ body {
   background: var(--accent);
   border-radius: 50%;
   animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--accent);
 }
 
 @keyframes pulse {
@@ -253,6 +347,13 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradientFlow 5s ease infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes gradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .hero__desc {
@@ -286,6 +387,7 @@ body {
   font-weight: 800;
   color: var(--accent);
   line-height: 1;
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
 }
 
 .stat-label {
@@ -317,6 +419,7 @@ body {
 .scroll-arrow {
   font-size: 24px;
   color: var(--accent);
+  text-shadow: 0 0 20px var(--accent);
 }
 
 /* ============================================
@@ -378,8 +481,8 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  0%, 100% { transform: translateY(0) rotateY(0deg); }
+  50% { transform: translateY(-20px) rotateY(5deg); }
 }
 
 .drone-specs-overlay {
@@ -396,6 +499,183 @@ body {
   font-size: 13px;
   font-weight: 600;
   color: var(--accent);
+  backdrop-filter: blur(10px);
+}
+
+/* ============================================
+   THERMAL HEATMAP
+   ============================================ */
+.thermal-heatmap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.thermal-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thermal-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.thermal-crosshair {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.5);
+}
+
+.thermal-crosshair::before,
+.thermal-crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.thermal-crosshair::before {
+  width: 2px;
+  height: 80px;
+}
+
+.thermal-crosshair::after {
+  width: 80px;
+  height: 2px;
+}
+
+.thermal-temp {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 87, 34, 0.8);
+  z-index: 1;
+}
+
+.thermal-scale {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.thermal-scale-bar {
+  width: 12px;
+  height: 80px;
+  background: linear-gradient(180deg, #d32f2f 0%, #ff5722 25%, #ffc107 50%, #00897b 75%, #1a237e 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.thermal-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+/* ============================================
+   CONTOUR VISUALIZATION
+   ============================================ */
+.contour-viz {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.contour-viz canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.contour-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+/* ============================================
+   LIDAR VISUALIZATION
+   ============================================ */
+.lidar-viz {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.lidar-viz canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.lidar-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.lidar-stats {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  gap: 12px;
+}
+
+.lidar-stats span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
 }
 
 /* ============================================
@@ -437,8 +717,6 @@ body {
 
 /* Industry Cards with DISTINCT Images */
 .industry-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 24px;
   overflow: hidden;
   transition: all 0.5s ease;
@@ -486,6 +764,12 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 28px;
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+}
+
+.industry-card__viz {
+  padding: 16px;
+  border-top: 1px solid var(--border);
 }
 
 .industry-card__content {
@@ -521,6 +805,7 @@ body {
   font-size: 26px;
   font-weight: 800;
   color: var(--accent);
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
 }
 
 .industry-card__stat-label {
@@ -566,7 +851,7 @@ body {
 .platform__specs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 20px;
   margin-bottom: 32px;
 }
 
@@ -574,10 +859,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  padding: 24px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.spec:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 212, 255, 0.15);
 }
 
 .spec__icon {
@@ -588,6 +877,7 @@ body {
   font-size: 28px;
   font-weight: 800;
   color: var(--accent);
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
 }
 
 .spec__label {
@@ -599,7 +889,7 @@ body {
 
 .platform__features {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -611,6 +901,12 @@ body {
   font-size: 14px;
   font-weight: 500;
   color: var(--accent);
+  transition: all 0.3s ease;
+}
+
+.platform__features span:hover {
+  background: rgba(0, 212, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .platform__image {
@@ -654,8 +950,6 @@ body {
 }
 
 .team__card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 28px;
   padding: 56px;
 }
@@ -670,6 +964,7 @@ body {
   justify-content: center;
   font-size: 48px;
   margin: 0 auto 28px;
+  box-shadow: 0 16px 48px rgba(0, 212, 255, 0.3);
 }
 
 .team__card h3 {
@@ -698,14 +993,15 @@ body {
 
 .team__creds {
   display: inline-block;
-  padding: 12px 24px;
+  padding: 14px 28px;
   background: rgba(0, 212, 255, 0.1);
   border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 700;
   color: var(--accent);
   letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
 }
 
 /* ============================================
@@ -721,8 +1017,6 @@ body {
   max-width: 700px;
   margin: 0 auto;
   text-align: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 32px;
   padding: 64px 56px;
 }
@@ -884,5 +1178,11 @@ body {
     flex-direction: column;
     gap: 20px;
     text-align: center;
+  }
+
+  .thermal-heatmap,
+  .contour-viz,
+  .lidar-viz {
+    height: 150px;
   }
 }

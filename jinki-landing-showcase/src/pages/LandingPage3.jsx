@@ -33,13 +33,14 @@ function FluidBackground() {
     const width = () => canvas.width
     const height = () => canvas.height
 
-    // Metaballs
+    // Metaballs with varied colors
     const balls = [
-      { x: 0.2, y: 0.3, radius: 180, vx: 0.3, vy: 0.2 },
-      { x: 0.8, y: 0.2, radius: 150, vx: -0.25, vy: 0.4 },
-      { x: 0.5, y: 0.7, radius: 160, vx: 0.2, vy: -0.35 },
-      { x: 0.3, y: 0.85, radius: 120, vx: 0.4, vy: 0.15 },
-      { x: 0.7, y: 0.6, radius: 100, vx: -0.3, vy: -0.2 },
+      { x: 0.2, y: 0.3, radius: 200, vx: 0.3, vy: 0.2, color: [0, 212, 255] },
+      { x: 0.8, y: 0.2, radius: 180, vx: -0.25, vy: 0.4, color: [99, 102, 241] },
+      { x: 0.5, y: 0.7, radius: 190, vx: 0.2, vy: -0.35, color: [139, 92, 246] },
+      { x: 0.3, y: 0.85, radius: 150, vx: 0.4, vy: 0.15, color: [0, 212, 255] },
+      { x: 0.7, y: 0.6, radius: 130, vx: -0.3, vy: -0.2, color: [99, 102, 241] },
+      { x: 0.15, y: 0.5, radius: 110, vx: 0.2, vy: 0.3, color: [139, 92, 246] },
     ]
 
     let mouseX = 0.5
@@ -57,57 +58,54 @@ function FluidBackground() {
       const w = width()
       const h = height()
 
-      ctx.fillStyle = 'rgba(5, 5, 12, 0.08)'
+      ctx.fillStyle = 'rgba(5, 5, 12, 0.06)'
       ctx.fillRect(0, 0, w, h)
 
       balls.forEach((ball, i) => {
-        // Convert relative to absolute
         let bx = ball.x * w
         let by = ball.y * h
 
         // Organic movement with sine waves
-        bx += ball.vx * 2 + Math.sin(time * 1.5 + i) * 3
-        by += ball.vy * 2 + Math.cos(time * 1.2 + i * 0.7) * 3
+        bx += ball.vx * 2.5 + Math.sin(time * 1.5 + i) * 4
+        by += ball.vy * 2.5 + Math.cos(time * 1.2 + i * 0.7) * 4
 
         // Bounce at edges
         if (bx < 0 || bx > w) ball.vx *= -1
         if (by < 0 || by > h) ball.vy *= -1
 
-        // Mouse interaction - strong attraction
+        // Mouse interaction - attraction
         const dx = mouseX * w - bx
         const dy = mouseY * h - by
         const dist = Math.sqrt(dx * dx + dy * dy)
-        if (dist < 500) {
-          const force = (1 - dist / 500) * 0.015
+        if (dist < 600) {
+          const force = (1 - dist / 600) * 0.02
           bx += dx * force
           by += dy * force
         }
 
-        // Update relative position
         ball.x = bx / w
         ball.y = by / h
 
-        // Draw glow layers
-        const pulseRadius = ball.radius + Math.sin(time * 2 + i) * 15
+        const pulseRadius = ball.radius + Math.sin(time * 2 + i) * 20
 
         // Outer glow
-        const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, pulseRadius * 1.5)
-        gradient.addColorStop(0, 'rgba(0, 212, 255, 0.5)')
-        gradient.addColorStop(0.4, 'rgba(99, 102, 241, 0.25)')
-        gradient.addColorStop(0.7, 'rgba(139, 92, 246, 0.1)')
+        const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, pulseRadius * 1.8)
+        gradient.addColorStop(0, `rgba(${ball.color[0]}, ${ball.color[1]}, ${ball.color[2]}, 0.6)`)
+        gradient.addColorStop(0.4, `rgba(${ball.color[0]}, ${ball.color[1]}, ${ball.color[2]}, 0.25)`)
+        gradient.addColorStop(0.7, `rgba(${ball.color[0]}, ${ball.color[1]}, ${ball.color[2]}, 0.08)`)
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
 
         ctx.beginPath()
-        ctx.arc(bx, by, pulseRadius * 1.5, 0, Math.PI * 2)
+        ctx.arc(bx, by, pulseRadius * 1.8, 0, Math.PI * 2)
         ctx.fillStyle = gradient
         ctx.fill()
 
-        // Inner bright core
-        const coreGrad = ctx.createRadialGradient(bx, by, 0, bx, by, pulseRadius * 0.5)
-        coreGrad.addColorStop(0, 'rgba(255, 255, 255, 0.15)')
-        coreGrad.addColorStop(1, 'rgba(0, 212, 255, 0)')
+        // Inner core
+        const coreGrad = ctx.createRadialGradient(bx, by, 0, bx, by, pulseRadius * 0.4)
+        coreGrad.addColorStop(0, 'rgba(255, 255, 255, 0.2)')
+        coreGrad.addColorStop(1, `rgba(${ball.color[0]}, ${ball.color[1]}, ${ball.color[2]}, 0)`)
         ctx.beginPath()
-        ctx.arc(bx, by, pulseRadius * 0.5, 0, Math.PI * 2)
+        ctx.arc(bx, by, pulseRadius * 0.4, 0, Math.PI * 2)
         ctx.fillStyle = coreGrad
         ctx.fill()
       })
@@ -127,13 +125,27 @@ function FluidBackground() {
 }
 
 // ============================================
+// ANIMATED LOGO WITH GRADIENT SHIMMER
+// ============================================
+function AnimatedLogo() {
+  return (
+    <a href="/" className="nav__logo">
+      <div className="logo-container">
+        <span className="logo-text">JINKI</span>
+        <span className="logo-shimmer"></span>
+      </div>
+      <span className="logo-sub">INTELLIGENCE</span>
+    </a>
+  )
+}
+
+// ============================================
 // SPLINE 3D DRONE SCENE
 // ============================================
 function DroneScene() {
   const [showFallback, setShowFallback] = useState(false)
 
   useEffect(() => {
-    // Fallback after 5 seconds if Spline doesn't load
     const timer = setTimeout(() => setShowFallback(true), 5000)
     return () => clearTimeout(timer)
   }, [])
@@ -153,7 +165,6 @@ function DroneScene() {
         />
       </Suspense>
 
-      {/* Fallback DJI image */}
       {showFallback && (
         <div className="drone-fallback">
           <img
@@ -264,9 +275,263 @@ function AnimatedStat({ value, suffix = '', prefix = '', label }) {
 }
 
 // ============================================
+// INTERACTIVE THERMAL HEATMAP
+// ============================================
+function ThermalHeatmap() {
+  const canvasRef = useRef(null)
+  const containerRef = useRef(null)
+  const [hotspot, setHotspot] = useState({ x: 50, y: 50, temp: 78 })
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    const width = canvas.width = 400
+    const height = canvas.height = 300
+
+    const drawHeatmap = () => {
+      // Base thermal gradient
+      const baseGradient = ctx.createLinearGradient(0, 0, width, height)
+      baseGradient.addColorStop(0, '#1a237e')
+      baseGradient.addColorStop(0.3, '#0d47a1')
+      baseGradient.addColorStop(0.5, '#00897b')
+      baseGradient.addColorStop(0.7, '#ffc107')
+      baseGradient.addColorStop(0.85, '#ff5722')
+      baseGradient.addColorStop(1, '#d32f2f')
+
+      ctx.fillStyle = baseGradient
+      ctx.fillRect(0, 0, width, height)
+
+      // Add noise texture
+      const imageData = ctx.getImageData(0, 0, width, height)
+      const data = imageData.data
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * 20
+        data[i] = Math.max(0, Math.min(255, data[i] + noise))
+        data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise))
+        data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise))
+      }
+      ctx.putImageData(imageData, 0, 0)
+
+      // Draw hotspot
+      const hx = (hotspot.x / 100) * width
+      const hy = (hotspot.y / 100) * height
+      const hotGradient = ctx.createRadialGradient(hx, hy, 0, hx, hy, 60)
+      hotGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)')
+      hotGradient.addColorStop(0.3, 'rgba(255, 87, 34, 0.8)')
+      hotGradient.addColorStop(0.6, 'rgba(211, 47, 47, 0.5)')
+      hotGradient.addColorStop(1, 'rgba(211, 47, 47, 0)')
+
+      ctx.fillStyle = hotGradient
+      ctx.fillRect(0, 0, width, height)
+
+      // Grid overlay
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
+      ctx.lineWidth = 1
+      for (let x = 0; x < width; x += 40) {
+        ctx.beginPath()
+        ctx.moveTo(x, 0)
+        ctx.lineTo(x, height)
+        ctx.stroke()
+      }
+      for (let y = 0; y < height; y += 40) {
+        ctx.beginPath()
+        ctx.moveTo(0, y)
+        ctx.lineTo(width, y)
+        ctx.stroke()
+      }
+    }
+
+    drawHeatmap()
+  }, [hotspot])
+
+  const handleMouseMove = (e) => {
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    const temp = Math.round(60 + (y / 100) * 40 + Math.random() * 5)
+    setHotspot({ x, y, temp })
+  }
+
+  return (
+    <div ref={containerRef} className="thermal-heatmap" onMouseMove={handleMouseMove}>
+      <canvas ref={canvasRef} className="thermal-canvas" />
+      <div className="thermal-overlay">
+        <div className="thermal-crosshair" style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}>
+          <span className="thermal-temp">{hotspot.temp}°C</span>
+        </div>
+      </div>
+      <div className="thermal-scale">
+        <span>60°C</span>
+        <div className="thermal-scale-bar" />
+        <span>100°C</span>
+      </div>
+      <div className="thermal-label">LIVE THERMAL IMAGING</div>
+    </div>
+  )
+}
+
+// ============================================
+// ANIMATED CONTOUR LINES
+// ============================================
+function ContourVisualization() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    const width = canvas.width = 500
+    const height = canvas.height = 300
+    let time = 0
+    let animationId
+
+    const drawContours = () => {
+      ctx.fillStyle = 'rgba(5, 5, 12, 0.1)'
+      ctx.fillRect(0, 0, width, height)
+
+      const layers = 12
+      for (let layer = 0; layer < layers; layer++) {
+        const progress = layer / layers
+        const hue = 180 + progress * 60 // Cyan to purple
+        ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${0.3 + progress * 0.4})`
+        ctx.lineWidth = 1 + progress
+
+        ctx.beginPath()
+        for (let x = 0; x <= width; x += 5) {
+          const baseY = height / 2
+          const amplitude = 40 + layer * 8
+          const frequency = 0.008 + layer * 0.002
+          const phase = time * (0.5 + layer * 0.1)
+
+          const y = baseY +
+            Math.sin(x * frequency + phase) * amplitude +
+            Math.sin(x * frequency * 2 + phase * 1.5) * (amplitude * 0.3) +
+            Math.cos(x * frequency * 0.5 + phase * 0.7) * (amplitude * 0.5)
+
+          if (x === 0) ctx.moveTo(x, y)
+          else ctx.lineTo(x, y)
+        }
+        ctx.stroke()
+      }
+
+      // Draw elevation markers
+      ctx.fillStyle = 'rgba(0, 212, 255, 0.8)'
+      ctx.font = '10px Inter'
+      for (let i = 1; i <= 3; i++) {
+        const x = (width / 4) * i
+        const y = height / 2 + Math.sin(x * 0.01 + time) * 50
+        ctx.fillText(`${100 + i * 50}m`, x - 15, y - 10)
+      }
+
+      time += 0.02
+      animationId = requestAnimationFrame(drawContours)
+    }
+
+    drawContours()
+    return () => cancelAnimationFrame(animationId)
+  }, [])
+
+  return (
+    <div className="contour-viz">
+      <canvas ref={canvasRef} />
+      <div className="contour-label">TOPOGRAPHIC ANALYSIS</div>
+    </div>
+  )
+}
+
+// ============================================
+// LIDAR POINT CLOUD VISUALIZATION
+// ============================================
+function LidarVisualization() {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    const width = canvas.width = 500
+    const height = canvas.height = 300
+    let time = 0
+    let animationId
+
+    // Generate points
+    const points = []
+    for (let i = 0; i < 800; i++) {
+      points.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        z: Math.random(),
+        size: 1 + Math.random() * 2,
+      })
+    }
+
+    const draw = () => {
+      ctx.fillStyle = 'rgba(5, 5, 12, 0.15)'
+      ctx.fillRect(0, 0, width, height)
+
+      // Sort by z for depth effect
+      points.sort((a, b) => a.z - b.z)
+
+      points.forEach((p, i) => {
+        // Animate z
+        p.z = (p.z + 0.002) % 1
+
+        const brightness = 0.3 + p.z * 0.7
+        const hue = 180 + p.z * 60
+        ctx.fillStyle = `hsla(${hue}, 80%, ${50 + p.z * 30}%, ${brightness})`
+
+        const size = p.size * (0.5 + p.z * 1.5)
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Scan line effect
+        const scanY = (time * 100) % height
+        if (Math.abs(p.y - scanY) < 3) {
+          ctx.fillStyle = 'rgba(0, 212, 255, 0.8)'
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, size * 2, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      })
+
+      // Draw scan line
+      const scanY = (time * 100) % height
+      ctx.strokeStyle = 'rgba(0, 212, 255, 0.5)'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(0, scanY)
+      ctx.lineTo(width, scanY)
+      ctx.stroke()
+
+      time += 0.016
+      animationId = requestAnimationFrame(draw)
+    }
+
+    draw()
+    return () => cancelAnimationFrame(animationId)
+  }, [])
+
+  return (
+    <div className="lidar-viz">
+      <canvas ref={canvasRef} />
+      <div className="lidar-label">LIDAR POINT CLOUD</div>
+      <div className="lidar-stats">
+        <span>2.4M points/sec</span>
+        <span>±2cm accuracy</span>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
 // INDUSTRY CARD WITH DISTINCT VISUALS
 // ============================================
-function IndustryCard({ image, icon, title, description, stats, index }) {
+function IndustryCard({ image, icon, title, description, stats, index, visualization }) {
   const ref = useRef(null)
 
   useLayoutEffect(() => {
@@ -288,12 +553,17 @@ function IndustryCard({ image, icon, title, description, stats, index }) {
   }, [index])
 
   return (
-    <div ref={ref} className="industry-card">
+    <div ref={ref} className="industry-card glass-card">
       <div className="industry-card__image">
         <img src={image} alt={title} loading="lazy" />
         <div className="industry-card__overlay" />
         <span className="industry-card__icon">{icon}</span>
       </div>
+      {visualization && (
+        <div className="industry-card__viz">
+          {visualization}
+        </div>
+      )}
       <div className="industry-card__content">
         <h3>{title}</h3>
         <p>{description}</p>
@@ -361,6 +631,7 @@ export default function LandingPage3() {
         { value: '$1M+', label: 'Outage Prevention' },
         { value: '0.05°C', label: 'Sensitivity' },
       ],
+      visualization: <ThermalHeatmap />,
     },
     {
       image: 'https://images.pexels.com/photos/7682452/pexels-photo-7682452.jpeg?w=800&h=600&fit=crop',
@@ -371,6 +642,7 @@ export default function LandingPage3() {
         { value: '60%', label: 'Cost Reduction' },
         { value: '4.5x', label: 'Defect Detection' },
       ],
+      visualization: <LidarVisualization />,
     },
     {
       image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80',
@@ -381,6 +653,7 @@ export default function LandingPage3() {
         { value: '150%', label: 'Documented ROI' },
         { value: '14 days', label: 'Early Detection' },
       ],
+      visualization: <ContourVisualization />,
     },
     {
       image: 'https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800&q=80',
@@ -398,13 +671,10 @@ export default function LandingPage3() {
     <div className="jinki-premium">
       <FluidBackground />
 
-      {/* Navigation */}
-      <header className="nav">
+      {/* iOS Liquid Glass Navigation */}
+      <header className="nav glass-nav">
         <div className="nav__inner">
-          <a href="/" className="nav__logo">
-            <span className="nav__logo-text">JINKI</span>
-            <span className="nav__logo-sub">INTELLIGENCE</span>
-          </a>
+          <AnimatedLogo />
           <nav className="nav__links">
             <a href="#industries">Industries</a>
             <a href="#platform">Platform</a>
@@ -420,7 +690,7 @@ export default function LandingPage3() {
       <motion.section ref={heroRef} className="hero" style={{ y: heroY }}>
         <motion.div className="hero__content" style={{ opacity: heroOpacity }}>
           <motion.div
-            className="hero__badge"
+            className="hero__badge glass-badge"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -520,22 +790,22 @@ export default function LandingPage3() {
             </p>
 
             <div className="platform__specs">
-              <div className="spec">
+              <div className="spec glass-card">
                 <span className="spec__icon">🔋</span>
                 <span className="spec__value">59 min</span>
                 <span className="spec__label">Flight Time</span>
               </div>
-              <div className="spec">
+              <div className="spec glass-card">
                 <span className="spec__icon">📡</span>
                 <span className="spec__value">20 km</span>
                 <span className="spec__label">O4 Transmission</span>
               </div>
-              <div className="spec">
+              <div className="spec glass-card">
                 <span className="spec__icon">🎯</span>
                 <span className="spec__value">±1 cm</span>
                 <span className="spec__label">RTK Positioning</span>
               </div>
-              <div className="spec">
+              <div className="spec glass-card">
                 <span className="spec__icon">📦</span>
                 <span className="spec__value">2.7 kg</span>
                 <span className="spec__label">Max Payload</span>
@@ -566,7 +836,7 @@ export default function LandingPage3() {
           <h2>Cyber & AI Advisory</h2>
           <p className="team__lead">Enterprise security architecture meets aerial intelligence</p>
 
-          <div className="team__card">
+          <div className="team__card glass-card">
             <div className="team__avatar">🛡️</div>
             <h3>Abdillahi A.</h3>
             <span className="team__role">Principal Security Architect</span>
@@ -584,7 +854,7 @@ export default function LandingPage3() {
 
       {/* CTA */}
       <section id="contact" className="cta">
-        <ScrollReveal className="cta__inner">
+        <ScrollReveal className="cta__inner glass-card">
           <h2>Ready to Modernize Your Inspections?</h2>
           <p>
             Schedule a consultation to discuss your infrastructure monitoring needs.
