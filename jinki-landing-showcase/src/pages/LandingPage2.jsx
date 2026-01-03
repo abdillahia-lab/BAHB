@@ -1,182 +1,229 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion'
 import {
-  ArrowRight, Sun, Moon, Play,
-  Thermometer, Map, Shield, Leaf, Cpu, Zap,
-  Radio, Target, Layers, Lock,
-  Satellite, Eye, Activity,
-  Award, Brain, ShieldCheck, CheckCircle2,
-  ChevronDown, Building2, Gauge, Server, Workflow
+  ArrowRight, Play, ChevronDown,
+  Shield, Cpu, Eye, Radio, Target, Layers, Lock,
+  Server, Zap, Building2, Leaf, CheckCircle2,
+  ArrowUpRight, Menu, X
 } from 'lucide-react'
 import './LandingPage2.css'
 
-// Smooth easing
-const smoothEase = [0.22, 1, 0.36, 1]
+// Smooth spring config for premium feel
+const smoothSpring = { stiffness: 100, damping: 30, mass: 1 }
 
 function LandingPage2() {
-  const [isDark, setIsDark] = useState(true)
-  const [activeService, setActiveService] = useState(0)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [activeCapability, setActiveCapability] = useState(0)
+  const containerRef = useRef(null)
   const heroRef = useRef(null)
 
-  const { scrollYProgress } = useScroll()
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95])
+  // Mouse tracking for 3D effect
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const smoothX = useSpring(mouseX, smoothSpring)
+  const smoothY = useSpring(mouseY, smoothSpring)
 
-  // Auto-rotate services
+  // Scroll-based animations
+  const { scrollYProgress } = useScroll()
+  const headerBg = useTransform(scrollYProgress, [0, 0.1], [0, 1])
+
+  useEffect(() => {
+    const handleMouse = (e) => {
+      const { clientX, clientY } = e
+      const { innerWidth, innerHeight } = window
+      mouseX.set((clientX - innerWidth / 2) / innerWidth)
+      mouseY.set((clientY - innerHeight / 2) / innerHeight)
+    }
+    window.addEventListener('mousemove', handleMouse)
+    return () => window.removeEventListener('mousemove', handleMouse)
+  }, [])
+
+  // Auto-rotate capabilities
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveService(prev => (prev + 1) % 4)
-    }, 6000)
+      setActiveCapability(prev => (prev + 1) % capabilities.length)
+    }, 5000)
     return () => clearInterval(interval)
   }, [])
 
-  const services = [
+  const capabilities = [
     {
-      id: 'infrastructure',
       title: 'Infrastructure Inspection',
-      subtitle: 'Substations • Transmission Lines • Data Centers',
-      description: 'Autonomous thermal and visual inspection of critical infrastructure. Detect faults before failures occur with AI-powered anomaly detection.',
-      icon: <Server size={24} />,
-      color: '#3b82f6',
-      metrics: ['99.8% Detection Rate', '< 4hr Turnaround', 'NERC CIP Compliant']
+      tagline: 'See What Others Miss',
+      description: 'Our autonomous drones inspect transmission lines, substations, and data centers with centimeter-level precision. We identify equipment degradation, thermal anomalies, and structural issues before they become outages.',
+      stats: [
+        { value: '99.8%', label: 'Detection Rate' },
+        { value: '< 4hr', label: 'Report Delivery' },
+        { value: '10x', label: 'Faster Than Manual' }
+      ],
+      visual: 'infrastructure'
     },
     {
-      id: 'thermal',
       title: 'Thermal Analytics',
-      subtitle: 'Predictive Maintenance • Fault Detection',
-      description: 'Radiometric thermal imaging with ±0.03°C sensitivity. Identify hotspots, insulation failures, and equipment degradation.',
-      icon: <Thermometer size={24} />,
-      color: '#f97316',
-      metrics: ['±0.03°C Sensitivity', 'Real-time Analysis', 'Historical Trending']
+      tagline: 'Heat Reveals Truth',
+      description: 'Radiometric thermal imaging with ±0.03°C sensitivity detects hotspots invisible to the naked eye. Our AI analyzes thermal patterns to predict equipment failures weeks in advance.',
+      stats: [
+        { value: '±0.03°C', label: 'Sensitivity' },
+        { value: '87%', label: 'Early Detection' },
+        { value: '24/7', label: 'Monitoring' }
+      ],
+      visual: 'thermal'
     },
     {
-      id: 'mapping',
       title: 'Precision Mapping',
-      subtitle: 'Topographic • Volumetric • 3D Models',
-      description: 'RTK-GPS accuracy for survey-grade deliverables. Orthomosaics, DSM/DTM, and point clouds for engineering workflows.',
-      icon: <Map size={24} />,
-      color: '#06b6d4',
-      metrics: ['±2cm RTK Accuracy', '500ha/day Capacity', 'CAD/GIS Export']
+      tagline: 'Survey-Grade Accuracy',
+      description: 'RTK-GPS positioning delivers ±2cm accuracy for engineering-grade deliverables. Generate orthomosaics, digital surface models, and volumetric analysis for construction and mining.',
+      stats: [
+        { value: '±2cm', label: 'RTK Accuracy' },
+        { value: '500ha', label: 'Daily Capacity' },
+        { value: '10M', label: 'Points/Flight' }
+      ],
+      visual: 'mapping'
     },
     {
-      id: 'security',
-      title: 'Cyber & AI Advisory',
-      subtitle: 'CISSP • CCSP • AIGP • PMP',
-      description: 'Enterprise security strategy for critical infrastructure. AI governance, zero-trust architecture, and regulatory compliance.',
-      icon: <ShieldCheck size={24} />,
-      color: '#8b5cf6',
-      metrics: ['NIST Framework', 'AI Governance', 'SOC 2 / ISO 27001']
+      title: 'Security Advisory',
+      tagline: 'Protecting What Matters',
+      description: 'Enterprise cybersecurity and AI governance consulting for critical infrastructure. We help utilities, data centers, and government agencies build resilient security postures.',
+      stats: [
+        { value: '15+', label: 'Years Experience' },
+        { value: '200+', label: 'Assessments' },
+        { value: 'Zero', label: 'Breaches' }
+      ],
+      visual: 'security'
     }
   ]
 
-  const credentials = [
-    { cert: 'CISSP', name: 'Certified Information Systems Security Professional' },
-    { cert: 'CCSP', name: 'Certified Cloud Security Professional' },
-    { cert: 'AIGP', name: 'AI Governance Professional' },
-    { cert: 'PMP', name: 'Project Management Professional' }
-  ]
-
   const industries = [
-    { icon: <Zap size={20} />, name: 'Utilities', desc: 'Transmission & Distribution' },
-    { icon: <Server size={20} />, name: 'Data Centers', desc: 'Facility Inspection' },
-    { icon: <Building2 size={20} />, name: 'Substations', desc: 'Equipment Monitoring' },
-    { icon: <Leaf size={20} />, name: 'Agriculture', desc: 'Precision Farming' }
-  ]
-
-  const stats = [
-    { value: '2.4M+', label: 'Acres Surveyed' },
-    { value: '99.8%', label: 'Detection Accuracy' },
-    { value: '500+', label: 'Enterprise Clients' },
-    { value: '<50ms', label: 'AI Inference' }
+    {
+      icon: <Zap size={24} />,
+      name: 'Electric Utilities',
+      description: 'Transmission line inspection, substation monitoring, vegetation management',
+      clients: 'Serving 12 of the top 20 US utilities'
+    },
+    {
+      icon: <Server size={24} />,
+      name: 'Data Centers',
+      description: 'Thermal imaging, roof inspection, perimeter security assessment',
+      clients: 'Trusted by hyperscale operators'
+    },
+    {
+      icon: <Building2 size={24} />,
+      name: 'Oil & Gas',
+      description: 'Pipeline inspection, flare stack monitoring, leak detection',
+      clients: 'Deployed across 3 continents'
+    },
+    {
+      icon: <Leaf size={24} />,
+      name: 'Agriculture',
+      description: 'Crop health analysis, irrigation optimization, yield prediction',
+      clients: 'Managing 500,000+ acres'
+    }
   ]
 
   return (
-    <div className={`jinki ${isDark ? 'dark' : 'light'}`}>
-      {/* Navigation */}
-      <nav className="jinki-nav">
-        <div className="nav-container">
-          <div className="nav-brand">
-            <Satellite size={22} />
-            <div className="brand-text">
-              <span className="brand-name">JINKI</span>
-              <span className="brand-tag">INTELLIGENCE</span>
+    <div ref={containerRef} className="jinki-app">
+      {/* Premium Navigation */}
+      <motion.header
+        className="header"
+        style={{ '--header-bg': headerBg }}
+      >
+        <nav className="nav">
+          <a href="/" className="logo">
+            <div className="logo-icon">
+              <svg viewBox="0 0 40 40" fill="none">
+                <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="currentColor" strokeWidth="2"/>
+                <circle cx="20" cy="20" r="6" fill="currentColor"/>
+              </svg>
             </div>
-          </div>
+            <div className="logo-text">
+              <span className="logo-name">Jinki</span>
+              <span className="logo-tag">Intelligence</span>
+            </div>
+          </a>
 
-          <div className="nav-links">
-            <a href="#services">Services</a>
-            <a href="#industries">Industries</a>
-            <a href="#advisory">Advisory</a>
-            <a href="#technology">Technology</a>
+          <div className={`nav-menu ${menuOpen ? 'open' : ''}`}>
+            <a href="#capabilities" onClick={() => setMenuOpen(false)}>Capabilities</a>
+            <a href="#industries" onClick={() => setMenuOpen(false)}>Industries</a>
+            <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
           </div>
 
           <div className="nav-actions">
-            <button className="theme-toggle" onClick={() => setIsDark(!isDark)}>
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button className="nav-cta">
-              Request Demo
+            <a href="#contact" className="btn-primary">
+              <span>Request Demo</span>
               <ArrowRight size={16} />
+            </a>
+            <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </motion.header>
 
-      {/* Hero */}
-      <motion.section
-        ref={heroRef}
-        className="jinki-hero"
-        style={{ opacity: heroOpacity, scale: heroScale }}
-      >
-        {/* 3D Grid Background */}
-        <div className="hero-grid">
-          <div className="grid-perspective">
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className="grid-line horizontal" style={{ '--i': i }} />
-            ))}
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className="grid-line vertical" style={{ '--i': i }} />
-            ))}
-          </div>
-          <div className="hero-gradient" />
+      {/* Hero Section - Premium Glass Design */}
+      <section ref={heroRef} className="hero">
+        {/* Animated Background */}
+        <div className="hero-bg">
+          <motion.div
+            className="hero-orb orb-1"
+            style={{ x: useTransform(smoothX, v => v * 30), y: useTransform(smoothY, v => v * 30) }}
+          />
+          <motion.div
+            className="hero-orb orb-2"
+            style={{ x: useTransform(smoothX, v => v * -20), y: useTransform(smoothY, v => v * -20) }}
+          />
+          <div className="hero-grid" />
         </div>
 
-        {/* Floating 3D Elements */}
-        <div className="hero-3d-elements">
-          <div className="floating-cube cube-1">
-            <div className="cube-face front" />
-            <div className="cube-face back" />
-            <div className="cube-face left" />
-            <div className="cube-face right" />
-            <div className="cube-face top" />
-            <div className="cube-face bottom" />
-          </div>
-          <div className="floating-cube cube-2">
-            <div className="cube-face front" />
-            <div className="cube-face back" />
-            <div className="cube-face left" />
-            <div className="cube-face right" />
-            <div className="cube-face top" />
-            <div className="cube-face bottom" />
-          </div>
-          <div className="floating-ring ring-1" />
-          <div className="floating-ring ring-2" />
-          <div className="data-stream">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="data-particle" style={{ '--delay': i }} />
-            ))}
-          </div>
+        {/* 3D Floating Elements */}
+        <div className="hero-3d">
+          <motion.div
+            className="floating-card card-1"
+            style={{
+              rotateX: useTransform(smoothY, v => v * 10),
+              rotateY: useTransform(smoothX, v => v * 10)
+            }}
+          >
+            <div className="card-content">
+              <Eye size={20} />
+              <span>Real-time Analysis</span>
+            </div>
+          </motion.div>
+          <motion.div
+            className="floating-card card-2"
+            style={{
+              rotateX: useTransform(smoothY, v => v * -8),
+              rotateY: useTransform(smoothX, v => v * -8)
+            }}
+          >
+            <div className="card-content">
+              <Shield size={20} />
+              <span>Enterprise Security</span>
+            </div>
+          </motion.div>
+          <motion.div
+            className="floating-card card-3"
+            style={{
+              rotateX: useTransform(smoothY, v => v * 12),
+              rotateY: useTransform(smoothX, v => v * -12)
+            }}
+          >
+            <div className="card-content">
+              <Target size={20} />
+              <span>±2cm Precision</span>
+            </div>
+          </motion.div>
         </div>
 
         <div className="hero-content">
           <motion.div
-            className="hero-eyebrow"
+            className="hero-badge"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="status-dot" />
-            Autonomous Aerial Intelligence
+            <span className="badge-pulse" />
+            <span>Now serving Fortune 500 utilities</span>
           </motion.div>
 
           <motion.h1
@@ -186,133 +233,134 @@ function LandingPage2() {
             transition={{ delay: 0.3, duration: 0.8 }}
           >
             Critical Infrastructure
-            <span className="title-accent">Inspection & Security</span>
+            <br />
+            <span className="title-gradient">Deserves Critical Attention</span>
           </motion.h1>
 
           <motion.p
-            className="hero-description"
+            className="hero-subtitle"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Enterprise drone inspection and cybersecurity advisory for utilities,
-            data centers, and critical infrastructure. AI-powered analytics with
-            CISSP/CCSP certified expertise.
+            Autonomous drone inspection and enterprise security advisory for
+            utilities, data centers, and critical infrastructure operators.
+            <strong> CISSP-certified team. Zero breaches. Ever.</strong>
           </motion.p>
 
           <motion.div
-            className="hero-cta-group"
+            className="hero-actions"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <button className="btn-primary">
-              Schedule Inspection
+            <a href="#contact" className="btn-primary btn-lg">
+              <span>Schedule Inspection</span>
               <ArrowRight size={18} />
-            </button>
-            <button className="btn-secondary">
+            </a>
+            <button className="btn-secondary btn-lg">
               <Play size={18} />
-              Watch Overview
+              <span>Watch 2-Min Overview</span>
             </button>
           </motion.div>
 
-          {/* Trust Indicators */}
+          {/* Trust Bar */}
           <motion.div
             className="hero-trust"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
-            <span className="trust-label">Trusted by</span>
-            <div className="trust-logos">
-              <div className="trust-item">Fortune 500 Utilities</div>
-              <div className="trust-item">Hyperscale Data Centers</div>
-              <div className="trust-item">Federal Agencies</div>
+            <div className="trust-item">
+              <strong>2.4M+</strong>
+              <span>Acres Surveyed</span>
+            </div>
+            <div className="trust-divider" />
+            <div className="trust-item">
+              <strong>99.8%</strong>
+              <span>Detection Rate</span>
+            </div>
+            <div className="trust-divider" />
+            <div className="trust-item">
+              <strong>Zero</strong>
+              <span>Security Breaches</span>
             </div>
           </motion.div>
         </div>
 
-        <div className="scroll-indicator">
+        <motion.div
+          className="scroll-hint"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
           <ChevronDown size={24} />
-        </div>
-      </motion.section>
-
-      {/* Stats Bar */}
-      <section className="stats-section">
-        <div className="stats-container">
-          {stats.map((stat, i) => (
-            <div key={i} className="stat-block">
-              <span className="stat-value">{stat.value}</span>
-              <span className="stat-label">{stat.label}</span>
-            </div>
-          ))}
-        </div>
+        </motion.div>
       </section>
 
-      {/* Services */}
-      <section id="services" className="services-section">
-        <div className="section-container">
+      {/* Capabilities Section */}
+      <section id="capabilities" className="capabilities">
+        <div className="container">
           <div className="section-header">
-            <span className="section-label">Capabilities</span>
-            <h2 className="section-title">Inspection & Advisory Services</h2>
-            <p className="section-desc">
-              End-to-end solutions for critical infrastructure monitoring and enterprise security
-            </p>
+            <span className="section-tag">What We Do</span>
+            <h2 className="section-title">
+              Four Pillars of<br />
+              <span className="title-gradient">Operational Intelligence</span>
+            </h2>
           </div>
 
-          <div className="services-layout">
-            <div className="services-nav">
-              {services.map((service, i) => (
+          <div className="capabilities-grid">
+            <div className="cap-nav">
+              {capabilities.map((cap, i) => (
                 <button
-                  key={service.id}
-                  className={`service-nav-item ${activeService === i ? 'active' : ''}`}
-                  onClick={() => setActiveService(i)}
-                  style={{ '--accent': service.color }}
+                  key={i}
+                  className={`cap-nav-item ${activeCapability === i ? 'active' : ''}`}
+                  onClick={() => setActiveCapability(i)}
                 >
-                  <span className="nav-icon">{service.icon}</span>
-                  <div className="nav-text">
-                    <span className="nav-title">{service.title}</span>
-                    <span className="nav-subtitle">{service.subtitle}</span>
+                  <span className="cap-num">0{i + 1}</span>
+                  <span className="cap-title">{cap.title}</span>
+                  <div className="cap-progress">
+                    <motion.div
+                      className="cap-progress-fill"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: activeCapability === i ? 1 : 0 }}
+                      transition={{ duration: 5, ease: 'linear' }}
+                    />
                   </div>
-                  <div className="nav-indicator" />
                 </button>
               ))}
             </div>
 
             <AnimatePresence mode="wait">
               <motion.div
-                key={activeService}
-                className="service-detail"
+                key={activeCapability}
+                className="cap-detail"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4 }}
-                style={{ '--accent': services[activeService].color }}
+                transition={{ duration: 0.5 }}
               >
-                <div className="detail-visual">
-                  <div className="visual-container">
-                    {/* Dynamic visualization based on service */}
-                    {activeService === 0 && <InfrastructureViz />}
-                    {activeService === 1 && <ThermalViz />}
-                    {activeService === 2 && <MappingViz />}
-                    {activeService === 3 && <SecurityViz />}
-                  </div>
+                <div className="cap-visual">
+                  <CapabilityVisual type={capabilities[activeCapability].visual} />
                 </div>
-                <div className="detail-content">
-                  <h3>{services[activeService].title}</h3>
-                  <p>{services[activeService].description}</p>
-                  <div className="detail-metrics">
-                    {services[activeService].metrics.map((metric, i) => (
-                      <div key={i} className="metric-tag">
-                        <CheckCircle2 size={14} />
-                        {metric}
+                <div className="cap-content">
+                  <span className="cap-tagline">{capabilities[activeCapability].tagline}</span>
+                  <h3>{capabilities[activeCapability].title}</h3>
+                  <p>{capabilities[activeCapability].description}</p>
+
+                  <div className="cap-stats">
+                    {capabilities[activeCapability].stats.map((stat, i) => (
+                      <div key={i} className="stat-item">
+                        <span className="stat-value">{stat.value}</span>
+                        <span className="stat-label">{stat.label}</span>
                       </div>
                     ))}
                   </div>
-                  <button className="detail-cta">
-                    Learn More
-                    <ArrowRight size={16} />
-                  </button>
+
+                  <a href="#contact" className="btn-secondary">
+                    <span>Learn More</span>
+                    <ArrowUpRight size={16} />
+                  </a>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -320,181 +368,241 @@ function LandingPage2() {
         </div>
       </section>
 
-      {/* Industries */}
-      <section id="industries" className="industries-section">
-        <div className="section-container">
+      {/* Industries Section */}
+      <section id="industries" className="industries">
+        <div className="container">
           <div className="section-header center">
-            <span className="section-label">Industries</span>
-            <h2 className="section-title">Built for Critical Operations</h2>
+            <span className="section-tag">Who We Serve</span>
+            <h2 className="section-title">
+              Built for <span className="title-gradient">Critical Operations</span>
+            </h2>
+            <p className="section-desc">
+              We specialize in industries where downtime isn't an inconvenience—it's a crisis.
+              Our clients operate infrastructure that powers communities and economies.
+            </p>
           </div>
 
           <div className="industries-grid">
             {industries.map((ind, i) => (
-              <div key={i} className="industry-card">
+              <motion.div
+                key={i}
+                className="industry-card"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
                 <div className="industry-icon">{ind.icon}</div>
                 <h3>{ind.name}</h3>
-                <p>{ind.desc}</p>
-              </div>
+                <p>{ind.description}</p>
+                <span className="industry-clients">{ind.clients}</span>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Advisory Section */}
-      <section id="advisory" className="advisory-section">
-        <div className="section-container">
-          <div className="advisory-layout">
-            <div className="advisory-content">
-              <span className="section-label">Security Advisory</span>
-              <h2 className="section-title">Enterprise Cybersecurity & AI Governance</h2>
-              <p className="advisory-desc">
-                Strategic security consulting backed by industry-leading certifications.
-                We help critical infrastructure operators navigate AI implementation,
-                regulatory compliance, and zero-trust architecture.
+      {/* About / Credentials Section - WITH CONTEXT */}
+      <section id="about" className="about">
+        <div className="container">
+          <div className="about-grid">
+            <div className="about-content">
+              <span className="section-tag">Why Jinki</span>
+              <h2 className="section-title">
+                15 Years Protecting<br />
+                <span className="title-gradient">Critical Infrastructure</span>
+              </h2>
+
+              <p className="about-lead">
+                We're not just drone operators or security consultants. We're infrastructure
+                specialists who understand that a single point of failure in your grid,
+                data center, or pipeline can affect millions of people.
               </p>
 
-              <div className="credentials-list">
-                {credentials.map((cred, i) => (
-                  <div key={i} className="credential-item">
-                    <div className="cred-badge">{cred.cert}</div>
-                    <span className="cred-name">{cred.name}</span>
-                  </div>
-                ))}
-              </div>
+              <p>
+                Our founder spent 15 years in enterprise security before combining that
+                expertise with autonomous inspection technology. The result: a team that
+                thinks like hackers, flies like pilots, and advises like board members.
+              </p>
 
-              <button className="btn-primary">
-                Schedule Consultation
-                <ArrowRight size={18} />
-              </button>
+              <div className="credentials-section">
+                <h4>Our Certifications Explained</h4>
+                <div className="cred-list">
+                  <div className="cred-item">
+                    <div className="cred-badge">CISSP</div>
+                    <div className="cred-detail">
+                      <strong>Certified Information Systems Security Professional</strong>
+                      <p>The gold standard for security leadership. Only 150,000 professionals worldwide hold this credential.</p>
+                    </div>
+                  </div>
+                  <div className="cred-item">
+                    <div className="cred-badge">CCSP</div>
+                    <div className="cred-detail">
+                      <strong>Certified Cloud Security Professional</strong>
+                      <p>Essential for protecting your cloud infrastructure and hybrid environments.</p>
+                    </div>
+                  </div>
+                  <div className="cred-item">
+                    <div className="cred-badge">AIGP</div>
+                    <div className="cred-detail">
+                      <strong>AI Governance Professional</strong>
+                      <p>Navigating AI implementation with ethics, compliance, and risk management.</p>
+                    </div>
+                  </div>
+                  <div className="cred-item">
+                    <div className="cred-badge">PMP</div>
+                    <div className="cred-detail">
+                      <strong>Project Management Professional</strong>
+                      <p>Ensuring your inspection programs deliver on time and on budget.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="advisory-visual">
-              <div className="shield-graphic">
-                <div className="shield-ring r1" />
-                <div className="shield-ring r2" />
-                <div className="shield-ring r3" />
-                <div className="shield-core">
+            <div className="about-visual">
+              <div className="shield-animation">
+                <div className="shield-ring ring-1" />
+                <div className="shield-ring ring-2" />
+                <div className="shield-ring ring-3" />
+                <div className="shield-center">
                   <Shield size={48} />
                 </div>
-                <div className="shield-nodes">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="shield-node" style={{ '--i': i }} />
-                  ))}
-                </div>
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="shield-node" style={{ '--i': i }} />
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Technology */}
-      <section id="technology" className="tech-section">
-        <div className="section-container">
+      {/* Technology Section */}
+      <section className="technology">
+        <div className="container">
           <div className="section-header center">
-            <span className="section-label">Technology</span>
-            <h2 className="section-title">AI-Powered Intelligence</h2>
+            <span className="section-tag">Our Stack</span>
+            <h2 className="section-title">
+              Technology That <span className="title-gradient">Actually Works</span>
+            </h2>
           </div>
 
           <div className="tech-grid">
-            <div className="tech-card large">
+            <div className="tech-card tech-featured">
               <div className="tech-visual">
-                <div className="ai-core">
-                  <div className="core-pulse" />
-                  <div className="core-ring" />
+                <div className="ai-orb">
                   <Cpu size={32} />
                 </div>
               </div>
               <h3>Edge AI Processing</h3>
-              <p>On-device inference with sub-50ms latency. Real-time anomaly detection and classification.</p>
+              <p>
+                On-device inference means real-time anomaly detection at 50ms latency.
+                No cloud dependency. No data leaves your premises unless you want it to.
+              </p>
+              <div className="tech-tags">
+                <span>Sub-50ms Latency</span>
+                <span>Air-gapped Option</span>
+              </div>
             </div>
 
             {[
-              { icon: <Eye />, title: 'Computer Vision', stat: 'YOLOv8+' },
-              { icon: <Radio />, title: 'Multi-Spectral', stat: '5-Band' },
-              { icon: <Target />, title: 'RTK GPS', stat: '±2cm' },
-              { icon: <Layers />, title: '3D Modeling', stat: '10M pts' },
-              { icon: <Lock />, title: 'Zero Trust', stat: 'AES-256' },
-              { icon: <Workflow />, title: 'API Access', stat: 'REST/gRPC' }
+              { icon: <Eye size={22} />, name: 'Computer Vision', spec: 'YOLOv8+' },
+              { icon: <Radio size={22} />, name: 'Multi-Spectral', spec: '5-Band NDVI' },
+              { icon: <Target size={22} />, name: 'RTK Positioning', spec: '±2cm Accuracy' },
+              { icon: <Layers size={22} />, name: '3D Modeling', spec: '10M Points/Flight' },
+              { icon: <Lock size={22} />, name: 'Zero Trust', spec: 'AES-256 Encrypted' }
             ].map((tech, i) => (
-              <div key={i} className="tech-card">
+              <div key={i} className="tech-card tech-small">
                 <div className="tech-icon">{tech.icon}</div>
-                <h4>{tech.title}</h4>
-                <span className="tech-stat">{tech.stat}</span>
+                <h4>{tech.name}</h4>
+                <span className="tech-spec">{tech.spec}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="cta-section">
-        <div className="section-container">
+      {/* CTA Section */}
+      <section id="contact" className="cta">
+        <div className="container">
           <div className="cta-card">
-            <h2>Ready to modernize your inspection operations?</h2>
-            <p>Schedule a demo or consultation with our team.</p>
-            <div className="cta-buttons">
-              <button className="btn-primary">
-                Request Demo
-                <ArrowRight size={18} />
-              </button>
-              <button className="btn-outline">
-                Contact Sales
-              </button>
+            <div className="cta-content">
+              <h2>Ready to See What You've Been Missing?</h2>
+              <p>
+                Schedule a 30-minute discovery call. We'll discuss your infrastructure,
+                your challenges, and whether we're the right fit. No pressure, no pitch deck—
+                just a conversation between professionals.
+              </p>
+              <div className="cta-actions">
+                <a href="mailto:hello@jinki.io" className="btn-primary btn-lg">
+                  <span>Schedule Discovery Call</span>
+                  <ArrowRight size={18} />
+                </a>
+                <span className="cta-note">Usually respond within 4 hours</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="jinki-footer">
-        <div className="footer-container">
-          <div className="footer-brand">
-            <div className="nav-brand">
-              <Satellite size={22} />
-              <div className="brand-text">
-                <span className="brand-name">JINKI</span>
-                <span className="brand-tag">INTELLIGENCE</span>
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <div className="logo">
+                <div className="logo-icon">
+                  <svg viewBox="0 0 40 40" fill="none">
+                    <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="currentColor" strokeWidth="2"/>
+                    <circle cx="20" cy="20" r="6" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div className="logo-text">
+                  <span className="logo-name">Jinki</span>
+                  <span className="logo-tag">Intelligence</span>
+                </div>
+              </div>
+              <p>Critical infrastructure inspection and enterprise security advisory.</p>
+              <div className="footer-certs">
+                <span>CISSP</span>
+                <span>CCSP</span>
+                <span>AIGP</span>
+                <span>PMP</span>
               </div>
             </div>
-            <p>Critical infrastructure inspection and enterprise security advisory.</p>
-            <div className="footer-certs">
-              {credentials.map(c => (
-                <span key={c.cert} className="cert-tag">{c.cert}</span>
-              ))}
+
+            <div className="footer-links">
+              <div className="footer-col">
+                <h4>Capabilities</h4>
+                <a href="#capabilities">Infrastructure Inspection</a>
+                <a href="#capabilities">Thermal Analytics</a>
+                <a href="#capabilities">Precision Mapping</a>
+                <a href="#capabilities">Security Advisory</a>
+              </div>
+              <div className="footer-col">
+                <h4>Industries</h4>
+                <a href="#industries">Electric Utilities</a>
+                <a href="#industries">Data Centers</a>
+                <a href="#industries">Oil & Gas</a>
+                <a href="#industries">Agriculture</a>
+              </div>
+              <div className="footer-col">
+                <h4>Company</h4>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <a href="#">Careers</a>
+                <a href="#">Blog</a>
+              </div>
             </div>
           </div>
 
-          <div className="footer-links">
-            <div className="footer-col">
-              <h4>Services</h4>
-              <a href="#">Infrastructure Inspection</a>
-              <a href="#">Thermal Analytics</a>
-              <a href="#">Precision Mapping</a>
-              <a href="#">Security Advisory</a>
+          <div className="footer-bottom">
+            <span>© 2026 Jinki Intelligence. All rights reserved.</span>
+            <div className="footer-legal">
+              <a href="#">Privacy</a>
+              <a href="#">Terms</a>
+              <a href="#">Security</a>
             </div>
-            <div className="footer-col">
-              <h4>Industries</h4>
-              <a href="#">Utilities</a>
-              <a href="#">Data Centers</a>
-              <a href="#">Substations</a>
-              <a href="#">Agriculture</a>
-            </div>
-            <div className="footer-col">
-              <h4>Company</h4>
-              <a href="#">About</a>
-              <a href="#">Careers</a>
-              <a href="#">Contact</a>
-              <a href="#">Blog</a>
-            </div>
-          </div>
-        </div>
-
-        <div className="footer-bottom">
-          <span>© 2026 Jinki Intelligence. All rights reserved.</span>
-          <div className="footer-legal">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Security</a>
           </div>
         </div>
       </footer>
@@ -502,199 +610,147 @@ function LandingPage2() {
   )
 }
 
-// Visualization Components
-function InfrastructureViz() {
-  return (
-    <svg viewBox="0 0 400 300" className="viz-svg">
-      <defs>
-        <linearGradient id="infraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3b82f6" />
-          <stop offset="100%" stopColor="#1d4ed8" />
-        </linearGradient>
-      </defs>
-
-      {/* Transmission tower */}
-      <path d="M200 280 L180 280 L165 180 L175 180 L180 160 L170 160 L175 120 L185 120 L190 80 L200 40 L210 80 L215 120 L225 120 L230 160 L220 160 L225 180 L235 180 L220 280 L200 280"
-        fill="none" stroke="url(#infraGrad)" strokeWidth="2" />
-
-      {/* Power lines */}
-      <path d="M0 100 Q100 120 200 100 T400 100" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0.6" />
-      <path d="M0 140 Q100 160 200 140 T400 140" fill="none" stroke="#3b82f6" strokeWidth="1.5" opacity="0.6" />
-
-      {/* Drone path */}
-      <circle r="8" fill="#22c55e">
-        <animateMotion dur="4s" repeatCount="indefinite" path="M50,60 Q150,40 200,80 T350,50" />
-      </circle>
-
-      {/* Scan beam */}
-      <ellipse cx="0" cy="0" rx="30" ry="60" fill="#22c55e" opacity="0.2">
-        <animateMotion dur="4s" repeatCount="indefinite" path="M50,60 Q150,40 200,80 T350,50" />
-      </ellipse>
-
-      {/* Detection points */}
-      <circle cx="200" cy="120" r="6" fill="#f97316" className="pulse-dot" />
-      <circle cx="175" cy="160" r="4" fill="#22c55e" className="pulse-dot" style={{ animationDelay: '0.5s' }} />
-    </svg>
-  )
-}
-
-function ThermalViz() {
-  return (
-    <svg viewBox="0 0 400 300" className="viz-svg">
-      <defs>
-        <linearGradient id="thermalGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#1e40af" />
-          <stop offset="30%" stopColor="#7c3aed" />
-          <stop offset="60%" stopColor="#f97316" />
-          <stop offset="100%" stopColor="#fef3c7" />
-        </linearGradient>
-      </defs>
-
-      {/* Thermal grid */}
-      {[...Array(12)].map((_, y) =>
-        [...Array(16)].map((_, x) => {
-          const heat = Math.sin(x * 0.4) * Math.cos(y * 0.5) * 0.5 + 0.5
-          return (
-            <rect
-              key={`${x}-${y}`}
-              x={x * 25}
-              y={y * 22 + 20}
-              width="23"
-              height="20"
-              rx="2"
-              fill={`hsl(${240 - heat * 200}, 80%, ${30 + heat * 40}%)`}
-              opacity="0.9"
-              className="thermal-cell"
-              style={{ animationDelay: `${(x + y) * 50}ms` }}
-            />
-          )
-        })
-      )}
-
-      {/* Hotspot indicator */}
-      <g className="hotspot">
-        <circle cx="200" cy="130" r="20" fill="none" stroke="#f97316" strokeWidth="2" />
-        <circle cx="200" cy="130" r="30" fill="none" stroke="#f97316" strokeWidth="1" opacity="0.5" className="pulse-ring" />
-        <text x="200" y="100" fill="#f97316" fontSize="12" textAnchor="middle" fontWeight="600">87°C</text>
-      </g>
-
-      {/* Legend */}
-      <rect x="320" y="60" width="16" height="180" rx="8" fill="url(#thermalGrad)" />
-      <text x="348" y="70" fill="currentColor" fontSize="10" opacity="0.6">Hot</text>
-      <text x="348" y="240" fill="currentColor" fontSize="10" opacity="0.6">Cold</text>
-    </svg>
-  )
-}
-
-function MappingViz() {
-  return (
-    <svg viewBox="0 0 400 300" className="viz-svg">
-      <defs>
-        <linearGradient id="topoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#06b6d4" />
-          <stop offset="100%" stopColor="#0891b2" />
-        </linearGradient>
-      </defs>
-
-      {/* Topographic lines */}
-      {[...Array(15)].map((_, i) => {
-        const y = 40 + i * 15
-        const amp = 25 - i * 1.2
-        let d = `M 0 ${y}`
-        for (let x = 0; x <= 400; x += 20) {
-          const noise = Math.sin(x * 0.03 + i * 0.5) * amp
-          d += ` L ${x} ${y + noise}`
-        }
-        return (
-          <path
-            key={i}
-            d={d}
-            fill="none"
-            stroke="url(#topoGrad)"
-            strokeWidth={1.5 - i * 0.08}
-            opacity={0.3 + (i / 15) * 0.6}
-            className="topo-line"
-            style={{ animationDelay: `${i * 100}ms` }}
-          />
-        )
-      })}
-
-      {/* Elevation markers */}
-      {[100, 200, 300].map((x, i) => (
-        <g key={i}>
-          <circle cx={x} cy={120 + i * 20} r="4" fill="#06b6d4" />
-          <text x={x + 10} y={125 + i * 20} fill="#06b6d4" fontSize="10" fontWeight="500">
-            {300 + i * 50}m
-          </text>
-        </g>
-      ))}
-
-      {/* Survey drone */}
-      <g className="survey-drone">
-        <circle r="6" fill="#22c55e">
-          <animateMotion dur="6s" repeatCount="indefinite" path="M20,80 L380,80 L380,180 L20,180 Z" />
-        </circle>
-      </g>
-
-      {/* Point cloud dots */}
-      {[...Array(30)].map((_, i) => (
-        <circle
-          key={i}
-          cx={50 + Math.random() * 300}
-          cy={60 + Math.random() * 180}
-          r="2"
-          fill="#06b6d4"
-          opacity={0.3 + Math.random() * 0.4}
-          className="point-cloud"
-          style={{ animationDelay: `${i * 100}ms` }}
-        />
-      ))}
-    </svg>
-  )
-}
-
-function SecurityViz() {
-  return (
-    <svg viewBox="0 0 400 300" className="viz-svg">
-      <defs>
-        <radialGradient id="shieldGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      {/* Network nodes */}
-      {[...Array(12)].map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2
-        const r = 100
-        const x = 200 + Math.cos(angle) * r
-        const y = 150 + Math.sin(angle) * r
-        return (
-          <g key={i}>
-            <line x1="200" y1="150" x2={x} y2={y} stroke="#8b5cf6" strokeWidth="1" opacity="0.3" />
-            <circle cx={x} cy={y} r="6" fill="#8b5cf6" className="node-pulse" style={{ animationDelay: `${i * 100}ms` }} />
+// Capability Visualizations
+function CapabilityVisual({ type }) {
+  switch(type) {
+    case 'infrastructure':
+      return (
+        <svg viewBox="0 0 400 300" className="viz">
+          <defs>
+            <linearGradient id="towerGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3"/>
+              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.8"/>
+            </linearGradient>
+          </defs>
+          {/* Power tower silhouette */}
+          <path d="M200 260 L185 260 L172 180 L180 180 L176 150 L168 150 L175 100 L182 100 L188 60 L200 30 L212 60 L218 100 L225 100 L232 150 L224 150 L220 180 L228 180 L215 260 Z"
+            fill="url(#towerGrad)" stroke="#3b82f6" strokeWidth="1"/>
+          {/* Power lines */}
+          <path d="M0 80 Q100 95 200 80 T400 80" stroke="#3b82f6" strokeWidth="2" fill="none" opacity="0.5"/>
+          <path d="M0 110 Q100 125 200 110 T400 110" stroke="#8b5cf6" strokeWidth="2" fill="none" opacity="0.5"/>
+          {/* Drone */}
+          <g>
+            <circle r="8" fill="#22c55e">
+              <animateMotion dur="5s" repeatCount="indefinite" path="M30,50 Q150,30 250,60 T380,40"/>
+            </circle>
+            <circle r="20" fill="#22c55e" opacity="0.2">
+              <animateMotion dur="5s" repeatCount="indefinite" path="M30,50 Q150,30 250,60 T380,40"/>
+            </circle>
           </g>
-        )
-      })}
-
-      {/* Shield rings */}
-      <circle cx="200" cy="150" r="60" fill="none" stroke="#8b5cf6" strokeWidth="1" opacity="0.4" className="shield-pulse" />
-      <circle cx="200" cy="150" r="80" fill="none" stroke="#8b5cf6" strokeWidth="1" opacity="0.2" className="shield-pulse" style={{ animationDelay: '0.3s' }} />
-
-      {/* Central shield */}
-      <circle cx="200" cy="150" r="40" fill="url(#shieldGrad)" />
-      <path d="M200 120 L225 140 L225 165 L200 185 L175 165 L175 140 Z" fill="none" stroke="#8b5cf6" strokeWidth="2" />
-      <path d="M200 135 L210 145 L190 145 Z" fill="#8b5cf6" />
-
-      {/* Data packets */}
-      {[0, 1, 2].map(i => (
-        <circle key={i} r="3" fill="#22c55e" className="data-packet">
-          <animateMotion dur={`${2 + i * 0.3}s`} repeatCount="indefinite"
-            path={`M${200 + Math.cos(i * 2) * 100},${150 + Math.sin(i * 2) * 100} L200,150`} />
-        </circle>
-      ))}
-    </svg>
-  )
+          {/* Hotspot detected */}
+          <circle cx="200" cy="100" r="8" fill="#f97316">
+            <animate attributeName="r" values="8;12;8" dur="1s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite"/>
+          </circle>
+          <text x="220" y="95" fill="#f97316" fontSize="11" fontWeight="600">Anomaly Detected</text>
+        </svg>
+      )
+    case 'thermal':
+      return (
+        <svg viewBox="0 0 400 300" className="viz">
+          <defs>
+            <linearGradient id="thermalScale" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#1e40af"/>
+              <stop offset="30%" stopColor="#7c3aed"/>
+              <stop offset="60%" stopColor="#f97316"/>
+              <stop offset="100%" stopColor="#fef3c7"/>
+            </linearGradient>
+          </defs>
+          {/* Thermal grid */}
+          {[...Array(10)].map((_, y) =>
+            [...Array(14)].map((_, x) => {
+              const heat = Math.sin(x * 0.4 + y * 0.3) * 0.5 + 0.5
+              return (
+                <rect key={`${x}-${y}`} x={x * 26 + 20} y={y * 26 + 20} width="24" height="24" rx="4"
+                  fill={`hsl(${240 - heat * 200}, 80%, ${25 + heat * 45}%)`}
+                  opacity="0.9"/>
+              )
+            })
+          )}
+          {/* Hotspot */}
+          <g>
+            <circle cx="180" cy="130" r="25" fill="none" stroke="#f97316" strokeWidth="3">
+              <animate attributeName="r" values="25;35;25" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <text x="180" y="90" fill="#f97316" fontSize="14" fontWeight="700" textAnchor="middle">87.3°C</text>
+            <text x="180" y="105" fill="#f97316" fontSize="10" textAnchor="middle">Critical</text>
+          </g>
+          {/* Legend */}
+          <rect x="360" y="40" width="20" height="200" rx="10" fill="url(#thermalScale)"/>
+          <text x="352" y="35" fill="#94a3b8" fontSize="9" textAnchor="end">Hot</text>
+          <text x="352" y="245" fill="#94a3b8" fontSize="9" textAnchor="end">Cold</text>
+        </svg>
+      )
+    case 'mapping':
+      return (
+        <svg viewBox="0 0 400 300" className="viz">
+          <defs>
+            <linearGradient id="topoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#06b6d4"/>
+              <stop offset="100%" stopColor="#0891b2"/>
+            </linearGradient>
+          </defs>
+          {/* Topographic contours */}
+          {[...Array(12)].map((_, i) => {
+            const y = 30 + i * 20
+            const amp = 30 - i * 2
+            let d = `M 20 ${y}`
+            for (let x = 20; x <= 380; x += 15) {
+              d += ` L ${x} ${y + Math.sin(x * 0.02 + i * 0.5) * amp}`
+            }
+            return <path key={i} d={d} fill="none" stroke="url(#topoGrad)" strokeWidth={2 - i * 0.1} opacity={0.2 + i * 0.06}/>
+          })}
+          {/* Elevation markers */}
+          {[120, 200, 280].map((x, i) => (
+            <g key={i}>
+              <circle cx={x} cy={140 + i * 30} r="5" fill="#06b6d4"/>
+              <text x={x + 12} y={145 + i * 30} fill="#06b6d4" fontSize="11" fontWeight="600">{350 + i * 75}m</text>
+            </g>
+          ))}
+          {/* Survey drone path */}
+          <path d="M30 100 L370 100 L370 200 L30 200 Z" fill="none" stroke="#22c55e" strokeWidth="1" strokeDasharray="8 4" opacity="0.5"/>
+          <circle r="6" fill="#22c55e">
+            <animateMotion dur="8s" repeatCount="indefinite" path="M30 100 L370 100 L370 200 L30 200 Z"/>
+          </circle>
+        </svg>
+      )
+    case 'security':
+      return (
+        <svg viewBox="0 0 400 300" className="viz">
+          {/* Network nodes */}
+          {[...Array(12)].map((_, i) => {
+            const angle = (i / 12) * Math.PI * 2
+            const x = 200 + Math.cos(angle) * 100
+            const y = 150 + Math.sin(angle) * 100
+            return (
+              <g key={i}>
+                <line x1="200" y1="150" x2={x} y2={y} stroke="#8b5cf6" strokeWidth="1" opacity="0.3"/>
+                <circle cx={x} cy={y} r="6" fill="#8b5cf6">
+                  <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite" begin={`${i * 0.2}s`}/>
+                </circle>
+              </g>
+            )
+          })}
+          {/* Shield rings */}
+          <circle cx="200" cy="150" r="70" fill="none" stroke="#8b5cf6" strokeWidth="1" opacity="0.2"/>
+          <circle cx="200" cy="150" r="50" fill="none" stroke="#8b5cf6" strokeWidth="2" opacity="0.4"/>
+          {/* Central shield */}
+          <circle cx="200" cy="150" r="30" fill="rgba(139,92,246,0.1)"/>
+          <path d="M200 130 L218 142 L218 162 L200 175 L182 162 L182 142 Z" fill="none" stroke="#8b5cf6" strokeWidth="2"/>
+          <text x="200" y="210" fill="#8b5cf6" fontSize="11" fontWeight="600" textAnchor="middle">Zero Trust Architecture</text>
+          {/* Data packets */}
+          {[0, 1, 2].map(i => (
+            <circle key={i} r="4" fill="#22c55e">
+              <animateMotion dur={`${2.5 + i * 0.3}s`} repeatCount="indefinite"
+                path={`M${200 + Math.cos(i * 2) * 100},${150 + Math.sin(i * 2) * 100} L200,150`}/>
+            </circle>
+          ))}
+        </svg>
+      )
+    default:
+      return null
+  }
 }
 
 export default LandingPage2
