@@ -94,3 +94,4 @@ adversarial_test_images/
 
 # External datasets (download using script)
 external_datasets/
+confusion_images/
