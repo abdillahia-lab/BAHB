@@ -1,13 +1,91 @@
-import { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react'
+import { useState, useEffect, useRef, useCallback, Suspense, lazy, memo } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
-import { ArrowRight, Play, ChevronDown, Shield, Eye, Zap, Server, Building2, Leaf, Menu, X, Phone, Mail, Thermometer, Map, Check, Clock, AlertTriangle, TrendingUp, Droplets, Activity, Wind, Database, Lock, Cpu, Radio, Navigation, Target, Gauge, Layers, TreeDeciduous, Factory, Wheat, Sun } from 'lucide-react'
+import { ArrowRight, Play, ChevronDown, Shield, Eye, Zap, Server, Building2, Leaf, Menu, X, Phone, Mail, Thermometer, Map, Check, Clock, AlertTriangle, TrendingUp, Droplets, Activity, Wind, Database, Lock, Cpu, Radio, Navigation, Target, Gauge, Layers, TreeDeciduous, Factory, Wheat, Sun, Flame, CircleDot, Crosshair, Radar } from 'lucide-react'
 import './LandingPage2.css'
 
 // Lazy load Spline for performance
 const Spline = lazy(() => import('@splinetool/react-spline'))
 
 // ============================================
-// MAGNETIC CURSOR EFFECT
+// BUILD VERSION - UNMISSABLE VERIFICATION
+// ============================================
+const BUILD_VERSION = 'PLATINUM-3.0'
+const BUILD_DATE = 'January 3, 2026 - 18:45 UTC'
+const BUILD_ID = 'M400-WEBGL-JITTER'
+
+// ============================================
+// WEBGL-STYLE FLUID BACKGROUND
+// Interactive with mouse movement
+// ============================================
+function WebGLFluidBackground() {
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
+  const [isPressed, setIsPressed] = useState(false)
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      })
+    }
+    const handleMouseDown = () => setIsPressed(true)
+    const handleMouseUp = () => setIsPressed(false)
+
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mousedown', handleMouseDown)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [])
+
+  return (
+    <div className="webgl-fluid">
+      {/* Primary orb - follows cursor */}
+      <motion.div
+        className="webgl-fluid__orb webgl-fluid__orb--primary"
+        animate={{
+          x: mousePos.x * 0.5,
+          y: mousePos.y * 0.5,
+          scale: isPressed ? 1.3 : 1,
+        }}
+        transition={{ type: 'spring', stiffness: 50, damping: 30 }}
+      />
+
+      {/* Secondary orb - inverse movement */}
+      <motion.div
+        className="webgl-fluid__orb webgl-fluid__orb--secondary"
+        animate={{
+          x: mousePos.x * -0.3,
+          y: mousePos.y * -0.3,
+          scale: isPressed ? 0.8 : 1,
+        }}
+        transition={{ type: 'spring', stiffness: 40, damping: 25 }}
+      />
+
+      {/* Tertiary orb - diagonal movement */}
+      <motion.div
+        className="webgl-fluid__orb webgl-fluid__orb--tertiary"
+        animate={{
+          x: mousePos.x * 0.2,
+          y: mousePos.y * -0.4,
+        }}
+        transition={{ type: 'spring', stiffness: 30, damping: 20 }}
+      />
+
+      {/* Grid overlay for military feel */}
+      <div className="webgl-fluid__grid" />
+
+      {/* Noise texture */}
+      <div className="webgl-fluid__noise" />
+    </div>
+  )
+}
+
+// ============================================
+// MAGNETIC CURSOR WITH TRAIL
 // Premium interaction following cursor
 // ============================================
 function MagneticCursor() {
@@ -19,12 +97,12 @@ function MagneticCursor() {
 
   useEffect(() => {
     const moveCursor = (e) => {
-      cursorX.set(e.clientX - 200)
-      cursorY.set(e.clientY - 200)
+      cursorX.set(e.clientX - 150)
+      cursorY.set(e.clientY - 150)
     }
     window.addEventListener('mousemove', moveCursor)
     return () => window.removeEventListener('mousemove', moveCursor)
-  }, [])
+  }, [cursorX, cursorY])
 
   return (
     <motion.div
@@ -38,34 +116,34 @@ function MagneticCursor() {
 }
 
 // ============================================
-// FLUID GRADIENT BACKGROUND
-// Animated mesh gradient like Linear
+// JITTER ANIMATION COMPONENT
+// Figma Jitter-style micro-interactions
 // ============================================
-function FluidBackground() {
-  return (
-    <div className="fluid-bg">
-      <div className="fluid-bg__gradient fluid-bg__gradient--1" />
-      <div className="fluid-bg__gradient fluid-bg__gradient--2" />
-      <div className="fluid-bg__gradient fluid-bg__gradient--3" />
-      <div className="fluid-bg__noise" />
-    </div>
-  )
-}
+function JitterCard({ children, className = '', delay = 0 }) {
+  const [isHovered, setIsHovered] = useState(false)
 
-// ============================================
-// GLASS MORPHISM CARD
-// Premium liquid glass effect
-// ============================================
-function GlassCard({ children, className = '', glow = true }) {
   return (
     <motion.div
-      className={`glass-card ${className}`}
-      whileHover={{ y: -8, scale: 1.02 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className={`jitter-card ${className}`}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{
+        duration: 0.7,
+        delay,
+        ease: [0.34, 1.56, 0.64, 1] // Spring curve
+      }}
+      whileHover={{
+        y: -8,
+        scale: 1.02,
+        boxShadow: '0 30px 60px rgba(0, 200, 255, 0.15)'
+      }}
     >
-      {glow && <div className="glass-card__glow" />}
-      <div className="glass-card__border" />
-      <div className="glass-card__content">
+      <div className="jitter-card__glow" />
+      <div className="jitter-card__border" />
+      <div className="jitter-card__content">
         {children}
       </div>
     </motion.div>
@@ -73,8 +151,7 @@ function GlassCard({ children, className = '', glow = true }) {
 }
 
 // ============================================
-// ANIMATED COUNTER
-// Count up animation for statistics
+// ANIMATED COUNTER WITH SPRING
 // ============================================
 function AnimatedCounter({ value, suffix = '', prefix = '' }) {
   const [count, setCount] = useState(0)
@@ -85,7 +162,7 @@ function AnimatedCounter({ value, suffix = '', prefix = '' }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           let start = 0
-          const end = parseFloat(value.replace(/[^0-9.]/g, ''))
+          const end = parseFloat(value.toString().replace(/[^0-9.]/g, ''))
           const duration = 2000
           const increment = end / (duration / 16)
 
@@ -107,120 +184,126 @@ function AnimatedCounter({ value, suffix = '', prefix = '' }) {
     return () => observer.disconnect()
   }, [value])
 
+  const displayValue = Number.isInteger(parseFloat(value))
+    ? Math.floor(count)
+    : count.toFixed(2)
+
   return (
-    <span ref={ref}>
-      {prefix}{typeof count === 'number' ? (count % 1 === 0 ? Math.floor(count) : count.toFixed(1)) : count}{suffix}
+    <span ref={ref} className="animated-counter">
+      {prefix}{displayValue}{suffix}
     </span>
   )
 }
 
 // ============================================
-// REAL DJI MATRICE 400 SHOWCASE
-// Using verified working image URLs
+// DJI MATRICE 400 RTK HERO
+// Official CDN images with floating specs
 // ============================================
-function DroneHero() {
+function DroneHeroSection() {
   return (
     <div className="drone-hero">
-      <div className="drone-hero__image-container">
-        <motion.img
-          src="https://www-cdn.djiits.com/cms/uploads/4d6128a30991074b6bad20e7e13a0c62.png"
-          alt="DJI Matrice 400 RTK Enterprise Drone"
-          className="drone-hero__image"
+      <div className="drone-hero__container">
+        {/* Main drone image from official DJI CDN */}
+        <motion.div
+          className="drone-hero__image-wrapper"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: 'easeOut' }}
-        />
-        <div className="drone-hero__glow" />
+        >
+          <img
+            src="https://www-cdn.djiits.com/cms/uploads/67bb8244fb64295b08f9186279ba5b35.png"
+            alt="DJI Matrice 400 RTK Enterprise Drone"
+            className="drone-hero__image"
+            onError={(e) => {
+              // Fallback to alternative CDN URL
+              e.target.src = 'https://www-cdn.djiits.com/cms/uploads/2ed1e47f4631274604877fa57933c373.png'
+            }}
+          />
+
+          {/* Floating spec badges */}
+          <motion.div
+            className="drone-hero__spec drone-hero__spec--1"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            <Clock size={16} />
+            <span>59 min</span>
+            <small>Flight Time</small>
+          </motion.div>
+
+          <motion.div
+            className="drone-hero__spec drone-hero__spec--2"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
+            <Gauge size={16} />
+            <span>6 kg</span>
+            <small>Max Payload</small>
+          </motion.div>
+
+          <motion.div
+            className="drone-hero__spec drone-hero__spec--3"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+          >
+            <Radio size={16} />
+            <span>40 km</span>
+            <small>O4 Transmission</small>
+          </motion.div>
+
+          <motion.div
+            className="drone-hero__spec drone-hero__spec--4"
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+          >
+            <Crosshair size={16} />
+            <span>±1 cm</span>
+            <small>RTK Accuracy</small>
+          </motion.div>
+        </motion.div>
       </div>
-
-      {/* Floating spec badges */}
-      <motion.div
-        className="drone-spec-badge drone-spec-badge--flight"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5 }}
-      >
-        <Clock size={16} />
-        <div>
-          <span className="drone-spec-badge__value">59 min</span>
-          <span className="drone-spec-badge__label">Flight Time</span>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="drone-spec-badge drone-spec-badge--payload"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Gauge size={16} />
-        <div>
-          <span className="drone-spec-badge__value">6 kg</span>
-          <span className="drone-spec-badge__label">Payload</span>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="drone-spec-badge drone-spec-badge--range"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-      >
-        <Radio size={16} />
-        <div>
-          <span className="drone-spec-badge__value">40 km</span>
-          <span className="drone-spec-badge__label">O4 Transmission</span>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="drone-spec-badge drone-spec-badge--accuracy"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-      >
-        <Target size={16} />
-        <div>
-          <span className="drone-spec-badge__value">±1 cm</span>
-          <span className="drone-spec-badge__label">RTK Accuracy</span>
-        </div>
-      </motion.div>
     </div>
   )
 }
 
 // ============================================
 // DATA CENTER THERMAL VISUALIZATION
-// Based on real research: ASHRAE standards, $540K/hr downtime
+// Interactive hot/cold aisle thermal grid
 // ============================================
-function DataCenterViz() {
+function DataCenterVisualization() {
   const [activeRack, setActiveRack] = useState(null)
 
   const racks = [
-    { id: 1, temp: 24, status: 'normal', name: 'Rack A1' },
-    { id: 2, temp: 32, status: 'warning', name: 'Rack A2' },
-    { id: 3, temp: 45, status: 'critical', name: 'Rack A3' },
-    { id: 4, temp: 22, status: 'normal', name: 'Rack B1' },
-    { id: 5, temp: 28, status: 'elevated', name: 'Rack B2' },
-    { id: 6, temp: 23, status: 'normal', name: 'Rack B3' },
+    { id: 1, name: 'Rack A1', temp: 22, status: 'optimal', x: 0, y: 0 },
+    { id: 2, name: 'Rack A2', temp: 28, status: 'normal', x: 1, y: 0 },
+    { id: 3, name: 'Rack A3', temp: 35, status: 'warning', x: 2, y: 0 },
+    { id: 4, name: 'Rack A4', temp: 48, status: 'critical', x: 3, y: 0 },
+    { id: 5, name: 'Rack B1', temp: 24, status: 'optimal', x: 0, y: 1 },
+    { id: 6, name: 'Rack B2', temp: 26, status: 'normal', x: 1, y: 1 },
+    { id: 7, name: 'Rack B3', temp: 31, status: 'warning', x: 2, y: 1 },
+    { id: 8, name: 'Rack B4', temp: 25, status: 'optimal', x: 3, y: 1 },
   ]
 
   return (
-    <div className="datacenter-viz">
-      <div className="datacenter-viz__header">
-        <span className="datacenter-viz__live">● LIVE THERMAL SCAN</span>
-        <span className="datacenter-viz__camera">FLIR Zenmuse H30T • 0.03°C Sensitivity</span>
+    <div className="viz viz--datacenter">
+      <div className="viz__header">
+        <Thermometer size={20} />
+        <span>THERMAL MONITORING - LIVE</span>
       </div>
 
-      <div className="datacenter-viz__floor">
-        {/* Cold aisle */}
-        <div className="datacenter-viz__aisle datacenter-viz__aisle--cold">
+      <div className="datacenter-grid">
+        {/* Cold Aisle Label */}
+        <div className="datacenter-aisle datacenter-aisle--cold">
           <span>COLD AISLE</span>
-          <span>18°C</span>
+          <small>18-20°C</small>
         </div>
 
-        {/* Racks */}
-        <div className="datacenter-viz__racks">
+        {/* Rack Grid */}
+        <div className="datacenter-racks">
           {racks.map((rack) => (
             <motion.div
               key={rack.id}
@@ -228,6 +311,10 @@ function DataCenterViz() {
               onHoverStart={() => setActiveRack(rack.id)}
               onHoverEnd={() => setActiveRack(null)}
               whileHover={{ scale: 1.05 }}
+              style={{
+                gridColumn: rack.x + 1,
+                gridRow: rack.y + 1,
+              }}
             >
               <div className="datacenter-rack__thermal" />
               <span className="datacenter-rack__temp">{rack.temp}°C</span>
@@ -238,15 +325,13 @@ function DataCenterViz() {
                     className="datacenter-rack__tooltip"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
                   >
                     <strong>{rack.name}</strong>
-                    <span>Temperature: {rack.temp}°C</span>
+                    <span>Temp: {rack.temp}°C</span>
                     <span>Status: {rack.status.toUpperCase()}</span>
                     {rack.status === 'critical' && (
-                      <span className="datacenter-rack__alert">
-                        ΔT +20°C above ASHRAE limit
-                      </span>
+                      <span className="datacenter-rack__alert">ASHRAE VIOLATION</span>
                     )}
                   </motion.div>
                 )}
@@ -255,26 +340,26 @@ function DataCenterViz() {
           ))}
         </div>
 
-        {/* Hot aisle */}
-        <div className="datacenter-viz__aisle datacenter-viz__aisle--hot">
+        {/* Hot Aisle Label */}
+        <div className="datacenter-aisle datacenter-aisle--hot">
           <span>HOT AISLE</span>
-          <span>35°C</span>
+          <small>35-45°C</small>
         </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="datacenter-viz__stats">
-        <div className="datacenter-stat">
-          <AlertTriangle size={16} className="text-critical" />
-          <span>1 Critical</span>
+      {/* ASHRAE Legend */}
+      <div className="datacenter-legend">
+        <div className="datacenter-legend__item datacenter-legend__item--optimal">
+          <span />
+          18-27°C (ASHRAE)
         </div>
-        <div className="datacenter-stat">
-          <Activity size={16} className="text-warning" />
-          <span>2 Warnings</span>
+        <div className="datacenter-legend__item datacenter-legend__item--warning">
+          <span />
+          27-35°C (Warning)
         </div>
-        <div className="datacenter-stat">
-          <Check size={16} className="text-success" />
-          <span>3 Normal</span>
+        <div className="datacenter-legend__item datacenter-legend__item--critical">
+          <span />
+          35°C+ (Critical)
         </div>
       </div>
     </div>
@@ -282,91 +367,105 @@ function DataCenterViz() {
 }
 
 // ============================================
-// POWER LINE INSPECTION VISUALIZATION
-// Based on research: vegetation encroachment, NERC FAC-003
+// POWER LINE LIDAR VISUALIZATION
+// SVG transmission line with vegetation detection
 // ============================================
-function PowerLineViz() {
+function PowerLineVisualization() {
   return (
-    <div className="powerline-viz">
-      <div className="powerline-viz__header">
-        <span className="powerline-viz__live">● LiDAR SCAN</span>
-        <span className="powerline-viz__sensor">Zenmuse L2 • 45 pts/m²</span>
+    <div className="viz viz--powerline">
+      <div className="viz__header">
+        <Radar size={20} />
+        <span>LIDAR SCAN - CORRIDOR ANALYSIS</span>
       </div>
 
-      <div className="powerline-viz__scene">
+      <svg viewBox="0 0 400 200" className="powerline-svg">
+        {/* Background grid */}
+        <defs>
+          <pattern id="powerlineGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(0, 200, 255, 0.1)" strokeWidth="0.5"/>
+          </pattern>
+
+          {/* Vegetation gradient */}
+          <linearGradient id="vegGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.8"/>
+            <stop offset="100%" stopColor="#166534" stopOpacity="0.4"/>
+          </linearGradient>
+
+          {/* Danger zone gradient */}
+          <linearGradient id="dangerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.3"/>
+            <stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <rect width="400" height="200" fill="url(#powerlineGrid)"/>
+
         {/* Transmission towers */}
-        <svg className="powerline-viz__svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
-          {/* Ground */}
-          <path d="M0 180 Q100 170 200 175 T400 180 L400 200 L0 200 Z" fill="#1a3d1a" />
+        <g className="powerline-tower">
+          <rect x="45" y="60" width="10" height="120" fill="#374151"/>
+          <polygon points="50,30 30,60 70,60" fill="#374151"/>
+          <line x1="30" y1="50" x2="70" y2="50" stroke="#6b7280" strokeWidth="3"/>
+          <line x1="25" y1="70" x2="75" y2="70" stroke="#6b7280" strokeWidth="3"/>
+        </g>
 
-          {/* Tower 1 */}
-          <g className="tower">
-            <rect x="60" y="80" width="8" height="100" fill="#64748b" />
-            <polygon points="64,80 45,100 83,100" fill="#64748b" />
-            <line x1="40" y1="90" x2="88" y2="90" stroke="#22d3ee" strokeWidth="2" />
-          </g>
+        <g className="powerline-tower">
+          <rect x="345" y="60" width="10" height="120" fill="#374151"/>
+          <polygon points="350,30 330,60 370,60" fill="#374151"/>
+          <line x1="330" y1="50" x2="370" y2="50" stroke="#6b7280" strokeWidth="3"/>
+          <line x1="325" y1="70" x2="375" y2="70" stroke="#6b7280" strokeWidth="3"/>
+        </g>
 
-          {/* Tower 2 */}
-          <g className="tower">
-            <rect x="310" y="70" width="8" height="110" fill="#64748b" />
-            <polygon points="314,70 295,90 333,90" fill="#64748b" />
-            <line x1="290" y1="80" x2="338" y2="80" stroke="#22d3ee" strokeWidth="2" />
-          </g>
+        {/* Power lines with animation */}
+        <path
+          d="M 75 50 Q 200 80 325 50"
+          fill="none"
+          stroke="#fbbf24"
+          strokeWidth="2"
+          className="powerline-wire"
+        />
+        <path
+          d="M 75 70 Q 200 100 325 70"
+          fill="none"
+          stroke="#fbbf24"
+          strokeWidth="2"
+          className="powerline-wire powerline-wire--2"
+        />
 
-          {/* Power lines with sag */}
-          <path d="M88 90 Q200 120 290 80" stroke="#22d3ee" strokeWidth="2" fill="none" className="powerline-wire" />
-          <path d="M88 90 Q200 125 290 80" stroke="#22d3ee" strokeWidth="1.5" fill="none" opacity="0.6" />
+        {/* Vegetation - safe */}
+        <ellipse cx="120" cy="175" rx="25" ry="20" fill="url(#vegGradient)"/>
+        <ellipse cx="280" cy="170" rx="30" ry="25" fill="url(#vegGradient)"/>
 
-          {/* Vegetation - encroachment zone */}
-          <g className="vegetation-danger">
-            <ellipse cx="180" cy="145" rx="35" ry="25" fill="#dc2626" opacity="0.3" />
-            <ellipse cx="180" cy="150" rx="30" ry="30" fill="#22c55e" />
-            <text x="180" y="125" textAnchor="middle" fill="#ef4444" fontSize="10" fontWeight="bold">
-              ENCROACHMENT
-            </text>
-            <text x="180" y="135" textAnchor="middle" fill="#ef4444" fontSize="8">
-              2.1m clearance (min: 4.5m)
-            </text>
-          </g>
+        {/* Vegetation - ENCROACHMENT */}
+        <ellipse cx="200" cy="130" rx="35" ry="40" fill="url(#vegGradient)" className="powerline-encroachment"/>
 
-          {/* Safe vegetation */}
-          <ellipse cx="100" cy="165" rx="20" ry="15" fill="#22c55e" opacity="0.8" />
-          <ellipse cx="320" cy="168" rx="25" ry="12" fill="#22c55e" opacity="0.8" />
-        </svg>
+        {/* Danger zone */}
+        <rect x="165" y="60" width="70" height="80" fill="url(#dangerGradient)" className="powerline-danger"/>
 
-        {/* Classification legend */}
-        <div className="powerline-viz__legend">
-          <div className="powerline-legend-item">
-            <span className="legend-dot legend-dot--conductor" />
-            <span>Conductors</span>
-          </div>
-          <div className="powerline-legend-item">
-            <span className="legend-dot legend-dot--structure" />
-            <span>Structures</span>
-          </div>
-          <div className="powerline-legend-item">
-            <span className="legend-dot legend-dot--vegetation" />
-            <span>Vegetation</span>
-          </div>
-          <div className="powerline-legend-item">
-            <span className="legend-dot legend-dot--danger" />
-            <span>MVCD Violation</span>
-          </div>
-        </div>
-      </div>
+        {/* MVCD clearance indicator */}
+        <line x1="200" y1="100" x2="200" y2="130" stroke="#ef4444" strokeWidth="2" strokeDasharray="4,2"/>
+        <text x="205" y="118" fill="#ef4444" fontSize="8" fontWeight="bold">2.1m</text>
 
-      <div className="powerline-viz__stats">
+        {/* Alert box */}
+        <g className="powerline-alert">
+          <rect x="145" y="5" width="110" height="22" rx="4" fill="#ef4444"/>
+          <text x="200" y="19" fill="white" fontSize="9" textAnchor="middle" fontWeight="bold">
+            NERC FAC-003 VIOLATION
+          </text>
+        </g>
+      </svg>
+
+      <div className="powerline-stats">
         <div className="powerline-stat">
           <span className="powerline-stat__value">2,418</span>
           <span className="powerline-stat__label">Spans Analyzed</span>
         </div>
         <div className="powerline-stat powerline-stat--alert">
           <span className="powerline-stat__value">23</span>
-          <span className="powerline-stat__label">NERC Violations</span>
+          <span className="powerline-stat__label">MVCD Violations</span>
         </div>
         <div className="powerline-stat">
-          <span className="powerline-stat__value">±2cm</span>
-          <span className="powerline-stat__label">Accuracy</span>
+          <span className="powerline-stat__value">4.5m</span>
+          <span className="powerline-stat__label">Min Clearance (230kV)</span>
         </div>
       </div>
     </div>
@@ -375,63 +474,66 @@ function PowerLineViz() {
 
 // ============================================
 // AGRICULTURE NDVI VISUALIZATION
-// Based on research: real NDVI thresholds, CWSI
+// Color-coded field zones with water stress
 // ============================================
-function AgricultureViz() {
-  const [selectedZone, setSelectedZone] = useState(null)
+function AgricultureVisualization() {
+  const [activeZone, setActiveZone] = useState(null)
 
   const zones = [
-    { id: 1, ndvi: 0.82, status: 'healthy', label: 'Zone A', cwsi: 0.15 },
-    { id: 2, ndvi: 0.45, status: 'stressed', label: 'Zone B', cwsi: 0.58 },
-    { id: 3, ndvi: 0.71, status: 'healthy', label: 'Zone C', cwsi: 0.22 },
-    { id: 4, ndvi: 0.28, status: 'critical', label: 'Zone D', cwsi: 0.78 },
-    { id: 5, ndvi: 0.65, status: 'moderate', label: 'Zone E', cwsi: 0.35 },
-    { id: 6, ndvi: 0.78, status: 'healthy', label: 'Zone F', cwsi: 0.18 },
+    { id: 1, ndvi: 0.82, cwsi: 0.12, status: 'healthy', label: 'Zone A' },
+    { id: 2, ndvi: 0.45, cwsi: 0.58, status: 'stressed', label: 'Zone B' },
+    { id: 3, ndvi: 0.71, cwsi: 0.22, status: 'healthy', label: 'Zone C' },
+    { id: 4, ndvi: 0.28, cwsi: 0.78, status: 'critical', label: 'Zone D' },
+    { id: 5, ndvi: 0.65, cwsi: 0.35, status: 'moderate', label: 'Zone E' },
+    { id: 6, ndvi: 0.78, cwsi: 0.18, status: 'healthy', label: 'Zone F' },
   ]
 
-  const getNdviColor = (ndvi) => {
-    if (ndvi >= 0.7) return '#22c55e'
-    if (ndvi >= 0.5) return '#84cc16'
-    if (ndvi >= 0.3) return '#eab308'
-    return '#ef4444'
+  const getNDVIColor = (ndvi) => {
+    if (ndvi >= 0.7) return 'var(--success)'
+    if (ndvi >= 0.5) return 'var(--warning)'
+    if (ndvi >= 0.3) return '#f97316'
+    return 'var(--critical)'
   }
 
   return (
-    <div className="agriculture-viz">
-      <div className="agriculture-viz__header">
-        <span className="agriculture-viz__live">● MULTISPECTRAL SCAN</span>
-        <span className="agriculture-viz__sensor">MicaSense RedEdge-P • 5-Band</span>
+    <div className="viz viz--agriculture">
+      <div className="viz__header">
+        <Wheat size={20} />
+        <span>NDVI ANALYSIS - FIELD HEALTH</span>
       </div>
 
-      <div className="agriculture-viz__field">
-        <div className="agriculture-viz__grid">
+      <div className="agriculture-container">
+        {/* Field grid */}
+        <div className="agriculture-field">
           {zones.map((zone) => (
             <motion.div
               key={zone.id}
               className={`agriculture-zone agriculture-zone--${zone.status}`}
-              style={{ backgroundColor: getNdviColor(zone.ndvi) }}
-              onHoverStart={() => setSelectedZone(zone.id)}
-              onHoverEnd={() => setSelectedZone(null)}
+              onHoverStart={() => setActiveZone(zone.id)}
+              onHoverEnd={() => setActiveZone(null)}
               whileHover={{ scale: 1.05 }}
+              style={{
+                backgroundColor: getNDVIColor(zone.ndvi),
+                opacity: 0.7 + (zone.ndvi * 0.3)
+              }}
             >
+              <span className="agriculture-zone__label">{zone.label}</span>
               <span className="agriculture-zone__ndvi">{zone.ndvi.toFixed(2)}</span>
 
               <AnimatePresence>
-                {selectedZone === zone.id && (
+                {activeZone === zone.id && (
                   <motion.div
                     className="agriculture-zone__tooltip"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
                   >
                     <strong>{zone.label}</strong>
-                    <span>NDVI: {zone.ndvi.toFixed(2)}</span>
-                    <span>CWSI: {zone.cwsi.toFixed(2)}</span>
-                    {zone.cwsi > 0.5 && (
-                      <span className="agriculture-zone__alert">
-                        Water stress detected
-                      </span>
-                    )}
+                    <div>NDVI: {zone.ndvi.toFixed(2)}</div>
+                    <div>CWSI: {zone.cwsi.toFixed(2)}</div>
+                    <div className={`agriculture-zone__status agriculture-zone__status--${zone.status}`}>
+                      {zone.status.toUpperCase()}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -440,42 +542,26 @@ function AgricultureViz() {
         </div>
 
         {/* NDVI Scale */}
-        <div className="agriculture-viz__scale">
-          <div className="ndvi-scale">
-            <div className="ndvi-scale__bar" />
-            <div className="ndvi-scale__labels">
-              <span>0</span>
-              <span>0.3</span>
-              <span>0.5</span>
-              <span>0.7</span>
-              <span>1.0</span>
-            </div>
+        <div className="agriculture-scale">
+          <div className="agriculture-scale__bar" />
+          <div className="agriculture-scale__labels">
+            <span>0.0<br/><small>Bare</small></span>
+            <span>0.3<br/><small>Sparse</small></span>
+            <span>0.5<br/><small>Moderate</small></span>
+            <span>0.7<br/><small>Healthy</small></span>
+            <span>1.0<br/><small>Dense</small></span>
           </div>
-          <span className="ndvi-scale__title">NDVI Index</span>
         </div>
       </div>
 
-      <div className="agriculture-viz__stats">
-        <div className="agriculture-stat">
-          <Wheat size={16} className="text-success" />
-          <div>
-            <span className="agriculture-stat__value">847 ha</span>
-            <span className="agriculture-stat__label">Healthy Canopy</span>
-          </div>
+      <div className="agriculture-insights">
+        <div className="agriculture-insight agriculture-insight--alert">
+          <AlertTriangle size={16} />
+          <span>Zone D requires immediate irrigation (CWSI: 0.78)</span>
         </div>
-        <div className="agriculture-stat agriculture-stat--alert">
-          <Droplets size={16} />
-          <div>
-            <span className="agriculture-stat__value">156 ha</span>
-            <span className="agriculture-stat__label">Irrigation Needed</span>
-          </div>
-        </div>
-        <div className="agriculture-stat">
+        <div className="agriculture-insight">
           <TrendingUp size={16} />
-          <div>
-            <span className="agriculture-stat__value">+12%</span>
-            <span className="agriculture-stat__label">Yield Forecast</span>
-          </div>
+          <span>+12% yield forecast in healthy zones</span>
         </div>
       </div>
     </div>
@@ -483,102 +569,90 @@ function AgricultureViz() {
 }
 
 // ============================================
-// OIL & GAS THERMAL VISUALIZATION
-// Distinct from others - pipeline/refinery focus
+// OIL & GAS PIPELINE VISUALIZATION
+// Thermal profiling with gas detection
 // ============================================
-function OilGasViz() {
+function OilGasVisualization() {
   return (
-    <div className="oilgas-viz">
-      <div className="oilgas-viz__header">
-        <span className="oilgas-viz__live">● THERMAL + GAS DETECTION</span>
-        <span className="oilgas-viz__sensor">H30T + OGI Sensor</span>
+    <div className="viz viz--oilgas">
+      <div className="viz__header">
+        <Flame size={20} />
+        <span>PIPELINE THERMAL - OGI SCAN</span>
       </div>
 
-      <div className="oilgas-viz__scene">
-        {/* Pipeline schematic */}
-        <svg viewBox="0 0 400 200" className="oilgas-viz__svg">
-          {/* Main pipeline */}
-          <path
-            d="M20 100 L120 100 L140 80 L260 80 L280 100 L380 100"
-            stroke="#64748b"
-            strokeWidth="12"
-            fill="none"
-            strokeLinecap="round"
-          />
+      <svg viewBox="0 0 400 180" className="oilgas-svg">
+        <defs>
+          <linearGradient id="pipeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#3b82f6"/>
+            <stop offset="30%" stopColor="#22c55e"/>
+            <stop offset="50%" stopColor="#eab308"/>
+            <stop offset="70%" stopColor="#ef4444"/>
+            <stop offset="100%" stopColor="#3b82f6"/>
+          </linearGradient>
 
-          {/* Pipeline interior */}
-          <path
-            d="M20 100 L120 100 L140 80 L260 80 L280 100 L380 100"
-            stroke="#1e293b"
-            strokeWidth="8"
-            fill="none"
-            strokeLinecap="round"
-          />
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
 
-          {/* Thermal hotspot 1 - Flange */}
-          <g className="oilgas-hotspot oilgas-hotspot--critical">
-            <circle cx="120" cy="100" r="20" fill="url(#thermalGradient1)" />
-            <text x="120" y="70" textAnchor="middle" fill="#ef4444" fontSize="9" fontWeight="bold">
-              87°C
-            </text>
-            <text x="120" y="130" textAnchor="middle" fill="#94a3b8" fontSize="8">
-              Flange Leak
-            </text>
-          </g>
+        {/* Main pipeline */}
+        <rect x="20" y="70" width="360" height="20" rx="10" fill="url(#pipeGradient)"/>
 
-          {/* Thermal hotspot 2 - Valve */}
-          <g className="oilgas-hotspot oilgas-hotspot--warning">
-            <circle cx="280" cy="100" r="15" fill="url(#thermalGradient2)" />
-            <text x="280" y="75" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="bold">
-              62°C
-            </text>
-            <text x="280" y="125" textAnchor="middle" fill="#94a3b8" fontSize="8">
-              Valve Stress
-            </text>
-          </g>
+        {/* Pipeline supports */}
+        <rect x="60" y="90" width="8" height="40" fill="#374151"/>
+        <rect x="140" y="90" width="8" height="40" fill="#374151"/>
+        <rect x="220" y="90" width="8" height="40" fill="#374151"/>
+        <rect x="300" y="90" width="8" height="40" fill="#374151"/>
 
-          {/* Storage tank */}
-          <rect x="320" y="140" width="60" height="50" rx="4" fill="#334155" />
-          <rect x="325" y="145" width="50" height="40" rx="2" fill="#1e293b" />
-          <text x="350" y="170" textAnchor="middle" fill="#64748b" fontSize="8">
-            Tank 7A
-          </text>
+        {/* Thermal hotspot - flange leak */}
+        <circle cx="200" cy="80" r="25" fill="none" stroke="#ef4444" strokeWidth="3" filter="url(#glow)" className="oilgas-hotspot"/>
+        <circle cx="200" cy="80" r="15" fill="#ef4444" opacity="0.5" className="oilgas-hotspot-inner"/>
 
-          {/* Gas plume detection */}
-          <g className="gas-plume">
-            <ellipse cx="200" cy="50" rx="30" ry="15" fill="#a855f7" opacity="0.3" />
-            <ellipse cx="210" cy="45" rx="20" ry="10" fill="#a855f7" opacity="0.4" />
-            <text x="200" y="30" textAnchor="middle" fill="#a855f7" fontSize="9" fontWeight="bold">
-              CH₄ DETECTED
-            </text>
-          </g>
+        {/* Hotspot label */}
+        <g className="oilgas-label">
+          <rect x="160" y="25" width="80" height="30" rx="4" fill="rgba(239, 68, 68, 0.9)"/>
+          <text x="200" y="38" fill="white" fontSize="9" textAnchor="middle" fontWeight="bold">FLANGE LEAK</text>
+          <text x="200" y="50" fill="white" fontSize="11" textAnchor="middle" fontWeight="bold">87°C</text>
+        </g>
 
-          {/* Gradients */}
-          <defs>
-            <radialGradient id="thermalGradient1">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity="0.2" />
-            </radialGradient>
-            <radialGradient id="thermalGradient2">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.2" />
-            </radialGradient>
-          </defs>
-        </svg>
-      </div>
+        {/* Gas plume detection */}
+        <g className="oilgas-plume">
+          <ellipse cx="280" cy="55" rx="30" ry="20" fill="rgba(168, 85, 247, 0.4)"/>
+          <ellipse cx="285" cy="45" rx="20" ry="15" fill="rgba(168, 85, 247, 0.3)"/>
+          <ellipse cx="290" cy="38" rx="12" ry="10" fill="rgba(168, 85, 247, 0.2)"/>
+        </g>
 
-      <div className="oilgas-viz__stats">
-        <div className="oilgas-stat oilgas-stat--critical">
-          <span className="oilgas-stat__value">2</span>
-          <span className="oilgas-stat__label">Thermal Anomalies</span>
+        {/* Gas detection label */}
+        <g className="oilgas-gas-label">
+          <rect x="250" y="5" width="80" height="22" rx="4" fill="rgba(168, 85, 247, 0.9)"/>
+          <text x="290" y="19" fill="white" fontSize="9" textAnchor="middle" fontWeight="bold">CH₄ DETECTED</text>
+        </g>
+
+        {/* Normal temperature indicators */}
+        <text x="60" y="65" fill="#22c55e" fontSize="8" textAnchor="middle">32°C</text>
+        <text x="340" y="65" fill="#3b82f6" fontSize="8" textAnchor="middle">28°C</text>
+
+        {/* Ground line */}
+        <line x1="0" y1="140" x2="400" y2="140" stroke="#374151" strokeWidth="2"/>
+        <rect x="0" y="140" width="400" height="40" fill="#1f2937" opacity="0.5"/>
+      </svg>
+
+      <div className="oilgas-stats">
+        <div className="oilgas-stat">
+          <span className="oilgas-stat__value">14 km</span>
+          <span className="oilgas-stat__label">Scanned Today</span>
         </div>
-        <div className="oilgas-stat oilgas-stat--warning">
-          <span className="oilgas-stat__value">1</span>
-          <span className="oilgas-stat__label">Gas Emission</span>
+        <div className="oilgas-stat oilgas-stat--alert">
+          <span className="oilgas-stat__value">2</span>
+          <span className="oilgas-stat__label">Anomalies Found</span>
         </div>
         <div className="oilgas-stat">
-          <span className="oilgas-stat__value">14.2 km</span>
-          <span className="oilgas-stat__label">Pipeline Scanned</span>
+          <span className="oilgas-stat__value">99.2%</span>
+          <span className="oilgas-stat__label">Detection Rate</span>
         </div>
       </div>
     </div>
@@ -586,60 +660,12 @@ function OilGasViz() {
 }
 
 // ============================================
-// INDUSTRY CARDS WITH REAL STATS
-// Research-backed statistics for each
-// ============================================
-function IndustryCard({ industry }) {
-  const visualizations = {
-    datacenter: <DataCenterViz />,
-    utilities: <PowerLineViz />,
-    agriculture: <AgricultureViz />,
-    oilgas: <OilGasViz />,
-  }
-
-  return (
-    <motion.div
-      className={`industry-section industry-section--${industry.id}`}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-    >
-      <div className="industry-section__content">
-        <div className="industry-section__icon">{industry.icon}</div>
-        <h3>{industry.title}</h3>
-        <p className="industry-section__description">{industry.description}</p>
-
-        <div className="industry-section__stats">
-          {industry.stats.map((stat, i) => (
-            <div key={i} className="industry-stat-card">
-              <span className="industry-stat-card__value">
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} prefix={stat.prefix} />
-              </span>
-              <span className="industry-stat-card__label">{stat.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <ul className="industry-section__features">
-          {industry.features.map((feature, i) => (
-            <li key={i}><Check size={16} /> {feature}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="industry-section__visualization">
-        {visualizations[industry.id]}
-      </div>
-    </motion.div>
-  )
-}
-
-// ============================================
-// MAIN LANDING PAGE
+// MAIN LANDING PAGE COMPONENT
 // ============================================
 export default function LandingPage2() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [activeIndustry, setActiveIndustry] = useState('datacenter')
   const heroRef = useRef(null)
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
@@ -655,420 +681,312 @@ export default function LandingPage2() {
   const industries = [
     {
       id: 'datacenter',
-      icon: <Server size={32} />,
+      icon: <Server size={28} />,
       title: 'Data Centers',
-      description: 'Prevent catastrophic failures with aerial thermal imaging. Detect hotspots invisible to visual inspection before they cause $540K/hour downtime.',
+      description: 'Prevent $540K/hour downtime with thermal anomaly detection. ASHRAE compliance monitoring with 0.03°C sensitivity.',
       stats: [
-        { value: '540', suffix: 'K', prefix: '$', label: 'Avg. Hourly Downtime Cost' },
+        { value: '540', suffix: 'K', prefix: '$', label: 'Hourly Downtime Cost' },
         { value: '0.03', suffix: '°C', label: 'Detection Sensitivity' },
-        { value: '15', suffix: '°C', label: 'Critical ΔT Threshold' },
+        { value: '24', suffix: 'hr', label: 'Early Warning' },
       ],
-      features: [
-        'ASHRAE compliance monitoring (18-27°C)',
-        'Hot/cold aisle thermal mapping',
-        'CRAC unit performance analysis',
-        'Predictive failure detection',
-      ],
+      visualization: <DataCenterVisualization />,
     },
     {
       id: 'utilities',
-      icon: <Zap size={32} />,
+      icon: <Zap size={28} />,
       title: 'Electric Utilities',
-      description: 'Reduce inspection costs by 60% while achieving NERC FAC-003 compliance. LiDAR detects vegetation encroachment with centimeter accuracy.',
+      description: '60% cost reduction vs helicopters. NERC FAC-003 compliance with LiDAR vegetation analysis.',
       stats: [
-        { value: '60', suffix: '%', label: 'Cost Reduction vs. Helicopter' },
-        { value: '23', suffix: '%', label: 'Outages from Vegetation' },
-        { value: '4.5', suffix: 'm', label: 'Min Clearance (230kV)' },
+        { value: '60', suffix: '%', label: 'Cost Reduction' },
+        { value: '4.5', suffix: 'x', label: 'More Defects Found' },
+        { value: '14', suffix: ' mi', label: 'Daily Capacity' },
       ],
-      features: [
-        'NERC FAC-003-4 compliance verification',
-        'Corona discharge UV detection',
-        'Vegetation MVCD analysis',
-        'Transformer thermal profiling',
-      ],
+      visualization: <PowerLineVisualization />,
     },
     {
       id: 'agriculture',
-      icon: <Leaf size={32} />,
+      icon: <Leaf size={28} />,
       title: 'Precision Agriculture',
-      description: 'Detect crop stress 2 weeks before visible symptoms. NDVI and thermal analysis deliver 150%+ ROI through optimized inputs.',
+      description: 'Detect crop stress 14 days before visible symptoms. NDVI and CWSI analysis for 150%+ ROI.',
       stats: [
         { value: '150', suffix: '%', label: 'Documented ROI' },
-        { value: '25', suffix: '%', label: 'Water Efficiency Gain' },
-        { value: '2', suffix: ' weeks', label: 'Early Stress Detection' },
+        { value: '14', suffix: ' days', label: 'Early Detection' },
+        { value: '25', suffix: '%', label: 'Water Savings' },
       ],
-      features: [
-        'NDVI vegetation health indexing',
-        'CWSI water stress monitoring',
-        'Variable rate prescription maps',
-        'Irrigation efficiency analysis',
-      ],
+      visualization: <AgricultureVisualization />,
     },
     {
       id: 'oilgas',
-      icon: <Factory size={32} />,
+      icon: <Factory size={28} />,
       title: 'Oil & Gas',
-      description: 'Methane detection and thermal inspection of pipelines, refineries, and tank farms. API 653 compliant reporting.',
+      description: 'Optical Gas Imaging (OGI) for methane detection. Pipeline thermal profiling with API 653 compliance.',
       stats: [
-        { value: '87', suffix: '°C', label: 'Flange Leak Detection' },
-        { value: '14', suffix: ' km', label: 'Pipeline/Day Capacity' },
-        { value: '99.2', suffix: '%', label: 'Defect Detection Rate' },
+        { value: '99.2', suffix: '%', label: 'Detection Rate' },
+        { value: '14', suffix: ' km', label: 'Pipeline/Day' },
+        { value: '87', suffix: '°C', label: 'Hotspot Detection' },
       ],
-      features: [
-        'Optical gas imaging (OGI)',
-        'Pipeline right-of-way monitoring',
-        'Tank shell thermal profiling',
-        'API 653 inspection support',
-      ],
+      visualization: <OilGasVisualization />,
     },
   ]
 
-  const capabilities = [
+  const team = [
     {
-      icon: <Eye size={24} />,
-      title: 'Visual Inspection',
-      description: '4K aerial imagery with AI defect detection. Survey entire facilities in hours.',
-      specs: ['20MP sensor', '4K/60fps video', 'AI anomaly detection'],
-    },
-    {
-      icon: <Thermometer size={24} />,
-      title: 'Thermal Analysis',
-      description: 'Radiometric imaging reveals faults invisible to the eye. ±0.03°C sensitivity.',
-      specs: ['1280×1024 resolution', '±0.03°C NETD', 'Real-time streaming'],
-    },
-    {
-      icon: <Layers size={24} />,
-      title: 'LiDAR Mapping',
-      description: 'Survey-grade 3D point clouds with centimeter accuracy. 8-class automation.',
-      specs: ['45 pts/m² density', '±2cm RTK accuracy', 'DEM/DSM/CHM output'],
-    },
-    {
-      icon: <Shield size={24} />,
-      title: 'Cyber & AI Advisory',
-      description: 'Zero Trust architecture and AI governance for critical infrastructure.',
-      specs: ['Zero Trust design', 'AI risk assessment', 'Compliance audits'],
+      name: 'Abdillahi A.',
+      role: 'Cyber & AI Security Advisor',
+      description: 'Enterprise security architecture, AI governance, and risk management for critical infrastructure.',
       credentials: 'CISSP • CCSP • AIGP • PMP',
     },
   ]
 
   return (
-    <div className="jinki">
-      {/* VERSION BANNER - Remove after verification */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 9999,
-        background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 100%)',
-        color: 'white',
-        padding: '8px 16px',
-        fontSize: '12px',
-        fontFamily: 'monospace',
-        textAlign: 'center',
-        fontWeight: 'bold'
-      }}>
-        🚀 PLATINUM BUILD v2.0 | Jan 3, 2026 | Spline 3D + Real DJI Matrice 400 RTK + NDVI/Thermal Viz
+    <div className="jinki-v3">
+      {/* VERSION BANNER - UNMISSABLE */}
+      <div className="version-banner">
+        <div className="version-banner__pulse" />
+        <span className="version-banner__id">{BUILD_ID}</span>
+        <span className="version-banner__text">
+          PLATINUM BUILD {BUILD_VERSION} | {BUILD_DATE} | WebGL Fluid + Jitter Animations + Real M400 RTK
+        </span>
       </div>
 
-      <FluidBackground />
+      <WebGLFluidBackground />
       <MagneticCursor />
 
       {/* Navigation */}
-      <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
-        <div className="nav__container">
-          <a href="/" className="nav__logo">
-            <svg viewBox="0 0 32 32" className="nav__logo-icon">
-              <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-              <circle cx="16" cy="16" r="4" fill="currentColor"/>
-            </svg>
-            <span className="nav__logo-text">JINKI</span>
+      <header className={`nav-v3 ${scrolled ? 'nav-v3--scrolled' : ''}`}>
+        <div className="nav-v3__container">
+          <a href="/" className="nav-v3__logo">
+            <div className="nav-v3__logo-icon">
+              <svg viewBox="0 0 32 32">
+                <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <circle cx="16" cy="16" r="4" fill="currentColor"/>
+                <circle cx="16" cy="8" r="2" fill="currentColor" opacity="0.5"/>
+                <circle cx="22" cy="12" r="2" fill="currentColor" opacity="0.5"/>
+                <circle cx="22" cy="20" r="2" fill="currentColor" opacity="0.5"/>
+                <circle cx="16" cy="24" r="2" fill="currentColor" opacity="0.5"/>
+                <circle cx="10" cy="20" r="2" fill="currentColor" opacity="0.5"/>
+                <circle cx="10" cy="12" r="2" fill="currentColor" opacity="0.5"/>
+              </svg>
+            </div>
+            <span className="nav-v3__logo-text">JINKI</span>
+            <span className="nav-v3__logo-badge">INTELLIGENCE</span>
           </a>
 
-          <nav className={`nav__menu ${menuOpen ? 'nav__menu--open' : ''}`}>
-            <a href="#capabilities">Capabilities</a>
+          <nav className={`nav-v3__menu ${menuOpen ? 'nav-v3__menu--open' : ''}`}>
+            <a href="#platform">Platform</a>
             <a href="#industries">Industries</a>
             <a href="#technology">Technology</a>
-            <a href="#contact">Contact</a>
+            <a href="#team">Team</a>
           </nav>
 
-          <div className="nav__actions">
-            <a href="tel:+15551234567" className="nav__phone">
-              <Phone size={16} />
-              <span>(555) 123-4567</span>
+          <div className="nav-v3__actions">
+            <a href="#contact" className="btn-v3 btn-v3--primary">
+              <span>Request Demo</span>
+              <ArrowRight size={16} />
             </a>
-            <a href="#contact" className="btn btn--primary">Get Quote</a>
-            <button className="nav__toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <button className="nav-v3__toggle" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section ref={heroRef} className="hero">
-        <motion.div className="hero__content" style={{ opacity: heroOpacity, scale: heroScale }}>
+      {/* Hero Section */}
+      <motion.section
+        ref={heroRef}
+        className="hero-v3"
+        style={{ opacity: heroOpacity, scale: heroScale }}
+      >
+        <div className="hero-v3__container">
           <motion.div
-            className="hero__badge"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <span className="hero__badge-dot" />
-            <span>Powered by DJI Matrice 400 RTK</span>
-          </motion.div>
-
-          <motion.h1
+            className="hero-v3__content"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Enterprise Drone
-            <br />
-            <span className="hero__gradient-text">Intelligence</span>
-          </motion.h1>
+            <div className="hero-v3__badge">
+              <span className="hero-v3__badge-dot" />
+              Enterprise Drone Intelligence
+            </div>
 
-          <motion.p
-            className="hero__subtitle"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            Thermal imaging, LiDAR mapping, and AI analytics for data centers,
-            utilities, and critical infrastructure. Detect failures before they cost
-            you $540,000 per hour.
-          </motion.p>
+            <h1 className="hero-v3__title">
+              <span className="hero-v3__title-line">Autonomous</span>
+              <span className="hero-v3__title-line hero-v3__title-line--accent">Inspection</span>
+              <span className="hero-v3__title-line">Intelligence</span>
+            </h1>
 
-          <motion.div
-            className="hero__cta"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <a href="#contact" className="btn btn--primary btn--lg">
-              Schedule Inspection <ArrowRight size={18} />
-            </a>
-            <a href="#industries" className="btn btn--glass btn--lg">
-              <Play size={16} /> See Industries
-            </a>
+            <p className="hero-v3__description">
+              Military-grade thermal imaging and LiDAR inspection for critical infrastructure.
+              Powered by the DJI Matrice 400 RTK with 59-minute flight time and ±1cm positioning.
+            </p>
+
+            <div className="hero-v3__ctas">
+              <a href="#contact" className="btn-v3 btn-v3--primary btn-v3--large">
+                <span>Schedule Assessment</span>
+                <ArrowRight size={18} />
+              </a>
+              <a href="#platform" className="btn-v3 btn-v3--secondary btn-v3--large">
+                <Play size={18} />
+                <span>Watch Demo</span>
+              </a>
+            </div>
           </motion.div>
 
           <motion.div
-            className="hero__proof"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            className="hero-v3__drone"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.4 }}
           >
-            <div className="hero__proof-item">
-              <span className="hero__proof-value">2.4M+</span>
-              <span className="hero__proof-label">Acres Surveyed</span>
-            </div>
-            <div className="hero__proof-item">
-              <span className="hero__proof-value">99.8%</span>
-              <span className="hero__proof-label">Detection Rate</span>
-            </div>
-            <div className="hero__proof-item">
-              <span className="hero__proof-value">&lt;24hr</span>
-              <span className="hero__proof-label">Report Delivery</span>
-            </div>
+            <DroneHeroSection />
           </motion.div>
-        </motion.div>
+        </div>
 
         <motion.div
-          className="hero__visual"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 1 }}
+          className="hero-v3__scroll"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
         >
-          <DroneHero />
-        </motion.div>
-
-        <a href="#capabilities" className="hero__scroll">
           <ChevronDown size={24} />
-        </a>
-      </section>
+          <span>Scroll to explore</span>
+        </motion.div>
+      </motion.section>
 
-      {/* Capabilities */}
-      <section id="capabilities" className="section">
-        <div className="container">
-          <div className="section__header">
-            <span className="section__label">Capabilities</span>
-            <h2>Four Core Services</h2>
-            <p>Multi-sensor inspection platform for critical infrastructure</p>
+      {/* Industries Section */}
+      <section id="industries" className="industries-v3">
+        <div className="industries-v3__container">
+          <motion.div
+            className="industries-v3__header"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2>Industry Solutions</h2>
+            <p>Specialized inspection protocols for critical infrastructure sectors</p>
+          </motion.div>
+
+          {/* Industry Tabs */}
+          <div className="industries-v3__tabs">
+            {industries.map((industry) => (
+              <button
+                key={industry.id}
+                className={`industries-v3__tab ${activeIndustry === industry.id ? 'industries-v3__tab--active' : ''}`}
+                onClick={() => setActiveIndustry(industry.id)}
+              >
+                {industry.icon}
+                <span>{industry.title}</span>
+              </button>
+            ))}
           </div>
 
-          <div className="capabilities-grid">
-            {capabilities.map((cap, i) => (
-              <GlassCard key={i} className="capability-card">
-                <div className="capability-card__icon">{cap.icon}</div>
-                <h3>{cap.title}</h3>
-                <p>{cap.description}</p>
-                <ul className="capability-card__specs">
-                  {cap.specs.map((spec, j) => (
-                    <li key={j}><Check size={14} /> {spec}</li>
-                  ))}
-                </ul>
-                {cap.credentials && (
-                  <div className="capability-card__credentials">
-                    {cap.credentials}
+          {/* Active Industry Content */}
+          <AnimatePresence mode="wait">
+            {industries.map((industry) => (
+              activeIndustry === industry.id && (
+                <motion.div
+                  key={industry.id}
+                  className="industries-v3__content"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="industries-v3__info">
+                    <h3>{industry.title}</h3>
+                    <p>{industry.description}</p>
+
+                    <div className="industries-v3__stats">
+                      {industry.stats.map((stat, idx) => (
+                        <div key={idx} className="industries-v3__stat">
+                          <span className="industries-v3__stat-value">
+                            {stat.prefix}<AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                          </span>
+                          <span className="industries-v3__stat-label">{stat.label}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <a href="#contact" className="btn-v3 btn-v3--primary">
+                      <span>Learn More</span>
+                      <ArrowRight size={16} />
+                    </a>
                   </div>
-                )}
-              </GlassCard>
+
+                  <div className="industries-v3__viz">
+                    {industry.visualization}
+                  </div>
+                </motion.div>
+              )
+            ))}
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section id="team" className="team-v3">
+        <div className="team-v3__container">
+          <motion.div
+            className="team-v3__header"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2>Leadership</h2>
+            <p>Enterprise security expertise meets aerial intelligence</p>
+          </motion.div>
+
+          <div className="team-v3__grid">
+            {team.map((member, idx) => (
+              <JitterCard key={idx} delay={idx * 0.1}>
+                <div className="team-v3__member">
+                  <div className="team-v3__avatar">
+                    <Shield size={32} />
+                  </div>
+                  <h3>{member.name}</h3>
+                  <span className="team-v3__role">{member.role}</span>
+                  <p>{member.description}</p>
+                  <div className="team-v3__credentials">
+                    {member.credentials}
+                  </div>
+                </div>
+              </JitterCard>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Industries - Each with DISTINCT visualization */}
-      <section id="industries" className="section section--industries">
-        <div className="container">
-          <div className="section__header section__header--center">
-            <span className="section__label">Industries</span>
-            <h2>Built for Critical Operations</h2>
-            <p>Research-backed solutions for sectors where downtime costs millions</p>
-          </div>
+      {/* Contact Section */}
+      <section id="contact" className="contact-v3">
+        <div className="contact-v3__container">
+          <JitterCard className="contact-v3__card">
+            <div className="contact-v3__content">
+              <h2>Ready to Modernize Your Inspections?</h2>
+              <p>Schedule a consultation to discuss your infrastructure monitoring needs.</p>
 
-          {industries.map((industry, i) => (
-            <IndustryCard key={industry.id} industry={industry} />
-          ))}
-        </div>
-      </section>
-
-      {/* Technology - Real Matrice 400 imagery */}
-      <section id="technology" className="section section--dark">
-        <div className="container">
-          <div className="tech-showcase">
-            <div className="tech-showcase__content">
-              <span className="section__label">Platform</span>
-              <h2>DJI Matrice 400 RTK</h2>
-              <p className="tech-showcase__lead">
-                The newest enterprise flagship drone. 59-minute flight time,
-                6kg payload capacity, and O4 transmission up to 40km.
-              </p>
-
-              <div className="tech-showcase__features">
-                <div className="tech-feature">
-                  <Navigation size={20} />
-                  <div>
-                    <strong>Omnidirectional Sensing</strong>
-                    <span>LiDAR + mmWave radar for wire-level obstacle avoidance</span>
-                  </div>
-                </div>
-                <div className="tech-feature">
-                  <Target size={20} />
-                  <div>
-                    <strong>RTK Positioning</strong>
-                    <span>±1cm horizontal, ±1.5cm vertical accuracy</span>
-                  </div>
-                </div>
-                <div className="tech-feature">
-                  <Cpu size={20} />
-                  <div>
-                    <strong>7 Simultaneous Payloads</strong>
-                    <span>H30T, L2 LiDAR, P1 photogrammetry, and more</span>
-                  </div>
-                </div>
-                <div className="tech-feature">
-                  <Wind size={20} />
-                  <div>
-                    <strong>IP55 Weather Rating</strong>
-                    <span>Operates in rain, wind up to 15m/s</span>
-                  </div>
-                </div>
+              <div className="contact-v3__buttons">
+                <a href="tel:+15551234567" className="btn-v3 btn-v3--primary btn-v3--large">
+                  <Phone size={18} />
+                  <span>Call Now</span>
+                </a>
+                <a href="mailto:contact@jinki.io" className="btn-v3 btn-v3--secondary btn-v3--large">
+                  <Mail size={18} />
+                  <span>Email Us</span>
+                </a>
               </div>
             </div>
-
-            <div className="tech-showcase__image">
-              <img
-                src="https://www-cdn.djiits.com/cms/uploads/65de88444af3186c29fcd9df398325d5.png"
-                alt="DJI Matrice 400 RTK with payload"
-              />
-              <div className="tech-showcase__image-glow" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section id="contact" className="section">
-        <div className="container">
-          <GlassCard className="cta-card" glow={true}>
-            <div className="cta-card__content">
-              <h2>Ready to Prevent Your Next $540K Outage?</h2>
-              <p>
-                Schedule a 30-minute discovery call. We'll discuss your infrastructure,
-                your challenges, and whether aerial inspection is right for you.
-              </p>
-              <a href="mailto:hello@jinki.io" className="btn btn--primary btn--lg">
-                Schedule Discovery Call <ArrowRight size={18} />
-              </a>
-              <span className="cta-card__note">Usually respond within 4 hours</span>
-            </div>
-            <div className="cta-card__contact">
-              <div className="cta-contact-item">
-                <Mail size={20} />
-                <div>
-                  <strong>Email</strong>
-                  <span>hello@jinki.io</span>
-                </div>
-              </div>
-              <div className="cta-contact-item">
-                <Phone size={20} />
-                <div>
-                  <strong>Phone</strong>
-                  <span>(555) 123-4567</span>
-                </div>
-              </div>
-              <div className="cta-contact-item">
-                <Clock size={20} />
-                <div>
-                  <strong>Response</strong>
-                  <span>Within 4 hours</span>
-                </div>
-              </div>
-            </div>
-          </GlassCard>
+          </JitterCard>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer__grid">
-            <div className="footer__brand">
-              <a href="/" className="nav__logo">
-                <svg viewBox="0 0 32 32" className="nav__logo-icon">
-                  <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <circle cx="16" cy="16" r="4" fill="currentColor"/>
-                </svg>
-                <span className="nav__logo-text">JINKI</span>
-              </a>
-              <p>Critical infrastructure inspection and cybersecurity advisory.</p>
-            </div>
-            <div className="footer__links">
-              <div>
-                <h4>Services</h4>
-                <a href="#capabilities">Visual Inspection</a>
-                <a href="#capabilities">Thermal Analysis</a>
-                <a href="#capabilities">LiDAR Mapping</a>
-                <a href="#capabilities">Cyber Advisory</a>
-              </div>
-              <div>
-                <h4>Industries</h4>
-                <a href="#industries">Data Centers</a>
-                <a href="#industries">Electric Utilities</a>
-                <a href="#industries">Agriculture</a>
-                <a href="#industries">Oil & Gas</a>
-              </div>
-              <div>
-                <h4>Contact</h4>
-                <a href="mailto:hello@jinki.io">hello@jinki.io</a>
-                <a href="tel:+15551234567">(555) 123-4567</a>
-              </div>
-            </div>
+      <footer className="footer-v3">
+        <div className="footer-v3__container">
+          <div className="footer-v3__brand">
+            <span className="footer-v3__logo">JINKI INTELLIGENCE</span>
+            <span className="footer-v3__tagline">Autonomous Inspection. Intelligent Analysis.</span>
           </div>
-          <div className="footer__bottom">
-            <span>© 2026 Jinki Intelligence. All rights reserved.</span>
+          <div className="footer-v3__copy">
+            © 2026 Jinki Intelligence. All rights reserved.
           </div>
         </div>
       </footer>
