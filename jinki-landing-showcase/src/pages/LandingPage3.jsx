@@ -204,15 +204,16 @@ export default function LandingPage3() {
 
         <motion.div
           className="hero__visual"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
-          <img
-            src="https://www-cdn.djiits.com/cms/uploads/67bb8244fb64295b08f9186279ba5b35.png"
-            alt="DJI Matrice 400 RTK"
-            className="hero__drone"
-          />
+          <div className="liquid-orb">
+            <div className="liquid-orb__sphere"/>
+            <div className="liquid-orb__ring liquid-orb__ring--1"/>
+            <div className="liquid-orb__ring liquid-orb__ring--2"/>
+            <div className="liquid-orb__glow"/>
+          </div>
         </motion.div>
       </motion.section>
 
@@ -278,10 +279,12 @@ export default function LandingPage3() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
         >
-          <img
-            src="https://www-cdn.djiits.com/cms/uploads/67bb8244fb64295b08f9186279ba5b35.png"
-            alt="Enterprise Drone Platform"
-          />
+          <div className="liquid-cube">
+            <div className="liquid-cube__face liquid-cube__face--front"/>
+            <div className="liquid-cube__face liquid-cube__face--back"/>
+            <div className="liquid-cube__face liquid-cube__face--left"/>
+            <div className="liquid-cube__face liquid-cube__face--right"/>
+          </div>
         </motion.div>
       </section>
 
