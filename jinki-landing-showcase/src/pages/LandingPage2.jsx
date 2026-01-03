@@ -762,9 +762,18 @@ function LandingPage2() {
       {/* Hero Section */}
       <section ref={heroRef} className="lp2-hero">
         <div className="hero-bg">
-          <div className="gradient-orb orb-1" />
-          <div className="gradient-orb orb-2" />
-          <div className="gradient-orb orb-3" />
+          {/* Drone Video Background */}
+          <video
+            className="hero-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="https://images.pexels.com/videos/3015510/free-video-3015510.jpg?auto=compress&cs=tinysrgb&w=1920"
+          >
+            <source src="https://videos.pexels.com/video-files/3015510/3015510-uhd_2560_1440_24fps.mp4" type="video/mp4" />
+          </video>
+          <div className="video-overlay" />
           <div className="hero-grid-pattern" />
         </div>
 
