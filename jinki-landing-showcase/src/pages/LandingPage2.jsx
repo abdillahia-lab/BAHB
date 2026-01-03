@@ -10,12 +10,6 @@ import './LandingPage2.css'
 gsap.registerPlugin(ScrollTrigger)
 
 // ============================================
-// BUILD VERIFICATION
-// ============================================
-const BUILD_ID = 'CINEMATIC-FLUID-V4'
-const BUILD_TIME = new Date().toISOString()
-
-// ============================================
 // SMOOTH SCROLL WITH LENIS
 // ============================================
 function useSmoothScroll() {
@@ -444,13 +438,6 @@ export default function LandingPage2() {
 
   return (
     <div className="jinki-cinematic">
-      {/* Build verification banner */}
-      <div className="build-banner">
-        <span className="build-banner__dot" />
-        <span className="build-banner__id">{BUILD_ID}</span>
-        <span className="build-banner__text">GSAP + Lenis Smooth Scroll + Cinematic Animations</span>
-      </div>
-
       <FloatingParticles />
 
       {/* Navigation */}
