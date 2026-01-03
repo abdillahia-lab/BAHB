@@ -753,6 +753,24 @@ export default function LandingPage2() {
 
   return (
     <div className="jinki">
+      {/* VERSION BANNER - Remove after verification */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 100%)',
+        color: 'white',
+        padding: '8px 16px',
+        fontSize: '12px',
+        fontFamily: 'monospace',
+        textAlign: 'center',
+        fontWeight: 'bold'
+      }}>
+        🚀 PLATINUM BUILD v2.0 | Jan 3, 2026 | Spline 3D + Real DJI Matrice 400 RTK + NDVI/Thermal Viz
+      </div>
+
       <FluidBackground />
       <MagneticCursor />
 
