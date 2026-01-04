@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs>
+    <!-- Metallic gradient -->
+    <linearGradient id="chrome" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c0c0c0"/>
+      <stop offset="25%" stop-color="#e8e8e8"/>
+      <stop offset="50%" stop-color="#a0a0a0"/>
+      <stop offset="75%" stop-color="#d0d0d0"/>
+      <stop offset="100%" stop-color="#909090"/>
+    </linearGradient>
+
+    <!-- Cyan glow gradient -->
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#00b4d8"/>
+      <stop offset="100%" stop-color="#0077b6"/>
+    </radialGradient>
+
+    <!-- Outer glow filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="coreGlowFilter" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background (transparent for overlay use) -->
+
+  <!-- Outer swoosh - left -->
+  <ellipse cx="200" cy="80" rx="140" ry="50" fill="none" stroke="url(#chrome)" stroke-width="8"
+           transform="rotate(-5, 200, 80)" opacity="0.9"/>
+
+  <!-- Middle ring -->
+  <ellipse cx="200" cy="80" rx="100" ry="36" fill="none" stroke="url(#chrome)" stroke-width="6"
+           transform="rotate(3, 200, 80)" opacity="0.8"/>
+
+  <!-- Inner ring -->
+  <ellipse cx="200" cy="80" rx="65" ry="24" fill="none" stroke="url(#chrome)" stroke-width="4"
+           transform="rotate(-2, 200, 80)" opacity="0.7"/>
+
+  <!-- Swoosh wing - left -->
+  <path d="M60 75 Q90 60 140 70 Q100 80 60 85 Z" fill="url(#chrome)" opacity="0.8"/>
+
+  <!-- Swoosh wing - right -->
+  <path d="M340 75 Q310 60 260 70 Q300 80 340 85 Z" fill="url(#chrome)" opacity="0.8"/>
+
+  <!-- Core eye - outer -->
+  <circle cx="200" cy="80" r="28" fill="none" stroke="url(#chrome)" stroke-width="3" filter="url(#glow)"/>
+
+  <!-- Core eye - iris -->
+  <circle cx="200" cy="80" r="20" fill="url(#coreGlow)" filter="url(#coreGlowFilter)"/>
+
+  <!-- Core eye - pupil -->
+  <circle cx="200" cy="80" r="8" fill="#0a1628"/>
+
+  <!-- Core eye - highlight -->
+  <circle cx="194" cy="74" r="4" fill="rgba(255,255,255,0.6)"/>
+
+  <!-- Aperture blades hint -->
+  <g opacity="0.4" stroke="#0a1628" stroke-width="1" fill="none">
+    <path d="M200 60 L190 72"/>
+    <path d="M200 60 L210 72"/>
+    <path d="M220 80 L208 75"/>
+    <path d="M220 80 L208 85"/>
+    <path d="M200 100 L190 88"/>
+    <path d="M200 100 L210 88"/>
+    <path d="M180 80 L192 75"/>
+    <path d="M180 80 L192 85"/>
+  </g>
+
+  <!-- Text: JINKI INTELLIGENCE -->
+  <text x="200" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="28"
+        font-weight="bold" fill="url(#chrome)" letter-spacing="8">JINKI INTELLIGENCE</text>
+
+  <!-- Tagline: EX ALTO OMNIA -->
+  <text x="200" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12"
+        fill="#8b949e" letter-spacing="6">EX ALTO OMNIA</text>
+</svg>

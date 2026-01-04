@@ -3,8 +3,8 @@ import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-mo
 import Lenis from 'lenis'
 import './LandingPage3.css'
 
-// Import logo
-const logoUrl = '/jinki-logo.png'
+// Logo
+const logoUrl = '/jinki-logo.svg'
 
 const ease = [0.25, 0.1, 0.25, 1]
 
