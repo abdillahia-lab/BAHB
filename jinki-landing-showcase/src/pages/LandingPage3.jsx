@@ -3,31 +3,27 @@ import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-mo
 import Lenis from 'lenis'
 import './LandingPage3.css'
 
-// Apple-style easing
-const appleEase = [0.25, 0.1, 0.25, 1]
-const appleBounce = [0.34, 1.56, 0.64, 1]
+// Import logo
+const logoUrl = '/jinki-logo.png'
 
-// Smooth scroll hook
+const ease = [0.25, 0.1, 0.25, 1]
+
 function useSmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
       smoothWheel: true,
     })
-
     function raf(time) {
       lenis.raf(time)
       requestAnimationFrame(raf)
     }
     requestAnimationFrame(raf)
-
     return () => lenis.destroy()
   }, [])
 }
 
-// Fade up animation component
 function FadeUp({ children, delay = 0, className = '' }) {
   return (
     <motion.div
@@ -35,14 +31,13 @@ function FadeUp({ children, delay = 0, className = '' }) {
       initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.8, delay, ease: appleEase }}
+      transition={{ duration: 0.8, delay, ease }}
     >
       {children}
     </motion.div>
   )
 }
 
-// Counter with spring animation
 function Counter({ value, suffix = '', prefix = '', label }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true })
@@ -51,14 +46,11 @@ function Counter({ value, suffix = '', prefix = '', label }) {
   useEffect(() => {
     if (!inView) return
     const num = parseFloat(value.toString().replace(/[^0-9.]/g, ''))
-    let start = 0
     const duration = 1500
     const startTime = Date.now()
-
     const tick = () => {
       const elapsed = Date.now() - startTime
       const progress = Math.min(elapsed / duration, 1)
-      // Apple-style ease out
       const eased = 1 - Math.pow(1 - progress, 3)
       setDisplay(Math.floor(num * eased))
       if (progress < 1) requestAnimationFrame(tick)
@@ -74,24 +66,23 @@ function Counter({ value, suffix = '', prefix = '', label }) {
   )
 }
 
-// Industry card with parallax
 function IndustryCard({ image, title, problem, solution, stats, index }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start']
   })
-  const y = useTransform(scrollYProgress, [0, 1], [60, -60])
+  const y = useTransform(scrollYProgress, [0, 1], [40, -40])
   const smoothY = useSpring(y, { stiffness: 100, damping: 30 })
 
   return (
     <motion.div
       ref={ref}
       className="card"
-      initial={{ opacity: 0, y: 100 }}
+      initial={{ opacity: 0, y: 80 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.9, delay: index * 0.1, ease: appleEase }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease }}
     >
       <motion.div className="card__image" style={{ y: smoothY }}>
         <img src={image} alt={title} loading="lazy"/>
@@ -119,7 +110,6 @@ function IndustryCard({ image, title, problem, solution, stats, index }) {
   )
 }
 
-// Main component
 export default function LandingPage3() {
   useSmoothScroll()
 
@@ -129,12 +119,11 @@ export default function LandingPage3() {
     offset: ['start start', 'end start']
   })
 
-  // Parallax values
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 200])
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
   const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95])
-  const orbY = useTransform(scrollYProgress, [0, 1], [0, -100])
-  const orbRotate = useTransform(scrollYProgress, [0, 1], [0, 45])
+  const logoY = useTransform(scrollYProgress, [0, 1], [0, -80])
+  const logoRotate = useTransform(scrollYProgress, [0, 1], [0, 15])
 
   const industries = [
     {
@@ -174,10 +163,12 @@ export default function LandingPage3() {
         className="nav"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: appleEase }}
+        transition={{ duration: 0.8, ease }}
       >
         <div className="nav__inner">
-          <a href="/" className="logo">JINKI</a>
+          <a href="/" className="nav__logo">
+            <img src={logoUrl} alt="Jinki Intelligence" />
+          </a>
           <nav className="nav__links">
             <a href="#industries">Industries</a>
             <a href="#platform">Platform</a>
@@ -189,62 +180,65 @@ export default function LandingPage3() {
 
       {/* HERO */}
       <section ref={heroRef} className="hero">
+        <div className="hero__bg">
+          <div className="hero__grid"/>
+        </div>
+
+        <motion.div
+          className="hero__logo"
+          style={{ y: logoY, rotate: logoRotate }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, delay: 0.2, ease }}
+        >
+          <img src={logoUrl} alt="Jinki Intelligence" />
+          <div className="hero__logo-glow"/>
+        </motion.div>
+
         <motion.div className="hero__content" style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}>
           <motion.p
-            className="hero__eyebrow"
+            className="hero__tagline"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: appleEase }}
+            transition={{ duration: 0.6, delay: 0.8, ease }}
           >
-            Enterprise Drone Intelligence
+            Ex Alto Omnia
           </motion.p>
 
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: appleEase }}
+            transition={{ duration: 0.8, delay: 0.9, ease }}
           >
-            Prevent Million-Dollar Failures
+            From Above, <span className="gradient-text">All Things</span>
           </motion.h1>
 
           <motion.p
             className="hero__subtitle"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5, ease: appleEase }}
+            transition={{ duration: 0.7, delay: 1.1, ease }}
           >
-            Autonomous thermal intelligence for critical infrastructure.<br/>
-            Detect anomalies 72 hours before catastrophic failure.
+            Autonomous aerial intelligence for critical infrastructure.<br/>
+            Detect anomalies before catastrophic failure.
           </motion.p>
 
           <motion.div
             className="hero__actions"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7, ease: appleEase }}
+            transition={{ duration: 0.7, delay: 1.3, ease }}
           >
-            <a href="#contact" className="btn btn--filled">Schedule Assessment</a>
-            <a href="#industries" className="btn btn--ghost">Learn More</a>
+            <a href="#contact" className="btn btn--primary">Schedule Assessment</a>
+            <a href="#industries" className="btn btn--ghost">Explore Solutions</a>
           </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="hero__orb"
-          style={{ y: orbY, rotate: orbRotate }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.4, ease: appleEase }}
-        >
-          <div className="orb">
-            <div className="orb__inner"/>
-          </div>
         </motion.div>
 
         <motion.div
           className="hero__stats"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9, ease: appleEase }}
+          transition={{ duration: 0.8, delay: 1.5, ease }}
         >
           <Counter value="700" prefix="$" suffix="K" label="Avg Outage Prevented"/>
           <Counter value="72" suffix="hrs" label="Early Detection"/>
@@ -257,8 +251,8 @@ export default function LandingPage3() {
       <section id="industries" className="section">
         <FadeUp className="section__header">
           <p className="section__eyebrow">Solutions</p>
-          <h2>Built for critical infrastructure</h2>
-          <p className="section__subtitle">Research-backed protocols trusted by industry leaders</p>
+          <h2>Critical Infrastructure Intelligence</h2>
+          <p className="section__subtitle">Research-backed aerial protocols trusted by industry leaders</p>
         </FadeUp>
 
         <div className="cards">
@@ -269,13 +263,13 @@ export default function LandingPage3() {
       </section>
 
       {/* PLATFORM */}
-      <section id="platform" className="section section--dark">
+      <section id="platform" className="section section--alt">
         <div className="platform">
           <FadeUp className="platform__text">
             <p className="section__eyebrow">Technology</p>
-            <h2>Enterprise-grade inspection platform</h2>
+            <h2>Enterprise-Grade Platform</h2>
             <p className="platform__lead">
-              Military-adjacent technology. IP55 rated for all-weather operation.
+              Military-adjacent inspection technology. IP55 rated for all-weather.
               Redundant flight systems. 59-minute endurance.
             </p>
             <div className="features">
@@ -293,9 +287,14 @@ export default function LandingPage3() {
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.08, ease: appleEase }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease }}
                 >
-                  <span className="feature__dot"/>
+                  <span className="feature__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </span>
                   {f}
                 </motion.div>
               ))}
@@ -303,8 +302,12 @@ export default function LandingPage3() {
           </FadeUp>
 
           <FadeUp delay={0.2} className="platform__visual">
-            <div className="glass-card">
-              <div className="glass-card__shine"/>
+            <div className="eye-visual">
+              <div className="eye-visual__ring eye-visual__ring--1"/>
+              <div className="eye-visual__ring eye-visual__ring--2"/>
+              <div className="eye-visual__ring eye-visual__ring--3"/>
+              <div className="eye-visual__core"/>
+              <div className="eye-visual__glow"/>
             </div>
           </FadeUp>
         </div>
@@ -314,12 +317,15 @@ export default function LandingPage3() {
       <section id="advisory" className="section">
         <FadeUp className="section__header">
           <p className="section__eyebrow">Advisory</p>
-          <h2>Cyber & AI expertise</h2>
+          <h2>Cyber & AI Expertise</h2>
           <p className="section__subtitle">Enterprise security architecture meets aerial intelligence</p>
         </FadeUp>
 
         <FadeUp delay={0.2} className="advisor">
-          <div className="advisor__avatar">AA</div>
+          <div className="advisor__avatar">
+            <span>AA</span>
+            <div className="advisor__avatar-ring"/>
+          </div>
           <h3>Abdillahi A.</h3>
           <p className="advisor__role">Principal Security Architect</p>
           <p className="advisor__bio">
@@ -338,10 +344,18 @@ export default function LandingPage3() {
       {/* CTA */}
       <section id="contact" className="section section--cta">
         <FadeUp className="cta">
-          <h2>Ready to modernize inspections?</h2>
+          <div className="cta__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+            </svg>
+          </div>
+          <h2>Ready to See Everything?</h2>
+          <p className="cta__tagline">Ex Alto Omnia — From Above, All Things</p>
           <p>Schedule a consultation. Prevent the next million-dollar outage.</p>
           <div className="cta__actions">
-            <a href="tel:+15551234567" className="btn btn--filled btn--lg">Call Now</a>
+            <a href="tel:+15551234567" className="btn btn--primary btn--lg">Call Now</a>
             <a href="mailto:contact@jinki.io" className="btn btn--ghost btn--lg">Email Us</a>
           </div>
         </FadeUp>
@@ -350,8 +364,11 @@ export default function LandingPage3() {
       {/* FOOTER */}
       <footer className="footer">
         <div className="footer__inner">
-          <span className="footer__logo">JINKI INTELLIGENCE</span>
-          <span className="footer__copy">© 2026 Jinki Intelligence</span>
+          <div className="footer__brand">
+            <img src={logoUrl} alt="Jinki Intelligence" className="footer__logo"/>
+            <span className="footer__tagline">Ex Alto Omnia</span>
+          </div>
+          <span className="footer__copy">© 2026 Jinki Intelligence. All rights reserved.</span>
         </div>
       </footer>
     </div>
