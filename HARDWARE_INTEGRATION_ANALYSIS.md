@@ -93,10 +93,10 @@ This is the **#1 reliability risk**. Let me break down actual memory usage:
 │  H30T STREAM DECODE (3 streams):                                            │
 │  ├── Wide 4K decode (nvdec)           ~200 MB                               │
 │  ├── Zoom 4K decode (nvdec)           ~200 MB                               │
-│  ├── Thermal 640×512 decode           ~50 MB                                │
-│  └── Frame buffers (3 × 5 frames)     ~150 MB                               │
+│  ├── Thermal 1280×1024 decode         ~200 MB  ← UPDATED (was 50MB)         │
+│  └── Frame buffers (3 × 5 frames)     ~250 MB  ← UPDATED for high-res thermal│
 │  ────────────────────────────────────────────                               │
-│  TOTAL DECODE:                        ~0.6 GB                               │
+│  TOTAL DECODE:                        ~0.85 GB ← INCREASED                  │
 │                                                                             │
 │  AI MODELS (CURRENT - FP16):                                                │
 │  ├── YOLO11l (25.3M params)           ~1.6 GB                               │
@@ -107,13 +107,14 @@ This is the **#1 reliability risk**. Let me break down actual memory usage:
 │  ────────────────────────────────────────────                               │
 │  TOTAL AI:                            ~7.9 GB                               │
 │                                                                             │
-│  GRAND TOTAL:                         ~13.0 GB                              │
+│  GRAND TOTAL:                         ~13.25 GB ← REVISED UP               │
 │  AVAILABLE:                            16.0 GB                              │
-│  HEADROOM:                             ~3.0 GB (18.75%)                     │
+│  HEADROOM:                             ~2.75 GB (17.2%)                     │
 │                                                                             │
 │  ⚠️ WARNING: <20% headroom is RISKY for production                          │
 │  ⚠️ Memory fragmentation will reduce effective headroom                     │
 │  ⚠️ Peaks during inference can exceed steady-state                          │
+│  ⚠️ HIGH-RES THERMAL (1280×1024) adds ~0.25GB vs typical 640×512           │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -478,7 +479,7 @@ Based on this analysis, here's what will actually work:
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │ H30T CAMERA INPUT                                                    │   │
-│  │ Wide: 1920×1080@30fps, Zoom: 1920×1080@30fps, Thermal: 640×512@30fps│   │
+│  │ Wide: 1920×1080@30fps, Zoom: 1920×1080@30fps, Thermal: 1280×1024@30fps│   │
 │  └───────────────────────────────┬─────────────────────────────────────┘   │
 │                                  │                                          │
 │                                  ▼                                          │
@@ -613,9 +614,13 @@ Inference: 8-10ms (keyframe), 0.3ms (tracking)
 Average: ~2.5ms/frame with 3:1 skip
 FPS: 30 sustained (camera-limited)
 Power: 12-15W
-Memory: ~11GB used, ~5GB headroom
+Memory (FP16): ~13.25GB used, ~2.75GB headroom ← TIGHT
+Memory (INT8): ~10GB used, ~6GB headroom ← SAFE
 Thermal: <75°C (typical), <85°C (worst case)
 Reliability: 99%+ uptime in normal conditions
 ```
 
-**This is achievable and production-ready.**
+**⚠️ NOTE: H30T's high-resolution thermal (1280×1024) increases processing load.**
+INT8 quantization is ESSENTIAL for safe memory margins with this camera.
+
+**This is achievable and production-ready with INT8.**
