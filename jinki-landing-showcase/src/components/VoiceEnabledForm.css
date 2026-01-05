@@ -1,0 +1,349 @@
+/* Voice Enabled Form Styles */
+
+.voice-enabled-form {
+  max-width: 600px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(10, 30, 50, 0.9), rgba(5, 15, 30, 0.9));
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.vef-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.vef-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  color: #00ff88;
+  font-weight: 600;
+}
+
+.vef-header p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(100, 200, 255, 0.7);
+}
+
+/* Progress */
+.vef-progress {
+  margin-bottom: 24px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(100, 200, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #00ddff);
+  border-radius: 3px;
+}
+
+.progress-text {
+  display: inline-block;
+  font-size: 12px;
+  color: rgba(100, 200, 255, 0.6);
+  font-weight: 500;
+}
+
+/* Fields */
+.vef-fields {
+  margin-bottom: 24px;
+}
+
+.vef-field {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(100, 200, 255, 0.03);
+  border: 1px solid rgba(100, 200, 255, 0.1);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.vef-field.active {
+  background: rgba(100, 200, 255, 0.08);
+  border-color: rgba(100, 200, 255, 0.3);
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.1);
+}
+
+.vef-field.completed {
+  border-color: rgba(0, 255, 136, 0.3);
+  background: rgba(0, 255, 136, 0.03);
+}
+
+.vef-field.completed label {
+  color: #00ff88;
+}
+
+.vef-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(100, 200, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vef-field input,
+.vef-field textarea {
+  width: 100%;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(100, 200, 255, 0.15);
+  border-radius: 4px;
+  color: #64c8ff;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 40px;
+}
+
+.vef-field input::placeholder,
+.vef-field textarea::placeholder {
+  color: rgba(100, 200, 255, 0.3);
+}
+
+.vef-field input:hover,
+.vef-field textarea:hover {
+  border-color: rgba(100, 200, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.vef-field input:focus,
+.vef-field textarea:focus {
+  outline: none;
+  border-color: rgba(100, 200, 255, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 8px rgba(100, 200, 255, 0.2);
+}
+
+.vef-field input:disabled,
+.vef-field textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Voice button */
+.vef-voice-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 6px 12px;
+  background: rgba(100, 200, 255, 0.1);
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  border-radius: 4px;
+  color: #64c8ff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.vef-voice-btn:hover {
+  background: rgba(100, 200, 255, 0.15);
+  border-color: rgba(100, 200, 255, 0.4);
+}
+
+.vef-voice-btn.recording {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: rgba(0, 255, 136, 0.4);
+  color: #00ff88;
+}
+
+.vef-voice-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.recording-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.vef-transcript {
+  margin: 8px 0 0 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  font-size: 12px;
+  color: #64c8ff;
+  font-style: italic;
+  border-left: 2px solid #00ff88;
+}
+
+/* Controls */
+.vef-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.vef-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: rgba(100, 200, 255, 0.1);
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  color: #64c8ff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.vef-btn:hover:not(:disabled) {
+  background: rgba(100, 200, 255, 0.15);
+  border-color: rgba(100, 200, 255, 0.4);
+}
+
+.vef-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vef-field-info {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: #64c8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.field-name {
+  font-weight: 600;
+}
+
+.listening-indicator {
+  color: #00ff88;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Submit */
+.vef-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 200, 150, 0.15));
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 6px;
+  color: #00ff88;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+}
+
+.vef-submit:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 200, 150, 0.2));
+  border-color: rgba(0, 255, 136, 0.6);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);
+}
+
+.vef-submit:active {
+  transform: scale(0.98);
+}
+
+.submit-hint {
+  font-size: 11px;
+  color: rgba(0, 255, 136, 0.6);
+  font-weight: 400;
+}
+
+/* Help */
+.vef-help {
+  padding: 12px;
+  background: rgba(100, 200, 255, 0.05);
+  border: 1px solid rgba(100, 200, 255, 0.1);
+  border-radius: 4px;
+  font-size: 11px;
+  color: rgba(100, 200, 255, 0.7);
+}
+
+.vef-help p {
+  margin: 0 0 6px 0;
+  font-weight: 600;
+  color: #64c8ff;
+}
+
+.vef-help ul {
+  margin: 0;
+  padding-left: 16px;
+  list-style: none;
+}
+
+.vef-help li {
+  margin-bottom: 4px;
+  color: rgba(100, 200, 255, 0.6);
+}
+
+.vef-help li:before {
+  content: '→ ';
+  color: #00ff88;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .voice-enabled-form {
+    padding: 16px;
+    border-radius: 6px;
+  }
+
+  .vef-header h2 {
+    font-size: 18px;
+  }
+
+  .vef-controls {
+    flex-direction: column;
+  }
+
+  .vef-btn {
+    width: 100%;
+  }
+}
+
+/* Accessibility */
+.vef-field input:focus-visible,
+.vef-field textarea:focus-visible,
+.vef-btn:focus-visible,
+.vef-submit:focus-visible {
+  outline: 2px solid #00ff88;
+  outline-offset: 2px;
+}

@@ -1,0 +1,102 @@
+/**
+ * AudioVisualizer Styling
+ * Futuristic visualization canvas with glowing effects
+ */
+
+.audio-visualizer {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  background: linear-gradient(135deg, rgba(10, 25, 47, 0.3) 0%, rgba(20, 40, 70, 0.3) 100%);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.1),
+    inset 0 0 20px rgba(0, 255, 255, 0.05);
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.1));
+  animation: audioVisualizerFadeIn 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes audioVisualizerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.visualizer-bars {
+  aspect-ratio: 16 / 4;
+}
+
+.visualizer-waveform {
+  aspect-ratio: 16 / 3;
+}
+
+.visualizer-circle {
+  aspect-ratio: 1;
+  max-width: 300px;
+  margin: 20px auto;
+}
+
+.visualizer-spectrum {
+  aspect-ratio: 16 / 4;
+}
+
+.visualizer-reactive {
+  aspect-ratio: 1;
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+/* Dark theme background */
+@media (prefers-color-scheme: dark) {
+  .audio-visualizer {
+    background: linear-gradient(135deg, rgba(5, 15, 30, 0.5) 0%, rgba(10, 30, 50, 0.5) 100%);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .audio-visualizer {
+    margin: 16px 0;
+    border-radius: 6px;
+  }
+
+  .visualizer-circle,
+  .visualizer-reactive {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .audio-visualizer {
+    margin: 12px 0;
+    border-radius: 4px;
+    border-width: 0.5px;
+  }
+
+  .visualizer-circle,
+  .visualizer-reactive {
+    max-width: 150px;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .audio-visualizer {
+    animation: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .audio-visualizer {
+    display: none;
+  }
+}

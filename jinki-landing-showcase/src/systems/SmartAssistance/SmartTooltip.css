@@ -1,0 +1,95 @@
+/**
+ * ════════════════════════════════════════════════════════════════
+ * SMART TOOLTIP STYLES
+ * Glassmorphic design with smooth animations
+ * ════════════════════════════════════════════════════════════════
+ */
+
+.smart-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.smart-tooltip {
+  position: fixed;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+  animation: tooltip-glow 3s ease-in-out infinite;
+}
+
+.smart-tooltip-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.smart-tooltip-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: #00ffc8;
+  text-shadow: 0 0 8px rgba(0, 255, 200, 0.3);
+}
+
+.smart-tooltip-body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #e0e7ff;
+}
+
+.smart-tooltip-close {
+  flex-shrink: 0;
+  background: rgba(0, 255, 200, 0.1);
+  border: 1px solid rgba(0, 255, 200, 0.2);
+  color: #00ffc8;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.smart-tooltip-close:hover {
+  background: rgba(0, 255, 200, 0.2);
+  border-color: rgba(0, 255, 200, 0.4);
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.2);
+}
+
+.smart-tooltip-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 12px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(0, 255, 200, 0.3);
+}
+
+/* Subtle glow animation */
+@keyframes tooltip-glow {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(0, 255, 200, 0.1);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(0, 255, 200, 0.2);
+  }
+}
+
+/* Responsive - Stack on mobile */
+@media (max-width: 768px) {
+  .smart-tooltip {
+    max-width: 85vw !important;
+    font-size: 12px;
+  }
+
+  .smart-tooltip-body {
+    font-size: 11px;
+  }
+}

@@ -1,7 +1,15 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import Lenis from 'lenis'
 import './LandingPage3.css'
+
+// GPU RENDERING PERFORMANCE CONFIG
+const PERF_CONFIG = {
+  RAF_THROTTLE: true,
+  OFFSCREEN_CANVAS: true,
+  BATCH_UPDATES: true,
+  MEMORY_CLEANUP: true,
+}
 
 // Logo
 const logoUrl = '/jinki-logo.svg'
@@ -9,15 +17,48 @@ const logoUrl = '/jinki-logo.svg'
 const ease = [0.25, 0.1, 0.25, 1]
 
 // ═══════════════════════════════════════════════════════════════
-// ASCII LIQUID GLASS - Animated ASCII art with fluid morphing
+// PERFORMANCE MONITOR - Real-time FPS tracking
+// ═══════════════════════════════════════════════════════════════
+class PerformanceMonitor {
+  constructor() {
+    this.frames = 0
+    this.lastTime = performance.now()
+    this.fps = 60
+    this.metrics = { paints: 0, composites: 0, memory: 0 }
+  }
+
+  tick() {
+    this.frames++
+    const now = performance.now()
+    if (now - this.lastTime >= 1000) {
+      this.fps = this.frames
+      this.frames = 0
+      this.lastTime = now
+      if (typeof window !== 'undefined' && window.__PERF__) {
+        window.__PERF__.fps = this.fps
+      }
+    }
+  }
+
+  report() {
+    if (typeof window !== 'undefined') {
+      window.__PERF__ = { fps: this.fps, metrics: this.metrics }
+    }
+  }
+}
+
+const perfMonitor = new PerformanceMonitor()
+
+// ═══════════════════════════════════════════════════════════════
+// ASCII LIQUID GLASS - GPU-OPTIMIZED with requestAnimationFrame
 // ═══════════════════════════════════════════════════════════════
 function AsciiLiquidGlass() {
   const [frame, setFrame] = useState(0)
-  const chars = ['░', '▒', '▓', '█', '▄', '▀', '■', '□', '▪', '▫', '●', '○', '◐', '◑', '◒', '◓']
-  const waveChars = ['~', '≈', '∼', '≋', '〰', '∿']
+  const frameRequestRef = useRef(null)
+  const animationStartRef = useRef(Date.now())
 
-  // Eye ASCII frames for liquid morphing effect
-  const eyeFrames = [
+  // Eye ASCII frames - memoized to prevent recreation
+  const eyeFrames = useMemo(() => [
     [
       "            ░░░░░░░░░░░░            ",
       "        ░░▒▒▓▓██████▓▓▒▒░░        ",
@@ -72,14 +113,25 @@ function AsciiLiquidGlass() {
       "        ▓▓██████████████████▓▓        ",
       "            ▓▓▓▓▓▓▓▓▓▓▓▓            ",
     ],
-  ]
+  ], [])
 
+  // GPU-OPTIMIZED: RAF-driven animation without setInterval
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFrame(f => (f + 1) % eyeFrames.length)
-    }, 800)
-    return () => clearInterval(interval)
-  }, [])
+    const animate = (now) => {
+      const elapsed = now - animationStartRef.current
+      const newFrame = Math.floor((elapsed / 800) % eyeFrames.length)
+      if (newFrame !== frame) {
+        setFrame(newFrame)
+      }
+      frameRequestRef.current = requestAnimationFrame(animate)
+    }
+    frameRequestRef.current = requestAnimationFrame(animate)
+    return () => {
+      if (frameRequestRef.current) {
+        cancelAnimationFrame(frameRequestRef.current)
+      }
+    }
+  }, [frame, eyeFrames.length])
 
   const currentFrame = eyeFrames[frame]
 
@@ -94,6 +146,7 @@ function AsciiLiquidGlass() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.03, duration: 0.3 }}
+              style={{ willChange: 'opacity, transform' }}
             >
               {line}
             </motion.span>
@@ -107,33 +160,37 @@ function AsciiLiquidGlass() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// LIQUID WAVE ASCII - Flowing wave animation
+// LIQUID WAVE ASCII - GPU-OPTIMIZED with CSS animation
 // ═══════════════════════════════════════════════════════════════
 function LiquidWaveAscii() {
-  const [offset, setOffset] = useState(0)
-  const wave = '░▒▓█▓▒░  '
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setOffset(o => (o + 1) % wave.length)
-    }, 100)
-    return () => clearInterval(interval)
-  }, [])
-
-  const generateWaveLine = (rowOffset) => {
-    let line = ''
-    for (let i = 0; i < 50; i++) {
-      const charIndex = (i + offset + rowOffset) % wave.length
-      line += wave[charIndex]
+  // Memoize wave lines - prevent recalculation on every render
+  const waveLines = useMemo(() => {
+    const wave = '░▒▓█▓▒░  '
+    const rows = []
+    for (let rowOffset = 0; rowOffset < 5; rowOffset++) {
+      let line = ''
+      for (let i = 0; i < 50; i++) {
+        const charIndex = (i + rowOffset) % wave.length
+        line += wave[charIndex]
+      }
+      rows.push(line)
     }
-    return line
-  }
+    return rows
+  }, [])
 
   return (
     <div className="liquid-wave">
-      {[0, 2, 4, 6, 8].map(rowOffset => (
-        <div key={rowOffset} className="liquid-wave__row">
-          {generateWaveLine(rowOffset)}
+      {waveLines.map((line, idx) => (
+        <div
+          key={idx}
+          className="liquid-wave__row"
+          style={{
+            willChange: 'transform',
+            contain: 'layout paint',
+            transform: 'translateZ(0)',
+          }}
+        >
+          {line}
         </div>
       ))}
     </div>
@@ -170,35 +227,55 @@ function FadeUp({ children, delay = 0, className = '' }) {
   )
 }
 
-function Counter({ value, suffix = '', prefix = '', label }) {
+// GPU-OPTIMIZED Counter with RAF-based animation
+const Counter = ({ value, suffix = '', prefix = '', label }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true })
   const [display, setDisplay] = useState(0)
+  const rafRef = useRef(null)
 
   useEffect(() => {
     if (!inView) return
+
     const num = parseFloat(value.toString().replace(/[^0-9.]/g, ''))
     const duration = 1500
-    const startTime = Date.now()
-    const tick = () => {
-      const elapsed = Date.now() - startTime
+    const startTime = performance.now()
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime
       const progress = Math.min(elapsed / duration, 1)
       const eased = 1 - Math.pow(1 - progress, 3)
       setDisplay(Math.floor(num * eased))
-      if (progress < 1) requestAnimationFrame(tick)
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate)
+      }
     }
-    tick()
+
+    rafRef.current = requestAnimationFrame(animate)
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
   }, [inView, value])
 
   return (
-    <div ref={ref} className="stat">
+    <div
+      ref={ref}
+      className="stat"
+      style={{
+        willChange: 'contents',
+        contain: 'content',
+      }}
+    >
       <span className="stat__value">{prefix}{display}{suffix}</span>
       <span className="stat__label">{label}</span>
     </div>
   )
 }
 
-function IndustryCard({ image, title, problem, solution, stats, index }) {
+// GPU-OPTIMIZED IndustryCard with transform3d promotion
+const IndustryCard = ({ image, title, problem, solution, stats, index }) => {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -215,11 +292,28 @@ function IndustryCard({ image, title, problem, solution, stats, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.8, delay: index * 0.1, ease }}
+      style={{
+        willChange: 'transform, opacity',
+        contain: 'layout paint',
+        transform: 'translateZ(0)',
+      }}
     >
-      <motion.div className="card__image" style={{ y: smoothY }}>
-        <img src={image} alt={title} loading="lazy"/>
+      <motion.div
+        className="card__image"
+        style={{
+          y: smoothY,
+          willChange: 'transform',
+          transform: 'translate3d(0, 0, 0)',
+        }}
+      >
+        <img
+          src={image}
+          alt={title}
+          loading="lazy"
+          style={{ transform: 'translateZ(0)' }}
+        />
       </motion.div>
-      <div className="card__content">
+      <div className="card__content" style={{ contain: 'content' }}>
         <h3>{title}</h3>
         <div className="card__section">
           <span className="card__label">Challenge</span>

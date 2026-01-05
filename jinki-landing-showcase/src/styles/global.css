@@ -1,5 +1,25 @@
-/* Google Fonts Import */
+/* ════════════════════════════════════════════════════════════════════════════════
+   JINKI INTELLIGENCE - RESPONSIVE DESIGN SYSTEM
+   Pixel-Perfect Layouts on Every Device
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Google Fonts Import - Optimized with font-display=swap and preload */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700;900&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+/* Import responsive design system */
+@import './responsive-typography.css';
+@import './responsive-layout.css';
+@import './container-queries.css';
+@import './touch-interactions.css';
+@import './layout-shift-prevention.css';
+
+/* Font fallback size-adjust for zero-width fallback prevention */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  font-display: fallback;
+  size-adjust: 96%;
+}
 
 /* CSS Reset */
 *, *::before, *::after {

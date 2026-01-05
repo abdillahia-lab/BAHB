@@ -1,0 +1,184 @@
+/* ═══════════════════════════════════════════════════════════════
+   LAZYMASTER: Lazy Image Component Styles
+   Blur-up effect for a polished progressive image loading experience
+   ═══════════════════════════════════════════════════════════════ */
+
+.lazy-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+}
+
+/* Placeholder blur-up effect */
+.lazy-image__placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(20px);
+  scale: 1.1;
+  opacity: 0.7;
+  animation: fadeOut 0.3s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+/* Main image */
+.lazy-image__img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Loading skeleton */
+.lazy-image__skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 37%,
+    #f0f0f0 63%
+  );
+  background-size: 200% 100%;
+  animation: wave 2s infinite;
+}
+
+.lazy-image__skeleton-pulse {
+  width: 100%;
+  height: 100%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Loading state */
+.lazy-image--loading {
+  background-color: #e8e8e8;
+}
+
+/* Loaded state */
+.lazy-image--loaded {
+  background-color: transparent;
+}
+
+/* Error state */
+.lazy-image--error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  min-height: 200px;
+}
+
+.lazy-image__error-content {
+  text-align: center;
+  color: #999;
+}
+
+.lazy-image__error-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.lazy-image__error-text {
+  font-size: 14px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes wave {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Responsive images */
+@media (max-width: 768px) {
+  .lazy-image {
+    border-radius: 6px;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .lazy-image {
+    background-color: #2a2a2a;
+  }
+
+  .lazy-image--loading {
+    background-color: #3a3a3a;
+  }
+
+  .lazy-image--error {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  }
+
+  .lazy-image__skeleton {
+    background: linear-gradient(
+      90deg,
+      #2a2a2a 25%,
+      #3a3a3a 37%,
+      #2a2a2a 63%
+    );
+  }
+}
+
+/* Reduce animations for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .lazy-image__placeholder {
+    animation: none;
+    opacity: 0;
+  }
+
+  .lazy-image__img {
+    animation: none;
+  }
+
+  .lazy-image__skeleton {
+    animation: none;
+    background: #e8e8e8;
+  }
+
+  .lazy-image__skeleton-pulse {
+    animation: none;
+    opacity: 0.8;
+  }
+}

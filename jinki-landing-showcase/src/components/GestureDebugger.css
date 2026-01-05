@@ -1,0 +1,257 @@
+/* GESTURAL: Debugger UI Styling */
+
+.gesture-debugger {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 20, 40, 0.95);
+  border: 1px solid #00D4FF;
+  border-radius: 12px;
+  padding: 16px;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 10001;
+  backdrop-filter: blur(10px);
+  font-family: 'Courier New', monospace;
+  color: #00D4FF;
+  font-size: 12px;
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+}
+
+.gesture-debugger.compact {
+  width: 250px;
+  max-height: 300px;
+}
+
+.debugger-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.debugger-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #00FF88;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.debugger-close {
+  background: none;
+  border: none;
+  color: #00D4FF;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.debugger-close:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00FF88;
+}
+
+.debugger-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.debug-section {
+  padding: 8px;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 6px;
+}
+
+.debug-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  font-weight: bold;
+  color: #00FF88;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.debug-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.debug-label {
+  color: #00D4FF;
+  font-weight: bold;
+  min-width: 90px;
+}
+
+.debug-value {
+  color: #00FF88;
+  font-weight: bold;
+  text-align: right;
+  flex: 1;
+  margin-left: 8px;
+}
+
+.gestures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.gesture-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px;
+  background: rgba(0, 255, 136, 0.05);
+  border-left: 2px solid #00FF88;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.gesture-type {
+  color: #FF00FF;
+  font-weight: bold;
+  min-width: 80px;
+}
+
+.gesture-direction {
+  color: #FFD700;
+  font-size: 9px;
+}
+
+.gesture-time {
+  color: #00D4FF;
+  font-size: 9px;
+  margin-left: auto;
+}
+
+.debugger-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #00D4FF;
+  color: #001428;
+  border: 2px solid #00FF88;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10000;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+.debugger-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+  background: #00FF88;
+}
+
+.debugger-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Scrollbar styling */
+.gesture-debugger::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gesture-debugger::-webkit-scrollbar-track {
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: 3px;
+}
+
+.gesture-debugger::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+.gesture-debugger::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+.gestures-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.gestures-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gestures-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 136, 0.3);
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gesture-debugger {
+    width: 280px;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .gesture-debugger.compact {
+    width: 240px;
+  }
+
+  .debug-section {
+    padding: 6px;
+    font-size: 10px;
+  }
+
+  .debugger-header h3 {
+    font-size: 12px;
+  }
+
+  .gesture-item {
+    font-size: 9px;
+  }
+}
+
+/* Animation for new items */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.gesture-item {
+  animation: slideIn 0.2s ease-out;
+}
+
+/* Print styles */
+@media print {
+  .gesture-debugger,
+  .debugger-toggle {
+    display: none;
+  }
+}

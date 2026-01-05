@@ -1,0 +1,415 @@
+/* GESTURAL: Visual Feedback Styling
+   Advanced gesture recognition visual indicators with GPU optimization */
+
+.gesture-particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.gesture-feedback-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+.gesture-feedback {
+  position: fixed;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* SWIPE FEEDBACK */
+.swipe-feedback .swipe-arrow {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.swipe-feedback .swipe-arrow svg {
+  filter: drop-shadow(0 0 8px #00D4FF);
+  animation: swipeArrowMove 0.6s ease-out forwards;
+}
+
+@keyframes swipeArrowMove {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) translateX(50px);
+  }
+}
+
+/* PINCH FEEDBACK */
+.pinch-feedback .pinch-circle {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, -50%);
+}
+
+.pinch-feedback .pinch-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pinchPulse 0.5s ease-out forwards;
+}
+
+@keyframes pinchPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+.pinch-feedback svg {
+  filter: drop-shadow(0 0 10px #FF00FF);
+}
+
+/* ROTATE FEEDBACK */
+.rotate-feedback .rotate-indicator {
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  animation: rotateSpinIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes rotateSpinIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+}
+
+.rotate-feedback svg {
+  filter: drop-shadow(0 0 10px #FFD700);
+}
+
+/* LONG PRESS FEEDBACK */
+.long-press-feedback .long-press-indicator {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+}
+
+.long-press-feedback .pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #FF6B6B;
+  border-radius: 50%;
+  animation: longPressPulse 1.5s ease-out forwards;
+}
+
+@keyframes longPressPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+    border-color: #FF6B6B;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+    border-color: transparent;
+  }
+}
+
+/* SHAKE FEEDBACK */
+.shake-feedback .shake-indicator {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: shakeEffect 0.3s ease-out;
+}
+
+@keyframes shakeEffect {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  10% {
+    transform: translate(-3px, -3px) rotate(-2deg);
+  }
+  20% {
+    transform: translate(3px, 3px) rotate(2deg);
+  }
+  30% {
+    transform: translate(-3px, 3px) rotate(-2deg);
+  }
+  40% {
+    transform: translate(3px, -3px) rotate(2deg);
+  }
+  50% {
+    transform: translate(-2px, -2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(2px, 2px) rotate(1deg);
+  }
+  70% {
+    transform: translate(-1px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+}
+
+.shake-feedback svg {
+  filter: drop-shadow(0 0 15px #00FF00);
+}
+
+/* DRAW FEEDBACK */
+.draw-feedback .draw-indicator {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+}
+
+.draw-feedback svg {
+  filter: drop-shadow(0 0 12px #00FF88);
+}
+
+/* TAP FEEDBACK */
+.tap-feedback .tap-ripple {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+}
+
+.tap-feedback .ripple-inner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #00D4FF;
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* GESTURE STATE INDICATOR */
+.gesture-state-badge {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 8px 16px;
+  background: rgba(0, 20, 40, 0.8);
+  border: 1px solid #00D4FF;
+  border-radius: 20px;
+  color: #00D4FF;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.gesture-state-badge.active {
+  animation: statePulse 0.6s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes statePulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+  }
+}
+
+/* GESTURE TRAIL */
+.gesture-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9997;
+}
+
+.gesture-trail-line {
+  stroke: #00D4FF;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px #00D4FF);
+  opacity: 0.8;
+  animation: trailFade 0.5s ease-out forwards;
+}
+
+@keyframes trailFade {
+  from {
+    opacity: 1;
+    stroke-width: 2;
+  }
+  to {
+    opacity: 0;
+    stroke-width: 1;
+  }
+}
+
+/* GESTURE DEBUG INFO */
+.gesture-debug-info {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  padding: 12px;
+  background: rgba(0, 20, 40, 0.9);
+  border: 1px solid #00FF88;
+  border-radius: 8px;
+  color: #00FF88;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  z-index: 10000;
+  max-width: 250px;
+  backdrop-filter: blur(10px);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.gesture-debug-info .debug-line {
+  margin: 4px 0;
+  line-height: 1.2;
+}
+
+.gesture-debug-info .debug-label {
+  color: #00D4FF;
+  font-weight: bold;
+  display: inline-block;
+  min-width: 60px;
+}
+
+/* GPU OPTIMIZED ANIMATIONS */
+@supports (backdrop-filter: blur(10px)) {
+  .gesture-feedback {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .gesture-feedback-container {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  .gesture-state-badge {
+    top: 5px;
+    right: 5px;
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+
+  .gesture-debug-info {
+    bottom: 5px;
+    right: 5px;
+    font-size: 9px;
+    max-width: 200px;
+  }
+
+  .swipe-feedback .swipe-arrow {
+    width: 30px;
+    height: 30px;
+  }
+
+  .pinch-feedback .pinch-circle {
+    width: 50px;
+    height: 50px;
+  }
+
+  .rotate-feedback .rotate-indicator {
+    width: 40px;
+    height: 40px;
+  }
+
+  .long-press-feedback .long-press-indicator {
+    width: 50px;
+    height: 50px;
+  }
+
+  .draw-feedback .draw-indicator {
+    width: 60px;
+    height: 60px;
+  }
+
+  .tap-feedback .tap-ripple {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+/* DARK MODE SUPPORT */
+@media (prefers-color-scheme: dark) {
+  .gesture-state-badge,
+  .gesture-debug-info {
+    background: rgba(0, 20, 40, 0.95);
+    border-color: #00D4FF;
+  }
+}
+
+/* HIGH CONTRAST MODE */
+@media (prefers-contrast: more) {
+  .gesture-feedback svg {
+    filter: drop-shadow(0 0 15px currentColor) brightness(1.2);
+  }
+
+  .gesture-state-badge {
+    border-width: 2px;
+    font-weight: bold;
+  }
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .gesture-feedback,
+  .gesture-state-badge,
+  .pulse-ring,
+  .ripple-inner {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .gesture-feedback {
+    opacity: 0.5;
+  }
+}

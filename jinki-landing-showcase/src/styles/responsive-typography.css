@@ -1,0 +1,431 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   JINKI INTELLIGENCE - FLUID TYPOGRAPHY SYSTEM
+   Using CSS Clamp() for Perfect Scalability Across All Devices
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Fluid Typography Scale
+   Scales between min and max values based on viewport width
+   Formula: clamp(min, preferred, max)
+   - min: smallest size (mobile)
+   - preferred: viewport-based calculation
+   - max: largest size (ultra-wide)
+*/
+
+:root {
+  /* Typography Scale (T1-T9: Large to Small) */
+  --font-size-t1: clamp(2.5rem, 6vw, 4rem);      /* Hero titles */
+  --font-size-t2: clamp(2rem, 4.5vw, 3rem);      /* Section titles */
+  --font-size-t3: clamp(1.5rem, 3.5vw, 2.25rem); /* Subsection titles */
+  --font-size-t4: clamp(1.25rem, 2.5vw, 1.75rem); /* Card titles */
+  --font-size-t5: clamp(1rem, 2vw, 1.375rem);    /* Body large */
+  --font-size-t6: clamp(0.9rem, 1.8vw, 1.125rem); /* Body normal */
+  --font-size-t7: clamp(0.875rem, 1.5vw, 1rem);  /* Body small */
+  --font-size-t8: clamp(0.8125rem, 1.2vw, 0.9375rem); /* Caption */
+  --font-size-t9: clamp(0.75rem, 1vw, 0.875rem); /* Micro */
+
+  /* Line Heights - Optimal Reading */
+  --line-height-tight: 1.1;      /* Headings */
+  --line-height-normal: 1.5;     /* Body text */
+  --line-height-loose: 1.7;      /* Long-form content */
+  --line-height-dense: 1.4;      /* Stats, labels */
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-ultra-wide: 0.2em;
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+}
+
+/* ═══ HEADING STYLES ═══ */
+h1 {
+  font-size: var(--font-size-t1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h2 {
+  font-size: var(--font-size-t2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h3 {
+  font-size: var(--font-size-t4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+h4 {
+  font-size: var(--font-size-t5);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+h5, h6 {
+  font-size: var(--font-size-t6);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ═══ PARAGRAPH & BODY TEXT ═══ */
+p {
+  font-size: var(--font-size-t6);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+/* ═══ SPECIALIZED TEXT ═══ */
+.hero__tagline {
+  font-size: var(--font-size-t9);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-dense);
+  letter-spacing: var(--letter-spacing-ultra-wide);
+  text-transform: uppercase;
+}
+
+.hero__subtitle {
+  font-size: var(--font-size-t5);
+  line-height: var(--line-height-loose);
+  color: var(--slate-300);
+}
+
+.section__eyebrow {
+  font-size: var(--font-size-t9);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.section__subtitle {
+  font-size: var(--font-size-t6);
+  line-height: var(--line-height-loose);
+}
+
+/* ═══ STAT VALUES ═══ */
+.stat__value {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.stat__label {
+  font-size: var(--font-size-t9);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  line-height: var(--line-height-dense);
+}
+
+/* ═══ CARD CONTENT ═══ */
+.card__content h3 {
+  font-size: var(--font-size-t4);
+  font-weight: var(--font-weight-semibold);
+}
+
+.card__label {
+  font-size: var(--font-size-t9);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.card__section p {
+  font-size: var(--font-size-t7);
+  line-height: var(--line-height-normal);
+}
+
+.card__stat-value {
+  font-size: clamp(1.25rem, 2.5vw, 1.375rem);
+  font-weight: var(--font-weight-bold);
+}
+
+.card__stat-label {
+  font-size: var(--font-size-t9);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+/* ═══ BUTTON TEXT ═══ */
+.btn {
+  font-size: var(--font-size-t7);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.btn--lg {
+  font-size: var(--font-size-t6);
+}
+
+/* ═══ NAV TEXT ═══ */
+.nav__logo-text {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-ultra-wide);
+}
+
+.nav__links a {
+  font-size: var(--font-size-t7);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+/* ═══ FEATURE LIST ═══ */
+.feature {
+  font-size: var(--font-size-t6);
+  line-height: var(--line-height-normal);
+}
+
+/* ═══ ADVISOR ═══ */
+.advisor h3 {
+  font-size: var(--font-size-t4);
+  font-weight: var(--font-weight-semibold);
+}
+
+.advisor__role {
+  font-size: var(--font-size-t7);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.advisor__bio {
+  font-size: var(--font-size-t6);
+  line-height: var(--line-height-loose);
+}
+
+.cert {
+  font-size: var(--font-size-t9);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* ═══ CTA SECTION ═══ */
+.cta h2 {
+  font-size: var(--font-size-t2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.cta__tagline {
+  font-size: var(--font-size-t6);
+  font-style: italic;
+  line-height: var(--line-height-normal);
+}
+
+.cta p {
+  font-size: var(--font-size-t5);
+  line-height: var(--line-height-loose);
+}
+
+/* ═══ FOOTER ═══ */
+.footer__logo {
+  font-size: var(--font-size-t7);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.footer__tagline {
+  font-size: var(--font-size-t9);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.footer__copy {
+  font-size: var(--font-size-t9);
+}
+
+/* ═══ ASCII & CODE BLOCKS ═══ */
+.ascii-glass__art,
+.ascii-box,
+.ascii-avatar,
+.cta__ascii {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: clamp(0.5rem, 1.2vw, 0.875rem);
+  line-height: 1.15;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   PARAGRAPH STYLING FOR DIFFERENT CONTEXTS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Body Copy - Optimal for reading */
+.body-text {
+  font-size: var(--font-size-t6);
+  line-height: var(--line-height-loose);
+  letter-spacing: var(--letter-spacing-normal);
+  max-width: 75ch; /* Optimal line length for reading */
+}
+
+/* Compact labels & descriptions */
+.label-text {
+  font-size: var(--font-size-t8);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+/* Helper/supporting text */
+.helper-text {
+  font-size: var(--font-size-t9);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE FONT ADJUSTMENTS FOR SPECIFIC BREAKPOINTS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Ultra-wide (> 1920px) - More breathing room */
+@media (min-width: 1921px) {
+  :root {
+    --font-size-t1: 4rem;
+    --font-size-t2: 3rem;
+    --font-size-t5: 1.375rem;
+  }
+
+  .hero__subtitle {
+    max-width: 90ch;
+  }
+
+  .body-text {
+    max-width: 80ch;
+  }
+}
+
+/* Tablet Portrait (768px - 1024px) */
+@media (max-width: 1024px) {
+  :root {
+    --line-height-loose: 1.8; /* Increased for smaller screens */
+  }
+
+  h1 {
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  h2 {
+    margin-bottom: clamp(0.75rem, 2.5vw, 1.25rem);
+  }
+
+  h3 {
+    margin-bottom: clamp(0.5rem, 2vw, 1rem);
+  }
+
+  p {
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
+  }
+}
+
+/* Mobile (< 768px) - Improved readability */
+@media (max-width: 768px) {
+  :root {
+    --line-height-tight: 1.15;
+    --line-height-normal: 1.6;
+    --line-height-loose: 1.8;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    margin-bottom: 0.875rem;
+  }
+
+  h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Better spacing for mobile readability */
+  .body-text {
+    max-width: 100%;
+    word-spacing: 0.1em;
+  }
+}
+
+/* Small Mobile (< 480px) - Maximum readability */
+@media (max-width: 480px) {
+  :root {
+    --font-size-t1: clamp(1.75rem, 5vw, 2.5rem);
+    --font-size-t2: clamp(1.5rem, 4vw, 2rem);
+    --font-size-t3: clamp(1.25rem, 3vw, 1.5rem);
+  }
+
+  /* Stack text tighter on small screens */
+  h1 {
+    margin-bottom: 0.875rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Prevent orphans (single word on new line) */
+  h1, h2, h3, p {
+    text-wrap: pretty;
+  }
+}
+
+/* Landscape Mobile (max-height: 600px) - Compact typography */
+@media (max-height: 600px) and (orientation: landscape) {
+  :root {
+    --font-size-t1: clamp(1.75rem, 3vw, 2.25rem);
+    --font-size-t2: clamp(1.25rem, 2.5vw, 1.75rem);
+    --line-height-tight: 1.1;
+    --line-height-normal: 1.4;
+  }
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* High DPI Screens - Sharper rendering */
+@media (min-resolution: 192dpi) {
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - RESPECTS USER PREFERENCES
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Users who prefer larger text */
+@media (prefers-contrast: more) {
+  :root {
+    --line-height-tight: 1.15;
+    --line-height-normal: 1.6;
+    --line-height-loose: 1.8;
+    --letter-spacing-normal: 0.01em;
+  }
+}
+
+/* Users who prefer reduced motion - disable clamp animation flicker */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode preference (although we're dark-first) */
+@media (prefers-color-scheme: dark) {
+  body {
+    text-rendering: optimizeLegibility;
+  }
+}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 1: CRITICAL PATH OPTIMIZATION (above the fold) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jinki Intelligence - Landing Page Showcase</title>
+    <meta name="description" content="Browse and preview landing page designs for Jinki Intelligence" />
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 2: EARLY HINTS & DNS RESOLUTION (0-50ms savings) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- DNS Prefetch - resolve DNS for external CDNs ASAP (non-blocking) -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Preconnect - establish full connection (DNS + TCP + TLS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 3: FONT LOADING STRATEGY (Critical for LCP) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Inline critical font request to bypass render-blocking CSS @import -->
+    <!-- This eliminates Font Request Chain: HTML → CSS → Font request -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap"></noscript>
+
+    <!-- Preload variable fonts for optimal performance -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO_p8CyjoYL_58Ig4jVFQf4EBstn.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/spacegrotesk/v16/V0xR4EsONYYWNVH3T-R6AeFf7Wtayhc.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Async load remaining fonts with display=swap to prevent FOIT -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&family=Rajdhani:wght@400;600&family=Roboto:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet';document.dispatchEvent(new Event('webfontload'))">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 4: CRITICAL RESOURCE PREFETCHING & PRELOADING -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Preload CSS bundle (critical rendering path) -->
+    <link rel="preload" href="/assets/index-eII8Ij-Y.css" as="style">
+
+    <!-- Preload main JS bundle (high priority) -->
+    <link rel="preload" href="/assets/index-H6anRomC.js" as="script">
+
+    <!-- Prefetch favicon early to avoid 404s and delays -->
+    <link rel="prefetch" href="/vite.svg">
+
+    <!-- Prefetch SVG logo (likely needed early in render) -->
+    <link rel="prefetch" href="/jinki-logo.svg" as="image">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 5: ACTUAL STYLESHEET & FAVICON (must be blocking) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Critical CSS (required for initial paint) -->
+    <link rel="stylesheet" crossorigin href="/assets/index-eII8Ij-Y.css">
+
+    <!-- Favicon with preload -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 6: PERFORMANCE & SEO META TAGS -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Enable faster parsing in browsers -->
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+
+    <!-- Performance: Request page header/footer download during idle -->
+    <link rel="prefetch" href="/">
+
+    <!-- Reduce parser-blocking by deferring non-critical resources -->
+    <meta http-equiv="Link" content="</assets/index-H6anRomC.js>; rel=preload; as=script">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 7: EARLY HINTS (simulated via meta tags for non-HTTP/2 servers) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- For servers supporting 103 Early Hints: these would be sent before final response -->
+    <!-- Browsers not supporting 103 will use preload/prefetch above -->
+
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- LAYER 8: DEFERRED SCRIPT LOADING (non-blocking) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Main bundle with module support -->
+    <script type="module" crossorigin src="/assets/index-H6anRomC.js"></script>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- INLINE SERVICE WORKER REGISTRATION -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      // Register Service Worker immediately for offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
+
+      // Monitor performance metrics
+      if (window.PerformanceObserver) {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            // Send to analytics
+            console.log(`${entry.name}: ${entry.duration.toFixed(2)}ms`);
+          }
+        });
+        observer.observe({ entryTypes: ['navigation', 'resource', 'paint'] });
+      }
+    </script>
+  </body>
+</html>

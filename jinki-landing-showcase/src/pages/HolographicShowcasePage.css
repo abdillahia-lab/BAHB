@@ -1,0 +1,417 @@
+/* ═══════════════════════════════════════════════════════════════
+   HOLOGRAPHIC SHOWCASE PAGE
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0d1117 0%, #0a0e13 100%);
+  color: #f0f6fc;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  overflow: hidden;
+}
+
+.holo-hero__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.holo-hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 180, 216, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 216, 0.05) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+}
+
+.holo-hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+}
+
+.holo-hero__title {
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.holo-hero__subtitle {
+  font-size: 1.2rem;
+  color: rgba(0, 229, 255, 0.8);
+  margin-bottom: 24px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.holo-hero__description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.holo-hero__cta {
+  margin-bottom: 80px;
+}
+
+.holo-hero__cta .btn {
+  margin: 0 auto;
+  font-size: 1rem;
+  padding: 14px 32px;
+}
+
+.holo-hero__beacons {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHOWCASE SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-showcase-section {
+  position: relative;
+  padding: 120px 24px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 180, 216, 0.05) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  border-top: 1px solid rgba(0, 229, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTEGRATION EXAMPLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-integration {
+  padding: 120px 24px;
+}
+
+.holo-section-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.holo-section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #00b4d8, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.holo-section-header p {
+  font-size: 1.1rem;
+  color: rgba(0, 229, 255, 0.7);
+  letter-spacing: 0.02em;
+}
+
+.holo-examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.holo-example {
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.6));
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.holo-example:hover {
+  border-color: rgba(0, 229, 255, 0.8);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(0, 180, 216, 0.2);
+}
+
+.holo-example h3 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+  color: var(--holo-cyan-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.holo-example__code {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.holo-example__code pre {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #00e5ff;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.holo-example p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FEATURES SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-features {
+  padding: 120px 24px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 180, 216, 0.02));
+}
+
+.holo-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.holo-feature-card {
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(13, 17, 23, 0.7), rgba(13, 17, 23, 0.5));
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  border-radius: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.holo-feature-card:hover {
+  border-color: rgba(0, 229, 255, 0.6);
+  background: linear-gradient(135deg, rgba(13, 17, 23, 0.9), rgba(13, 17, 23, 0.7));
+  transform: translateY(-8px);
+}
+
+.holo-feature-card__icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  animation: holo-icon-float 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes holo-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.holo-feature-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: #00e5ff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.holo-feature-card p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-performance {
+  padding: 120px 24px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 180, 216, 0.05));
+  border-top: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.holo-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.holo-metric {
+  padding: 40px;
+  background: linear-gradient(135deg, rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.6));
+  border: 2px solid rgba(0, 180, 216, 0.3);
+  border-radius: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.holo-metric:hover {
+  border-color: rgba(0, 229, 255, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(0, 180, 216, 0.3);
+}
+
+.holo-metric h3 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00b4d8, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.holo-metric p {
+  font-size: 1rem;
+  color: rgba(0, 229, 255, 0.7);
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-footer {
+  padding: 80px 24px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 180, 216, 0.05));
+  border-top: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.holo-footer__content h3 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  color: #00e5ff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.holo-footer__content p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 32px;
+}
+
+.holo-footer__content .btn {
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS (from global)
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  cursor: pointer;
+  border: 1px solid transparent;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+  color: #0d1117;
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+}
+
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(0, 180, 216, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .holo-hero {
+    min-height: auto;
+    padding: 80px 20px 60px;
+  }
+
+  .holo-hero__title {
+    font-size: 2rem;
+  }
+
+  .holo-hero__beacons {
+    position: relative;
+    bottom: auto;
+    transform: translateX(0);
+    margin-top: 40px;
+  }
+
+  .holo-examples,
+  .holo-feature-grid,
+  .holo-metrics {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .holo-section-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .holo-integration,
+  .holo-features,
+  .holo-performance {
+    padding: 80px 20px;
+  }
+
+  .holo-showcase-section {
+    padding: 80px 20px;
+  }
+
+  .holo-footer {
+    padding: 60px 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

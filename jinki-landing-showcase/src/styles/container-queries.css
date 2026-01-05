@@ -1,0 +1,655 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   JINKI INTELLIGENCE - CSS CONTAINER QUERIES
+   Component-Level Responsiveness Without Media Queries
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTAINER QUERY SETUP - Define container contexts for different sections
+   Container queries allow components to adapt based on their parent container size
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Hero section container - adapts based on hero size, not viewport */
+.hero {
+  container-type: inline-size;
+  container-name: hero-section;
+}
+
+/* Cards grid container */
+.cards {
+  container-type: inline-size;
+  container-name: cards-grid;
+}
+
+/* Individual card container - adapts to card width */
+.card {
+  container-type: inline-size;
+  container-name: industry-card;
+}
+
+/* Platform section container */
+.platform {
+  container-type: inline-size;
+  container-name: platform-section;
+}
+
+/* Stats container */
+.hero__stats {
+  container-type: inline-size;
+  container-name: stats-group;
+}
+
+/* Features list container */
+.features {
+  container-type: inline-size;
+  container-name: features-list;
+}
+
+/* Advisor section container */
+.advisor {
+  container-type: inline-size;
+  container-name: advisor-card;
+}
+
+/* CTA section container */
+.cta {
+  container-type: inline-size;
+  container-name: cta-section;
+}
+
+/* Footer container */
+.footer {
+  container-type: inline-size;
+  container-name: footer-section;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   HERO SECTION - Responsive to container width
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large containers (> 1200px) - Full layout */
+@container hero-section (min-width: 1200px) {
+  .hero__content {
+    max-width: 700px;
+  }
+
+  .hero__ascii {
+    margin-bottom: 40px;
+  }
+
+  .hero h1 {
+    font-size: 4rem;
+    margin-bottom: 24px;
+  }
+
+  .hero__subtitle {
+    font-size: 1.125rem;
+    margin-bottom: 36px;
+  }
+
+  .hero__stats {
+    gap: 48px;
+    margin-top: 80px;
+  }
+}
+
+/* Medium containers (768px - 1199px) - Balanced */
+@container hero-section (min-width: 768px) and (max-width: 1199px) {
+  .hero__content {
+    max-width: 600px;
+  }
+
+  .hero__ascii {
+    margin-bottom: 32px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 20px;
+  }
+
+  .hero__subtitle {
+    font-size: 1rem;
+    margin-bottom: 28px;
+  }
+
+  .hero__actions {
+    gap: 12px;
+  }
+
+  .hero__stats {
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 60px;
+  }
+
+  .stat {
+    min-width: 120px;
+  }
+}
+
+/* Small containers (< 768px) - Stacked */
+@container hero-section (max-width: 767px) {
+  .hero {
+    padding: 80px 16px 40px;
+  }
+
+  .hero__content {
+    max-width: 100%;
+  }
+
+  .hero__ascii {
+    margin-bottom: 24px;
+    transform: scale(0.9);
+    transform-origin: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    margin-bottom: 16px;
+  }
+
+  .hero__subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero__stats {
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .stat {
+    min-width: auto;
+    padding: 16px 0;
+  }
+
+  .stat__value {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CARDS GRID - Adapts column count based on container width
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large containers (> 1200px) - 4 columns */
+@container cards-grid (min-width: 1200px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .card {
+    transform: translateZ(0);
+  }
+}
+
+/* Medium-large containers (992px - 1199px) - 3 columns */
+@container cards-grid (min-width: 992px) and (max-width: 1199px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+/* Medium containers (768px - 991px) - 2 columns */
+@container cards-grid (min-width: 768px) and (max-width: 991px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .card {
+    padding: 0 12px;
+  }
+
+  .card__image {
+    height: 160px;
+  }
+
+  .card__content {
+    padding: 20px;
+  }
+
+  .card__content h3 {
+    font-size: 1.125rem;
+  }
+}
+
+/* Small containers (< 768px) - Single column */
+@container cards-grid (max-width: 767px) {
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    transform: translateZ(0);
+  }
+
+  .card__image {
+    height: 140px;
+  }
+
+  .card__content {
+    padding: 16px;
+  }
+
+  .card__section {
+    margin-bottom: 12px;
+  }
+
+  .card__stats {
+    gap: 16px;
+    padding-top: 12px;
+    margin-top: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INDIVIDUAL CARD - Responsive content inside card
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large card (> 350px) - Full content */
+@container industry-card (min-width: 350px) {
+  .card__label {
+    font-size: 0.6875rem;
+    margin-bottom: 6px;
+  }
+
+  .card__section p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .card__stat-value {
+    font-size: 1.375rem;
+  }
+}
+
+/* Medium card (250px - 349px) - Condensed */
+@container industry-card (min-width: 250px) and (max-width: 349px) {
+  .card__label {
+    font-size: 0.625rem;
+    margin-bottom: 4px;
+  }
+
+  .card__section p {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .card__stat-value {
+    font-size: 1.125rem;
+  }
+
+  .card__stat-label {
+    font-size: 0.625rem;
+  }
+}
+
+/* Small card (< 250px) - Minimal */
+@container industry-card (max-width: 249px) {
+  .card__section {
+    margin-bottom: 8px;
+  }
+
+  .card__section p {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .card__stats {
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .card__stat-value {
+    font-size: 1rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PLATFORM SECTION - Two-column to single column
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large platform (> 1000px) - Side-by-side */
+@container platform-section (min-width: 1000px) {
+  .platform {
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .platform__text {
+    text-align: left;
+  }
+
+  .features {
+    align-items: flex-start;
+  }
+
+  .platform__visual {
+    justify-content: flex-end;
+  }
+}
+
+/* Medium platform (768px - 999px) - Stacked center */
+@container platform-section (min-width: 768px) and (max-width: 999px) {
+  .platform {
+    grid-template-columns: 1fr;
+    gap: 60px;
+    text-align: center;
+  }
+
+  .features {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .platform__visual {
+    justify-content: center;
+  }
+}
+
+/* Small platform (< 768px) - Single column, optimized */
+@container platform-section (max-width: 767px) {
+  .platform {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .platform__text h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+  }
+
+  .platform__lead {
+    font-size: 1rem;
+  }
+
+  .features {
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feature {
+    font-size: clamp(0.85rem, 2vw, 1rem);
+  }
+
+  .eye-visual {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STATS GROUP - Responsive layout
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large stats (> 800px) - 4 columns */
+@container stats-group (min-width: 800px) {
+  .hero__stats {
+    flex-direction: row;
+    justify-content: center;
+    gap: 48px;
+  }
+
+  .stat {
+    min-width: 140px;
+    flex: 0 1 auto;
+  }
+}
+
+/* Medium stats (500px - 799px) - 2 columns */
+@container stats-group (min-width: 500px) and (max-width: 799px) {
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .stat {
+    text-align: center;
+  }
+}
+
+/* Small stats (< 500px) - Single column */
+@container stats-group (max-width: 499px) {
+  .hero__stats {
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .stat {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .stat:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FEATURES LIST - Responsive layout
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large features (> 600px) - Vertical stack, left-aligned */
+@container features-list (min-width: 600px) {
+  .features {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .feature {
+    font-size: 0.9375rem;
+  }
+}
+
+/* Small features (< 600px) - Centered, compact */
+@container features-list (max-width: 599px) {
+  .features {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .feature {
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    text-align: center;
+  }
+
+  .feature__icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ADVISOR CARD - Responsive internal layout
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large advisor (> 400px) - Full width content */
+@container advisor-card (min-width: 400px) {
+  .advisor {
+    padding: 48px;
+  }
+
+  .advisor h3 {
+    font-size: 1.5rem;
+  }
+
+  .advisor__bio {
+    font-size: 0.9375rem;
+    margin-bottom: 28px;
+  }
+
+  .advisor__certs {
+    gap: 10px;
+  }
+
+  .cert {
+    padding: 8px 16px;
+  }
+}
+
+/* Small advisor (< 400px) - Condensed */
+@container advisor-card (max-width: 399px) {
+  .advisor {
+    padding: 24px 16px;
+  }
+
+  .advisor__avatar {
+    margin-bottom: 16px;
+  }
+
+  .advisor h3 {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+  }
+
+  .advisor__role {
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+  }
+
+  .advisor__bio {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .advisor__certs {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cert {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CTA SECTION - Call-to-action responsive
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large CTA (> 600px) - Full presentation */
+@container cta-section (min-width: 600px) {
+  .cta {
+    max-width: 600px;
+  }
+
+  .cta__ascii {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .cta h2 {
+    font-size: 2.25rem;
+    margin-bottom: 12px;
+  }
+
+  .cta__actions {
+    gap: 16px;
+    flex-wrap: nowrap;
+  }
+
+  .btn--lg {
+    padding: 16px 32px;
+    font-size: 1rem;
+  }
+}
+
+/* Small CTA (< 600px) - Stacked buttons */
+@container cta-section (max-width: 599px) {
+  .cta {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  .cta__ascii {
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+  }
+
+  .cta h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    margin-bottom: 8px;
+  }
+
+  .cta__tagline {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+
+  .cta p {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .cta__actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn--lg {
+    padding: 14px 24px;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FOOTER - Responsive layout
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Large footer (> 768px) - Horizontal layout */
+@container footer-section (min-width: 768px) {
+  .footer__inner {
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 20px;
+  }
+
+  .footer__brand {
+    gap: 16px;
+  }
+}
+
+/* Small footer (< 768px) - Vertical stacked */
+@container footer-section (max-width: 767px) {
+  .footer__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .footer__brand {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .footer__copy {
+    width: 100%;
+  }
+}

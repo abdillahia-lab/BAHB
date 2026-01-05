@@ -1,0 +1,163 @@
+/**
+ * ════════════════════════════════════════════════════════════════
+ * SMART SUGGESTIONS STYLES
+ * Non-blocking, helpful suggestions
+ * ════════════════════════════════════════════════════════════════
+ */
+
+.smart-suggestions-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  max-width: 320px;
+  pointer-events: auto;
+}
+
+.smart-suggestions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.suggestions-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+}
+
+.suggestions-icon {
+  flex-shrink: 0;
+  color: #00ffc8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: icon-float 3s ease-in-out infinite;
+}
+
+@keyframes icon-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.suggestions-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #e0e7ff;
+  line-height: 1.4;
+}
+
+.suggestion-icon-small {
+  flex-shrink: 0;
+  color: #00ffc8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.suggestion-text {
+  flex: 1;
+}
+
+.suggestion-close {
+  flex-shrink: 0;
+  background: rgba(0, 255, 200, 0.1);
+  border: none;
+  color: #00ffc8;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suggestion-close:hover {
+  background: rgba(0, 255, 200, 0.2);
+  color: #00ffc8;
+}
+
+/* Auto-dismiss timer bar */
+.suggestion-timer-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00ffc8, #00c8ff);
+  animation: timer-bar-shrink 8s linear forwards;
+}
+
+@keyframes timer-bar-shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Multiple suggestions */
+.smart-suggestions[data-count="2"] .suggestions-body {
+  gap: 6px;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .smart-suggestions-container {
+    right: 12px;
+    bottom: 12px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .smart-suggestions {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .suggestion-item {
+    font-size: 12px;
+  }
+
+  .suggestions-icon {
+    min-width: 16px;
+  }
+}
+
+/* Animation for appearance */
+.smart-suggestions {
+  animation: suggestion-glow 2s ease-in-out;
+}
+
+@keyframes suggestion-glow {
+  0% {
+    box-shadow: 0 8px 32px rgba(0, 255, 200, 0.2);
+  }
+  50% {
+    box-shadow: 0 12px 40px rgba(0, 255, 200, 0.3);
+  }
+  100% {
+    box-shadow: 0 8px 32px rgba(0, 255, 200, 0.15);
+  }
+}

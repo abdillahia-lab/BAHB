@@ -1,0 +1,102 @@
+/**
+ * ════════════════════════════════════════════════════════════════
+ * READING TIME STYLES
+ * Badge showing estimated reading time
+ * ════════════════════════════════════════════════════════════════
+ */
+
+.reading-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  position: absolute;
+  z-index: 10;
+  font-weight: 500;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 255, 200, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Position variants */
+.reading-time.top-right {
+  top: 12px;
+  right: 12px;
+}
+
+.reading-time.top-left {
+  top: 12px;
+  left: 12px;
+}
+
+.reading-time.bottom-right {
+  bottom: 12px;
+  right: 12px;
+}
+
+.reading-time.bottom-left {
+  bottom: 12px;
+  left: 12px;
+}
+
+.reading-time-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.reading-time-text {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+/* Hover effect */
+.reading-time:hover {
+  border-color: rgba(0, 255, 200, 0.3);
+  background: rgba(0, 255, 200, 0.1);
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Animation on appear */
+@keyframes reading-time-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reading-time {
+  animation: reading-time-appear 0.4s ease-out;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .reading-time {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .reading-time.top-right,
+  .reading-time.top-left,
+  .reading-time.bottom-right,
+  .reading-time.bottom-left {
+    top: 8px;
+    right: 8px;
+  }
+}
+
+/* Subtle pulse animation on hover */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

@@ -1,0 +1,822 @@
+/**
+ * MICROFEEDBACK - CSS ANIMATION LIBRARY
+ * Exceptional micro-interactions for Jinki Intelligence
+ * GPU-accelerated CSS animations for maximum performance
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTON ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Button Base - Optimized for GPU */
+.micro-btn {
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translateZ(0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.micro-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 122, 204, 0.25);
+}
+
+.micro-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.15);
+}
+
+/* Button Ripple Effect */
+.micro-btn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+  pointer-events: none;
+}
+
+@keyframes ripple-out {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 0.75;
+  }
+  to {
+    width: 500px;
+    height: 500px;
+    opacity: 0;
+  }
+}
+
+.micro-btn-ripple.active {
+  animation: ripple-out 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Glow Button */
+.micro-btn-glow {
+  box-shadow:
+    0 0 0 0px rgba(0, 122, 204, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-btn-glow:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 0 20px 2px rgba(0, 122, 204, 0.6),
+    0 8px 16px rgba(0, 122, 204, 0.2);
+}
+
+/* Icon Button */
+.micro-btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  opacity: 0.7;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-btn-icon:hover {
+  transform: scale(1.1);
+  opacity: 1;
+  box-shadow: 0 8px 16px rgba(0, 122, 204, 0.15);
+}
+
+.micro-btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOADING ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Pulse Animation */
+@keyframes micro-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.micro-pulse {
+  animation: micro-pulse 2s ease-in-out infinite;
+  will-change: opacity;
+}
+
+/* Shimmer Skeleton */
+@keyframes micro-shimmer {
+  0% {
+    background-position: 200% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
+.micro-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: micro-shimmer 2s infinite;
+}
+
+/* Spinner */
+@keyframes micro-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.micro-spinner {
+  animation: micro-spin 1s linear infinite;
+  will-change: transform;
+}
+
+/* Bouncing Dots */
+@keyframes micro-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.micro-bounce-dot {
+  animation: micro-bounce 0.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.micro-bounce-dot:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.micro-bounce-dot:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* Wave Loading */
+@keyframes micro-wave {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.micro-wave {
+  animation: micro-wave 1.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FEEDBACK ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Success Check Animation */
+@keyframes micro-success-scale {
+  0% {
+    transform: scale(0) rotate(-180deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.micro-success {
+  animation: micro-success-scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+/* Error Shake */
+@keyframes micro-error-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+.micro-error {
+  animation: micro-error-shake 0.4s;
+  will-change: transform;
+}
+
+/* Warning Pulse */
+@keyframes micro-warning-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0px rgba(255, 193, 7, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(255, 193, 7, 0);
+  }
+}
+
+.micro-warning {
+  animation: micro-warning-pulse 1s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+/* Info Slide In */
+@keyframes micro-info-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micro-info {
+  animation: micro-info-slide 0.3s cubic-bezier(0, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Toast Notification */
+@keyframes micro-toast-slide {
+  from {
+    opacity: 0;
+    transform: translateX(400px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.micro-toast {
+  animation: micro-toast-slide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, opacity;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CARD ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-card {
+  will-change: transform, box-shadow;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.micro-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Image Zoom */
+.micro-card-image {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.micro-card-image img {
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.33, 0.66, 0.66, 1);
+}
+
+.micro-card:hover .micro-card-image img {
+  transform: scale(1.05);
+}
+
+/* Card Content Slide */
+.micro-card-content {
+  will-change: transform, opacity;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-card:hover .micro-card-content {
+  transform: translateY(-4px);
+}
+
+/* Card Border Glow */
+.micro-card-border {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  will-change: border-color, box-shadow;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-card-border:hover {
+  border-color: rgba(0, 122, 204, 0.3);
+  box-shadow: 0 0 0 1px rgba(0, 122, 204, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FORM FIELD ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-input-wrapper {
+  position: relative;
+}
+
+/* Underline Animation */
+.micro-input {
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  transition: border-color 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: border-color, box-shadow;
+}
+
+.micro-input:focus {
+  outline: none;
+  border-bottom: 2px solid #007ACC;
+  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+}
+
+/* Floating Label */
+.micro-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, color;
+  color: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.micro-input:focus ~ .micro-label,
+.micro-input:not(:placeholder-shown) ~ .micro-label {
+  transform: translateY(-24px);
+  font-size: 0.75rem;
+  color: #007ACC;
+  font-weight: 600;
+}
+
+/* Input Fill Animation */
+.micro-input-fill {
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: background-color 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-input-fill:focus {
+  background-color: rgba(0, 122, 204, 0.05);
+}
+
+/* Character Counter */
+@keyframes micro-counter-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micro-counter {
+  animation: micro-counter-slide 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: opacity, transform;
+}
+
+/* Error Message */
+@keyframes micro-error-msg {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.micro-error-message {
+  animation: micro-error-msg 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: opacity, transform;
+  color: #d32f2f;
+  font-size: 0.875rem;
+}
+
+/* Success Checkmark */
+.micro-success-checkmark {
+  animation: micro-success-scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+  color: #388e3c;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Link Underline */
+.micro-link {
+  position: relative;
+  cursor: pointer;
+  transition: color 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #007ACC;
+  transition: width 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: width;
+}
+
+.micro-link:hover::after {
+  width: 100%;
+}
+
+/* Nav Item */
+.micro-nav-item {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: background-color, color, transform;
+  cursor: pointer;
+}
+
+.micro-nav-item:hover {
+  background-color: rgba(0, 122, 204, 0.1);
+  color: #007ACC;
+  transform: scale(1.02);
+}
+
+.micro-nav-item.active {
+  background-color: rgba(0, 122, 204, 0.15);
+  color: #007ACC;
+  font-weight: 600;
+  border-bottom: 2px solid #007ACC;
+}
+
+/* Dropdown Menu */
+@keyframes micro-dropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+    pointer-events: none;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+.micro-dropdown {
+  animation: micro-dropdown 0.2s cubic-bezier(0, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+/* Breadcrumb Chevron */
+.micro-breadcrumb-chevron {
+  will-change: transform, opacity;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0.5;
+}
+
+.micro-breadcrumb:hover .micro-breadcrumb-chevron {
+  transform: translateX(2px);
+  opacity: 1;
+}
+
+/* Mobile Menu */
+@keyframes micro-mobile-menu {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.micro-mobile-menu {
+  animation: micro-mobile-menu 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL PROGRESS INDICATORS
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #007ACC, #00BCD4);
+  z-index: 999;
+  will-change: width;
+}
+
+.micro-scroll-indicator {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #007ACC, #00BCD4);
+  z-index: 999;
+  will-change: height;
+}
+
+/* Dot Indicator */
+.micro-scroll-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: background-color, transform;
+  cursor: pointer;
+}
+
+.micro-scroll-dot.active {
+  transform: scale(1.2);
+  background-color: #007ACC;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Fade In */
+@keyframes micro-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.micro-fade-in {
+  animation: micro-fade-in 0.3s ease-out;
+}
+
+/* Slide In Left */
+@keyframes micro-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.micro-slide-left {
+  animation: micro-slide-left 0.3s cubic-bezier(0, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Slide In Right */
+@keyframes micro-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.micro-slide-right {
+  animation: micro-slide-right 0.3s cubic-bezier(0, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Slide In Top */
+@keyframes micro-slide-top {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micro-slide-top {
+  animation: micro-slide-top 0.3s cubic-bezier(0, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Slide In Bottom */
+@keyframes micro-slide-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micro-slide-bottom {
+  animation: micro-slide-bottom 0.3s cubic-bezier(0, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Scale Up */
+@keyframes micro-scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.micro-scale-up {
+  animation: micro-scale-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+
+/* Rotate In */
+@keyframes micro-rotate-in {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0);
+  }
+}
+
+.micro-rotate-in {
+  animation: micro-rotate-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+
+/* Bounce In */
+@keyframes micro-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.micro-bounce-in {
+  animation: micro-bounce-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+
+/* Flip Card */
+@keyframes micro-flip {
+  from {
+    transform: rotateY(-90deg);
+  }
+  to {
+    transform: rotateY(0);
+  }
+}
+
+.micro-flip {
+  animation: micro-flip 0.5s cubic-bezier(0.33, 0.66, 0.66, 1);
+  will-change: transform;
+  perspective: 1000px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY - Respect prefers-reduced-motion
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATION - GPU Acceleration
+   ═══════════════════════════════════════════════════════════════ */
+
+.gpu-accelerated {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translateZ(0);
+}
+
+/* High-performance animations */
+.micro-animation-optimized {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYFRAMES - Additional variations
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Subtle glow pulse */
+@keyframes micro-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0px rgba(0, 122, 204, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 122, 204, 0);
+  }
+}
+
+.micro-glow {
+  animation: micro-glow 2s ease-in-out infinite;
+}
+
+/* Jiggle effect for attention */
+@keyframes micro-jiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-1deg);
+  }
+  75% {
+    transform: rotate(1deg);
+  }
+}
+
+.micro-jiggle {
+  animation: micro-jiggle 0.3s ease-in-out;
+}
+
+/* Blink animation */
+@keyframes micro-blink {
+  0%, 49%, 100% {
+    opacity: 1;
+  }
+  50%, 99% {
+    opacity: 0;
+  }
+}
+
+.micro-blink {
+  animation: micro-blink 1s infinite;
+}
+
+/* Slide in with fade */
+@keyframes micro-slide-fade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micro-slide-fade {
+  animation: micro-slide-fade 0.3s cubic-bezier(0, 0, 0.2, 1);
+}

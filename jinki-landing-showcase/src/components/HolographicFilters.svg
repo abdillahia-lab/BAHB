@@ -1,0 +1,242 @@
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- ═══════════════════════════════════════════════════════════════
+         CHROMATIC ABERRATION - Red/Green/Blue channel separation
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="chromatic-aberration-strong">
+      <feOffset in="SourceGraphic" dx="3" dy="0" result="offsetR"/>
+      <feOffset in="SourceGraphic" dx="-3" dy="0" result="offsetB"/>
+      <feComponentTransfer in="offsetR" result="r">
+        <feFuncR type="discrete" tableValues="0 1"/>
+        <feFuncG type="discrete" tableValues="0 0"/>
+        <feFuncB type="discrete" tableValues="0 0"/>
+      </feComponentTransfer>
+      <feComponentTransfer in="offsetB" result="b">
+        <feFuncR type="discrete" tableValues="0 0"/>
+        <feFuncG type="discrete" tableValues="0 0"/>
+        <feFuncB type="discrete" tableValues="0 1"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="r" mode="lighten" result="rg"/>
+      <feBlend in="rg" in2="b" mode="lighten"/>
+    </filter>
+
+    <filter id="chromatic-aberration-subtle">
+      <feOffset in="SourceGraphic" dx="1.5" dy="0" result="offsetR"/>
+      <feOffset in="SourceGraphic" dx="-1.5" dy="0" result="offsetB"/>
+      <feComponentTransfer in="offsetR" result="r">
+        <feFuncR type="discrete" tableValues="0 1"/>
+        <feFuncG type="discrete" tableValues="0 0"/>
+        <feFuncB type="discrete" tableValues="0 0"/>
+      </feComponentTransfer>
+      <feComponentTransfer in="offsetB" result="b">
+        <feFuncR type="discrete" tableValues="0 0"/>
+        <feFuncG type="discrete" tableValues="0 0"/>
+        <feFuncB type="discrete" tableValues="0 1"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="r" mode="lighten" result="rg"/>
+      <feBlend in="rg" in2="b" mode="lighten"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HOLOGRAPHIC GLOW - Prismatic light spread
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="holographic-glow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="coloredBlur"/>
+      <feOffset in="coloredBlur" dx="0" dy="4" result="offsetblur"/>
+      <feFlood flood-color="#00b4d8" flood-opacity="0.5" result="offsetColor"/>
+      <feComposite in="offsetColor" in2="offsetblur" operator="in" result="offsetBlur"/>
+      <feFlood flood-color="#ff006e" flood-opacity="0.3" result="accent"/>
+      <feComposite in="accent" in2="offsetBlur" operator="in" result="accentBlur"/>
+      <feMerge>
+        <feMergeNode in="offsetBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PRISMATIC SPLIT - RGB channel separation
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="prismatic-split">
+      <feOffset in="SourceGraphic" dx="2" dy="0" result="r"/>
+      <feOffset in="SourceGraphic" dx="0" dy="2" result="g"/>
+      <feOffset in="SourceGraphic" dx="-2" dy="0" result="b"/>
+
+      <feComponentTransfer in="r" result="red">
+        <feFuncR type="linear" slope="1"/>
+        <feFuncG type="linear" slope="0"/>
+        <feFuncB type="linear" slope="0"/>
+      </feComponentTransfer>
+
+      <feComponentTransfer in="g" result="green">
+        <feFuncR type="linear" slope="0"/>
+        <feFuncG type="linear" slope="1"/>
+        <feFuncB type="linear" slope="0"/>
+      </feComponentTransfer>
+
+      <feComponentTransfer in="b" result="blue">
+        <feFuncR type="linear" slope="0"/>
+        <feFuncG type="linear" slope="0"/>
+        <feFuncB type="linear" slope="1"/>
+      </feComponentTransfer>
+
+      <feBlend in="red" in2="green" mode="lighten" result="rg"/>
+      <feBlend in="rg" in2="blue" mode="lighten" result="rgb"/>
+      <feBlend in="rgb" in2="SourceGraphic" mode="lighten"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         GLITCH CORRUPTION - Random distortion
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="glitch-corruption">
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="SourceAlpha"
+        scale="8"
+        xChannelSelector="R"
+        yChannelSelector="G"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feOffset in="blur" dx="3" dy="0" result="offsetR"/>
+      <feBlend in="SourceGraphic" in2="offsetR" mode="lighten"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         RETRO SCAN - CRT scanline effect
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="retro-scan">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.05"
+        numOctaves="2"
+        result="noise"/>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="noise"
+        scale="3"
+        yChannelSelector="Y"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         LIGHT REFRACTION - Hologram bending light
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="light-refraction">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.02"
+        numOctaves="3"
+        result="noise"/>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="noise"
+        scale="5"
+        xChannelSelector="R"
+        yChannelSelector="G"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         NEON GLOW - Strong cyan/magenta glow
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="neon-glow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DISPLACEMENT WAVE - Wavy hologram distortion
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="displacement-wave">
+      <feTurbulence
+        type="perlinNoise"
+        baseFrequency="0.03,0.05"
+        numOctaves="2"
+        result="turbulence"/>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="turbulence"
+        scale="8"
+        xChannelSelector="R"
+        yChannelSelector="G"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DOUBLE CHROMATIC - More intense RGB separation
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="double-chromatic">
+      <feOffset in="SourceGraphic" dx="4" dy="2" result="r"/>
+      <feOffset in="SourceGraphic" dx="-4" dy="-2" result="b"/>
+
+      <feComponentTransfer in="r" result="red">
+        <feFuncR type="linear" slope="1"/>
+        <feFuncG type="linear" slope="0"/>
+        <feFuncB type="linear" slope="0"/>
+        <feFuncA type="linear" slope="0.6"/>
+      </feComponentTransfer>
+
+      <feComponentTransfer in="b" result="blue">
+        <feFuncR type="linear" slope="0"/>
+        <feFuncG type="linear" slope="0"/>
+        <feFuncB type="linear" slope="1"/>
+        <feFuncA type="linear" slope="0.6"/>
+      </feComponentTransfer>
+
+      <feBlend in="red" in2="blue" mode="lighten" result="rb"/>
+      <feBlend in="rb" in2="SourceGraphic" mode="lighten"/>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HOLOGRAM SHIMMER - Shifting colors
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="hologram-shimmer">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feOffset in="blur" dx="2" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#00b4d8" flood-opacity="0.4" result="lightBlue"/>
+      <feComposite in="lightBlue" in2="offsetblur" operator="in" result="lightBlueBlur"/>
+      <feFlood flood-color="#ff006e" flood-opacity="0.2" result="magenta"/>
+      <feComposite in="magenta" in2="offsetblur" operator="in" result="magentaBlur"/>
+      <feMerge>
+        <feMergeNode in="lightBlueBlur"/>
+        <feMergeNode in="magentaBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DEEP SPACE - Dark hologram with distant glow
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="deep-space">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feOffset in="blur" dx="0" dy="8" result="offsetblur"/>
+      <feFlood flood-color="#0077b6" flood-opacity="0.3" result="offsetColor"/>
+      <feComposite in="offsetColor" in2="offsetblur" operator="in" result="offsetBlur"/>
+      <feFlood flood-color="#00b4d8" flood-opacity="0.2" result="farGlow"/>
+      <feComposite in="farGlow" in2="offsetBlur" operator="in" result="farBlur"/>
+      <feMerge>
+        <feMergeNode in="offsetBlur"/>
+        <feMergeNode in="farBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MORPHING HOLOGRAM - Liquid-like effect
+         ═══════════════════════════════════════════════════════════════ -->
+    <filter id="morphing-hologram">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.025"
+        numOctaves="3"
+        result="noise"/>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="noise"
+        scale="12"
+        xChannelSelector="R"
+        yChannelSelector="G"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feBlend in="blur" in2="SourceGraphic" mode="lighten"/>
+    </filter>
+  </defs>
+</svg>

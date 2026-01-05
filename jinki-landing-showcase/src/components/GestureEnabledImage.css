@@ -1,0 +1,297 @@
+/* GESTURAL: Gesture-Enabled Image Component Styling */
+
+.gesture-enabled-image-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 255, 136, 0.05) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: grab;
+  transition: box-shadow 0.3s ease;
+}
+
+.gesture-enabled-image-container:active {
+  cursor: grabbing;
+}
+
+.gesture-enabled-image-container:hover {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  transform-origin: center;
+  transform-style: preserve-3d;
+}
+
+.gesture-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  backface-visibility: hidden;
+}
+
+/* Gesture Hints Overlay */
+.gesture-hints-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  pointer-events: none;
+  justify-content: flex-start;
+  background: linear-gradient(to bottom, rgba(0, 20, 40, 0.3), transparent);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #00D4FF;
+  font-weight: 600;
+  background: rgba(0, 20, 40, 0.7);
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  backdrop-filter: blur(10px);
+  width: fit-content;
+  animation: hintSlideIn 0.5s ease-out forwards;
+}
+
+@keyframes hintSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.hint-icon {
+  font-size: 16px;
+  display: inline-block;
+}
+
+.hint-text {
+  white-space: nowrap;
+}
+
+/* Details Popup */
+.image-details-popup {
+  position: fixed;
+  background: rgba(0, 20, 40, 0.95);
+  border: 2px solid #00D4FF;
+  border-radius: 12px;
+  padding: 12px 16px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+  pointer-events: none;
+}
+
+.details-content {
+  color: #00FF88;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.detail-info {
+  margin: 4px 0;
+  color: #00D4FF;
+}
+
+.detail-hint {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 212, 255, 0.2);
+  color: #00FF88;
+  font-size: 10px;
+  font-style: italic;
+}
+
+/* Gesture State Indicator */
+.gesture-state-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  pointer-events: none;
+}
+
+.state-badge {
+  display: inline-block;
+  background: rgba(0, 212, 255, 0.2);
+  border: 1px solid #00D4FF;
+  color: #00D4FF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Reset Button */
+.reset-button {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #00D4FF 0%, #00FF88 100%);
+  color: #001428;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  z-index: 10;
+}
+
+.reset-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+}
+
+.reset-icon {
+  font-size: 14px;
+  animation: resetSpin 0.6s ease-in-out infinite;
+}
+
+@keyframes resetSpin {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+.reset-text {
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .gesture-enabled-image-container {
+    border-radius: 8px;
+  }
+
+  .gesture-hints-overlay {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .hint {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .reset-button {
+    bottom: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
+  .image-details-popup {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .gesture-enabled-image-container,
+  .image-wrapper,
+  .hint,
+  .reset-button,
+  .image-details-popup {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .gesture-enabled-image-container {
+    border-color: #00D4FF;
+  }
+
+  .hint,
+  .reset-button,
+  .image-details-popup {
+    border-width: 2px;
+  }
+
+  .state-badge {
+    border-width: 2px;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .gesture-enabled-image-container {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 255, 136, 0.08) 100%);
+  }
+}
+
+/* Light Mode */
+@media (prefers-color-scheme: light) {
+  .gesture-enabled-image-container {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.03) 0%, rgba(0, 255, 136, 0.03) 100%);
+  }
+
+  .hint,
+  .image-details-popup {
+    background: rgba(255, 255, 255, 0.9);
+    color: #001428;
+  }
+
+  .detail-info,
+  .hint-text {
+    color: #0066ff;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .gesture-hints-overlay,
+  .gesture-state-indicator,
+  .reset-button,
+  .image-details-popup {
+    display: none !important;
+  }
+}

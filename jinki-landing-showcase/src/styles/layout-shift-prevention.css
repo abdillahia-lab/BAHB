@@ -1,0 +1,524 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   JINKI INTELLIGENCE - LAYOUT SHIFT PREVENTION (CLS Optimization)
+   Cumulative Layout Shift prevention for Core Web Vitals
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESERVED SPACE FOR DYNAMIC CONTENT
+   Prevents layout shift when content loads
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Image aspect ratio maintenance - prevents shift when images load */
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+}
+
+/* Specific aspect ratios for known image dimensions */
+.card__image img {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero__ascii img {
+  aspect-ratio: auto;
+}
+
+.advisor__avatar img {
+  aspect-ratio: 1 / 1;
+}
+
+.footer__logo img {
+  aspect-ratio: auto;
+  max-height: 40px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FONT LOADING STRATEGY - Prevent FOUT/FOIT
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Use system fonts while web fonts load (font-display: swap) */
+@font-face {
+  font-family: 'Inter';
+  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  font-display: swap; /* Show fallback, swap to web font when ready */
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+  font-display: swap;
+}
+
+/* Fallback font sizing to prevent shift */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  font-size-adjust: 0.96; /* Normalize x-height */
+}
+
+/* Ensure consistent line height prevents shift */
+h1, h2, h3, h4, h5, h6,
+p, span, div {
+  line-height: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SCROLLBAR HANDLING - Prevent shift from scrollbar appearance
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Reserve space for scrollbar (only on desktop where scrollbar is always visible) */
+@media (min-width: 1024px) {
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTAINER SIZING - Fixed dimensions prevent shift
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Hero section - fixed height */
+.hero {
+  min-height: 100vh;
+  contain: layout style paint; /* CSS containment reduces recalculation */
+}
+
+/* Stats container - reserve space */
+.hero__stats {
+  min-height: 120px;
+  contain: content;
+}
+
+.stat {
+  min-height: 100px; /* Prevent text reflow */
+}
+
+.stat__value {
+  min-height: 2.7rem;
+  display: block;
+}
+
+.stat__label {
+  min-height: 1rem;
+  display: block;
+}
+
+/* Cards - consistent sizing */
+.card {
+  min-height: 300px;
+  contain: layout style paint;
+}
+
+.card__image {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+.card__content {
+  min-height: 120px;
+  contain: content;
+}
+
+/* Platform section - prevent layout shift */
+.platform {
+  contain: layout style paint;
+}
+
+.features {
+  min-height: 280px;
+  contain: content;
+}
+
+.feature {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* Advisor card - consistent sizing */
+.advisor {
+  min-height: 400px;
+  contain: layout style paint;
+}
+
+.advisor__avatar {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  contain: layout;
+}
+
+.advisor__certs {
+  min-height: 40px;
+}
+
+.cert {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* CTA section - reserve space */
+.cta {
+  min-height: 300px;
+  contain: layout style paint;
+}
+
+.cta__ascii {
+  min-height: 80px;
+  display: block;
+}
+
+/* Footer - prevent shift */
+.footer {
+  contain: layout style paint;
+}
+
+.footer__inner {
+  min-height: 60px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECTION PADDING - Consistent spacing prevents shift
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.section {
+  padding-top: clamp(3rem, 8vw, 7rem);
+  padding-bottom: clamp(3rem, 8vw, 7rem);
+}
+
+.section__header {
+  margin-bottom: clamp(2rem, 6vw, 5rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BUTTON SIZING - Prevent shift on interaction
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.btn {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: none;
+  /* Consistent padding prevents text shift on interaction */
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Prevent shift from box-shadow */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+  opacity: 1;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEXT OVERFLOW & WRAPPING - Prevent unexpected line breaks
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Prevent orphan words */
+h1, h2, h3, h4, h5, h6,
+p, span, .card__content,
+.stat__label, .feature {
+  text-wrap: pretty;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Long words - prevent overflow */
+.advisor__role,
+.section__eyebrow {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANIMATION CONTAINMENT - Prevent shift from animations
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Animations stay within container */
+.ascii-glass__glow {
+  will-change: opacity, transform;
+  contain: paint;
+}
+
+.ascii-glass__reflection {
+  will-change: opacity;
+  contain: paint;
+}
+
+.eye-visual__ring {
+  will-change: transform;
+  contain: paint;
+}
+
+.eye-visual__core {
+  will-change: transform;
+  contain: paint;
+}
+
+.cta__ascii {
+  will-change: transform, text-shadow;
+  contain: paint;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SCROLL ANCHOR PREVENTION - Prevent jumps during content load
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Prevent scroll anchoring on dynamic elements */
+.lazy-image,
+.skeleton-loader,
+[data-loading] {
+  overflow-anchor: none;
+}
+
+/* Allow anchoring on stable content */
+.hero,
+.section__header,
+.card:first-child {
+  overflow-anchor: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MODAL/POPUP PREVENTION - No layout shift when modals appear
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* When modal is open, don't add extra scrollbar space */
+body.modal-open {
+  scrollbar-gutter: stable;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   AD & EMBED SPACE RESERVATION
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Reserve space for ads/embeds that might load */
+[data-ad-container] {
+  min-height: 250px;
+  contain: layout style;
+}
+
+[data-embed] {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  contain: layout style;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FORM INPUT SIZING - Prevent zoom/shift
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+input,
+textarea,
+select {
+  font-size: 16px; /* Prevent iOS zoom */
+  min-height: 44px;
+  padding: 12px;
+  line-height: 1.5;
+  display: block;
+  width: 100%;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  /* Don't shift outline */
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE LAYOUT SHIFT PREVENTION
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Mobile - prevent margin/padding shifts */
+@media (max-width: 768px) {
+  .section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hero {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Prevent nav shift on mobile */
+  .nav {
+    padding: 10px 1rem;
+    height: auto;
+    min-height: 60px;
+  }
+
+  /* Cards - consistent spacing */
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Prevent hero stats reflow */
+  .hero__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    min-height: auto;
+  }
+
+  .stat {
+    min-height: 80px;
+  }
+
+  .stat__value {
+    min-height: 2rem;
+  }
+
+  .stat__label {
+    min-height: 0.9rem;
+  }
+}
+
+/* Desktop - consistent padding */
+@media (min-width: 1024px) {
+  .section {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .hero {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CSS CONTAINMENT - Performance optimization
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Containment reduces browser recalculation */
+.nav {
+  contain: layout style paint;
+}
+
+.hero {
+  contain: content;
+}
+
+.section {
+  contain: layout style;
+}
+
+.card {
+  contain: layout style paint;
+}
+
+.platform {
+  contain: layout style;
+}
+
+.advisor {
+  contain: layout style paint;
+}
+
+.footer {
+  contain: layout style paint;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANIMATIONS WITHOUT LAYOUT SHIFT - Use transform only
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Never use properties that affect layout (width, height, padding, margin) in animations */
+.btn:hover,
+.btn:active {
+  /* Use transform instead of margin/padding */
+  transform: translateY(-2px);
+}
+
+.card:hover {
+  /* Use transform instead of moving position */
+  transform: translateY(-4px);
+}
+
+.card__image img:hover {
+  /* Use transform for zoom */
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PRELOAD CRITICAL RESOURCES - Prevent CLS from resource loading
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* These should be in HTML head, but declaring here for reference */
+/*
+  <link rel="preload" as="font" href="..." type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="..." imagesrcset="..." imagesizes="...">
+*/
+
+/* Reserve space for critical images */
+.hero__ascii,
+.hero__content {
+  min-height: 200px;
+}
+
+.card__image {
+  background: var(--slate-700);
+  min-height: 180px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PAINT CONTAINMENT - Reduce paint areas
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Elements that move/animate should have paint containment */
+[data-animate],
+.motion-element {
+  contain: paint;
+  will-change: transform, opacity;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SIZE CONTAINMENT - For fixed-size components
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.stat {
+  contain: size layout style paint;
+  width: 100%;
+}
+
+.cert {
+  contain: size layout style paint;
+  min-width: 80px;
+}
+
+.feature__icon {
+  contain: size layout style paint;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}

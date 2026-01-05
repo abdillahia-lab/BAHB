@@ -1,0 +1,388 @@
+/* ═══════════════════════════════════════════════════════════════
+   PARALLAX3D: REVOLUTIONARY 3D DEPTH & PARALLAX SYSTEM
+   CSS 3D Transforms, Mouse Tracking, Device Orientation, Blur Effects
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ═══ PARALLAX 3D CARD ═══ */
+.parallax-3d-card__wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.parallax-3d-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition-property: transform, filter, opacity;
+  transition-duration: 0.1s;
+  transition-timing-function: ease-out;
+  transform-style: preserve-3d;
+}
+
+.parallax-3d-card__front,
+.parallax-3d-card__back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.parallax-3d-card__front {
+  transform: translateZ(0);
+}
+
+/* 3D Flip Animation */
+.parallax-3d-card__back {
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 180, 216, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.parallax-3d-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* ═══ 3D CARD IMAGE ═══ */
+.parallax-3d-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.parallax-3d-card:hover .parallax-3d-card__image {
+  transform: translateZ(20px) scale(1.05);
+}
+
+/* ═══ 3D CARD CONTENT ═══ */
+.parallax-3d-card__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  background: linear-gradient(
+    to top,
+    rgba(13, 17, 23, 0.95) 0%,
+    rgba(13, 17, 23, 0.7) 40%,
+    transparent 100%
+  );
+  transform-style: preserve-3d;
+  pointer-events: auto;
+}
+
+/* ═══ VOLUMETRIC LIGHT RAYS ═══ */
+.volumetric-rays {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 0 30px rgba(0, 180, 216, 0.4));
+}
+
+.volumetric-ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 600px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 229, 255, 0.8) 0%,
+    rgba(0, 180, 216, 0.4) 50%,
+    rgba(0, 180, 216, 0) 100%
+  );
+  transform-style: preserve-3d;
+  filter: blur(1.5px);
+  opacity: 0.4;
+}
+
+.volumetric-rays__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 229, 255, 0.2) 0%,
+    rgba(0, 180, 216, 0.1) 40%,
+    transparent 100%
+  );
+  transform: translate(-50%, -50%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: volumetricPulse 4s ease-in-out infinite;
+}
+
+@keyframes volumetricFloat {
+  0%, 100% {
+    opacity: 0.3;
+    transform: rotateZ(var(--rotation, 0deg)) translateY(-300px) skewY(5deg);
+  }
+  50% {
+    opacity: 0.6;
+    transform: rotateZ(var(--rotation, 0deg)) translateY(-350px) skewY(8deg);
+  }
+}
+
+@keyframes volumetricPulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+/* ═══ INFINITE ZOOM PARALLAX ═══ */
+.infinite-zoom-parallax {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ═══ TILT-SHIFT DEPTH BLUR ═══ */
+.tilt-shift-blur {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: filter 0.2s ease-out;
+  will-change: filter;
+}
+
+/* ═══ DEPTH TEXT LAYERS ═══ */
+.depth-text {
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  font-weight: 700;
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.depth-text__layer {
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+  white-space: nowrap;
+}
+
+/* ═══ PARALLAX 3D SCROLL LAYERS ═══ */
+.parallax-scroll-layer {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.parallax-scroll-layer--hero {
+  z-index: 10;
+}
+
+.parallax-scroll-layer--mid {
+  z-index: 5;
+}
+
+.parallax-scroll-layer--back {
+  z-index: 1;
+}
+
+/* ═══ 3D DEPTH CARD STACK ═══ */
+.depth-card-stack {
+  position: relative;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.depth-card-stack__item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.depth-card-stack__item:nth-child(1) {
+  transform: translateZ(0px) rotateY(0deg) scale(1);
+  z-index: 3;
+}
+
+.depth-card-stack__item:nth-child(2) {
+  transform: translateZ(-40px) rotateY(8deg) scale(0.95);
+  z-index: 2;
+}
+
+.depth-card-stack__item:nth-child(3) {
+  transform: translateZ(-80px) rotateY(16deg) scale(0.9);
+  z-index: 1;
+}
+
+/* ═══ 3D PERSPECTIVE TRANSFORM ═══ */
+.preserve-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+.perspective-800 {
+  perspective: 800px;
+  -webkit-perspective: 800px;
+}
+
+.perspective-600 {
+  perspective: 600px;
+  -webkit-perspective: 600px;
+}
+
+/* ═══ DEPTH FIELD BLUR ═══ */
+.depth-field-blur {
+  position: relative;
+  filter: blur(0px);
+  transition: filter 0.3s ease-out;
+  will-change: filter;
+}
+
+.depth-field-blur.is-background {
+  filter: blur(8px);
+  opacity: 0.5;
+}
+
+.depth-field-blur.is-midground {
+  filter: blur(2px);
+  opacity: 0.8;
+}
+
+.depth-field-blur.is-foreground {
+  filter: blur(0px);
+  opacity: 1;
+}
+
+/* ═══ 3D ROTATION UTILITIES ═══ */
+.rotate-x-10 {
+  transform: rotateX(10deg);
+}
+
+.rotate-y-10 {
+  transform: rotateY(10deg);
+}
+
+.rotate-z-10 {
+  transform: rotateZ(10deg);
+}
+
+.translate-z-10 {
+  transform: translateZ(10px);
+}
+
+.translate-z-20 {
+  transform: translateZ(20px);
+}
+
+.translate-z-40 {
+  transform: translateZ(40px);
+}
+
+/* ═══ PARALLAX SPEED MODIFIERS ═══ */
+.parallax-slow {
+  --parallax-speed: 0.2;
+}
+
+.parallax-normal {
+  --parallax-speed: 0.5;
+}
+
+.parallax-fast {
+  --parallax-speed: 0.8;
+}
+
+/* ═══ 3D GLOW EFFECTS ═══ */
+.glow-3d {
+  filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.5));
+  transition: filter 0.3s ease-out;
+}
+
+.glow-3d:hover {
+  filter: drop-shadow(0 0 40px rgba(0, 180, 216, 0.8));
+}
+
+/* ═══ PERFORMANCE OPTIMIZATIONS ═══ */
+.parallax-3d-card,
+.infinite-zoom-parallax,
+.depth-text,
+.volumetric-rays {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-3d-card,
+  .infinite-zoom-parallax,
+  .depth-text,
+  .volumetric-rays,
+  .depth-field-blur {
+    animation: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+
+  .parallax-3d-card {
+    transform: none !important;
+  }
+}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  .depth-text {
+    font-size: 2rem;
+  }
+
+  .volumetric-rays {
+    opacity: 0.5;
+  }
+
+  .volumetric-ray {
+    height: 400px;
+  }
+
+  /* Reduce 3D effects on mobile for performance */
+  .parallax-3d-card {
+    transition-duration: 0.2s;
+  }
+}
+
+/* ═══ ACCESSIBILITY ═══ */
+@media (prefers-color-scheme: dark) {
+  .parallax-3d-card__back {
+    background: rgba(0, 180, 216, 0.15);
+  }
+}
+
+/* ═══ GPU ACCELERATION ═══ */
+.gpu-accelerated {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}

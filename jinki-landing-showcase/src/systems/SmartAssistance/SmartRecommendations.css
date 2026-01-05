@@ -1,0 +1,195 @@
+/**
+ * ════════════════════════════════════════════════════════════════
+ * SMART RECOMMENDATIONS STYLES
+ * Card-based recommendation suggestions
+ * ════════════════════════════════════════════════════════════════
+ */
+
+.smart-recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 20, 40, 0.6) 0%,
+    rgba(20, 35, 60, 0.6) 100%
+  );
+  border: 1px solid rgba(0, 255, 200, 0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  margin-top: 24px;
+}
+
+.recommendations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recommendations-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e7ff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recommendations-title svg {
+  color: #00ffc8;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.3));
+}
+
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recommendation-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(10, 20, 40, 0.4);
+  border: 1px solid rgba(0, 255, 200, 0.1);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.recommendation-card:hover {
+  background: rgba(10, 20, 40, 0.7);
+  border-color: rgba(0, 255, 200, 0.3);
+  box-shadow: 0 0 16px rgba(0, 255, 200, 0.15);
+}
+
+.rec-badge {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, rgba(0, 255, 200, 0.2), rgba(0, 200, 255, 0.1));
+  border: 1px solid rgba(0, 255, 200, 0.3);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  color: #00ffc8;
+}
+
+.rec-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rec-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e7ff;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.rec-description {
+  font-size: 12px;
+  color: #a0aec0;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.rec-arrow {
+  flex-shrink: 0;
+  color: #00ffc8;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.recommendation-card:hover .rec-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* Glow effect */
+.rec-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 255, 200, 0.05),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.recommendation-card:hover .rec-glow {
+  opacity: 1;
+}
+
+/* Multiple cards */
+.smart-recommendations.card .recommendations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.smart-recommendations.card .recommendation-card {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  min-height: 100px;
+  justify-content: space-between;
+}
+
+.smart-recommendations.card .rec-badge {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  align-self: flex-end;
+  order: 1;
+}
+
+.smart-recommendations.card .rec-content {
+  order: 0;
+}
+
+.smart-recommendations.card .rec-arrow {
+  align-self: flex-end;
+  order: 2;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .smart-recommendations {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .smart-recommendations.card .recommendations-list {
+    grid-template-columns: 1fr;
+  }
+
+  .recommendations-title {
+    font-size: 13px;
+  }
+
+  .rec-title {
+    font-size: 12px;
+  }
+
+  .rec-description {
+    font-size: 11px;
+  }
+}
