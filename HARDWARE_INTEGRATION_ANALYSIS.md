@@ -39,18 +39,32 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### DJI Zenmuse H30T
+### DJI Zenmuse H30T (CORRECTED SPECS)
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  DJI Zenmuse H30T Multi-Sensor Payload                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Wide Camera:    1/2" CMOS, 48MP, 4K/30fps output                          │
-│  Zoom Camera:    1/2" CMOS, 8MP, 5-200× hybrid zoom, 4K/30fps              │
-│  Thermal:        640×512 uncooled VOx, <30mK NETD, 30fps                   │
-│  Laser:          1200m rangefinder                                          │
-│  Gimbal:         3-axis stabilization                                       │
-│  Output:         RTSP streams (H.265), ~50 Mbps combined                    │
-│  Latency:        ~120ms glass-to-glass                                      │
+│  Wide Camera:                                                               │
+│    ├── Normal mode: 3840×2160 @ 30fps OR 1920×1080 @ 30fps                 │
+│    └── Night mode:  1920×1080 @ 25/15/5fps                                 │
+│                                                                             │
+│  Zoom Camera:                                                               │
+│    ├── Normal mode: 3840×2160 @ 30fps OR 1920×1080 @ 30fps                 │
+│    └── Night mode:  1920×1080 @ 25/15/5fps                                 │
+│    └── Zoom range:  5-200× hybrid                                          │
+│                                                                             │
+│  Infrared Thermal:                                                          │
+│    ├── Resolution:  1280×1024 @ 30fps (HIGH RESOLUTION!)                   │
+│    ├── Sensor:      Uncooled VOx microbolometer                            │
+│    └── NETD:        <30mK                                                  │
+│                                                                             │
+│  Laser Rangefinder: 1200m                                                   │
+│  Gimbal:            3-axis stabilization                                    │
+│  Output:            RTSP streams (H.265)                                    │
+│  Latency:           ~120ms glass-to-glass                                   │
+│                                                                             │
+│  ⚠️ CRITICAL: Thermal at 1280×1024 is 2.5× more pixels than typical 640×512│
+│     This significantly increases processing load for thermal analysis       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
