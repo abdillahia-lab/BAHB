@@ -1,353 +1,62 @@
-/* ═══════════════════════════════════════════════════════════════
-   JINKI INTELLIGENCE - CHAMPIONSHIP IMPLEMENTATION
-   7 Winning Teams Combined | Apple-Level Experience
-   ═══════════════════════════════════════════════════════════════
-
-   IMPLEMENTED:
-   🏆 LOGO Magnetic Dimensional Presence (565/600)
-   🏆 OPT-3 RAF Throttling (548/600)
-   🏆 NAV Adaptive Smart Navigation (544/600)
-   🏆 GLASS-1 Premium Card System (538/600)
-   🏆 FLUID-2 Spring Stagger System (535/600)
-   🏆 FLUID-3 Magnetic Button (520/600)
-   🏆 OPT-1 CSS Containment (512/600)
-   ═══════════════════════════════════════════════════════════════ */
+/* JINKI INTELLIGENCE - Clean Apple-Style Design */
 
 :root {
-  --slate-900: #0d1117;
-  --slate-800: #161b22;
-  --slate-700: #21262d;
-  --slate-600: #30363d;
-  --slate-500: #484f58;
-  --slate-400: #6e7681;
-  --slate-300: #8b949e;
-  --slate-200: #c9d1d9;
-  --slate-100: #f0f6fc;
-
-  /* The ONLY color - Logo cyan core */
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --border: #222222;
+  --text: #ffffff;
+  --text-muted: #888888;
+  --text-dim: #555555;
   --cyan: #00d4ff;
-  --cyan-glow: rgba(0, 212, 255, 0.4);
-  --cyan-intense: rgba(0, 212, 255, 0.6);
-  --cyan-subtle: rgba(0, 212, 255, 0.15);
-
-  /* FLUID-2: Spring Physics Variables */
-  --spring-tension: 0.15;
-  --spring-friction: 0.85;
-  --stagger-delay: 0.08s;
-
-  /* GLASS-1: Glassmorphism Variables */
-  --glass-bg: rgba(22, 27, 34, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 20px;
+  --cyan-glow: rgba(0, 212, 255, 0.3);
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html {
-  font-size: 18px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
-  background: var(--slate-900);
-  color: var(--slate-300);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.6;
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   GRAYSCALE WORLD - Everything except logo
-   ═══════════════════════════════════════════════════════════════ */
-
+/* PAGE */
 .page {
   min-height: 100vh;
-  background: var(--slate-900);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HERO - Logo as absolute center of universe
-   ═══════════════════════════════════════════════════════════════ */
-
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 24px;
-  position: relative;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   🏆 TEAM LOGO CHAMPION: Magnetic Dimensional Presence
-   Triple-layered glow + 3D perspective breathing
-   ═══════════════════════════════════════════════════════════════ */
-
-.hero__logo-container {
-  position: relative;
-  perspective: 1000px;
-  transform-style: preserve-3d;
-  margin-bottom: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero__logo {
-  width: min(380px, 80vw);
-  height: auto;
-  position: relative;
-  z-index: 2;
-  /* Triple-layered glow system */
-  filter:
-    drop-shadow(0 0 20px var(--cyan-subtle))
-    drop-shadow(0 0 60px var(--cyan-glow))
-    drop-shadow(0 0 120px var(--cyan-intense));
-  animation: logoDimensionalBreath 6s ease-in-out infinite;
-  will-change: transform, filter;
-  transform: translateZ(0) rotateX(0deg) rotateY(0deg);
-  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  cursor: none;
-}
-
-/* Magnetic cursor attraction zone */
-.hero__logo:hover {
-  animation-play-state: paused;
-}
-
-/* 3D Dimensional Breathing Animation */
-@keyframes logoDimensionalBreath {
-  0%, 100% {
-    filter:
-      drop-shadow(0 0 15px var(--cyan-subtle))
-      drop-shadow(0 0 40px var(--cyan-glow))
-      drop-shadow(0 0 80px rgba(0, 212, 255, 0.2));
-    transform: translateZ(0) scale(1) rotateX(0deg);
-  }
-  25% {
-    transform: translateZ(20px) scale(1.01) rotateX(1deg);
-  }
-  50% {
-    filter:
-      drop-shadow(0 0 25px var(--cyan-glow))
-      drop-shadow(0 0 80px var(--cyan-intense))
-      drop-shadow(0 0 160px rgba(0, 212, 255, 0.4));
-    transform: translateZ(40px) scale(1.03) rotateX(0deg);
-  }
-  75% {
-    transform: translateZ(20px) scale(1.01) rotateX(-1deg);
-  }
-}
-
-/* Ambient glow layer behind logo */
-.hero__logo-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 120%;
-  height: 120%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    ellipse at center,
-    var(--cyan-subtle) 0%,
-    transparent 60%
-  );
-  filter: blur(60px);
-  opacity: 0.6;
-  animation: glowPulse 6s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 1;
-}
-
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
-}
-
-/* Tagline */
-.hero__tagline {
-  font-size: clamp(0.875rem, 2vw, 1.125rem);
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: var(--slate-400);
-  margin-bottom: 24px;
-  font-weight: 300;
-}
-
-/* Main headline - Single powerful word */
-.hero__headline {
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  font-weight: 600;
-  color: var(--slate-100);
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-/* Subheadline */
-.hero__sub {
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-  color: var(--slate-400);
-  max-width: 600px;
-  text-align: center;
-  font-weight: 300;
-  line-height: 1.6;
-  margin-bottom: 48px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   🏆 TEAM FLUID-3 CHAMPION: Magnetic Button with Cursor Glow
-   ═══════════════════════════════════════════════════════════════ */
-
-.hero__cta {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 18px 44px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--slate-100);
-  background: transparent;
-  border: 1px solid var(--slate-400);
-  border-radius: 50px;
-  text-decoration: none;
-  cursor: pointer;
-  overflow: hidden;
-  transition:
-    transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-/* Magnetic cursor-following glow */
-.hero__cta::before {
-  content: '';
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  background: radial-gradient(
-    circle,
-    var(--cyan-glow) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: opacity 0.3s ease;
-  left: var(--mouse-x, 50%);
-  top: var(--mouse-y, 50%);
-}
-
-.hero__cta:hover::before {
-  opacity: 0.6;
-}
-
-.hero__cta:hover {
-  border-color: var(--cyan);
-  box-shadow:
-    0 0 30px var(--cyan-subtle),
-    inset 0 0 20px var(--cyan-subtle);
-}
-
-.hero__cta:active {
-  transform: scale(0.97) translateZ(0);
-}
-
-/* Filled variant for bottom CTA */
-.hero__cta--filled {
-  background: var(--slate-100);
-  color: var(--slate-900);
-  border-color: var(--slate-100);
-}
-
-.hero__cta--filled:hover {
-  background: var(--cyan);
-  border-color: var(--cyan);
-  color: var(--slate-900);
-}
-
-/* Scroll indicator */
-.hero__scroll {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--slate-500);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.hero__scroll-line {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(to bottom, var(--slate-500), transparent);
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-
-@keyframes scrollPulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   🏆 TEAM NAV CHAMPION: Scroll-Adaptive Smart Navigation
-   Progressive glassmorphism + height compression
-   ═══════════════════════════════════════════════════════════════ */
-
+/* NAV */
 .nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 24px 40px;
-  background: rgba(13, 17, 23, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid transparent;
-  will-change: transform, padding, background, backdrop-filter;
-  transform: translateZ(0);
-  contain: layout style paint;
-  transition:
-    padding 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-    background 0.4s ease,
-    backdrop-filter 0.4s ease,
-    border-color 0.4s ease,
-    box-shadow 0.4s ease;
+  padding: 20px 40px;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
 }
 
-/* Scrolled state - applied via JS */
 .nav--scrolled {
   padding: 14px 40px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow:
-    0 4px 30px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(10, 10, 10, 0.95);
+  border-bottom: 1px solid var(--border);
 }
 
 .nav__inner {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -355,22 +64,11 @@ body {
 }
 
 .nav__logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
-
-.nav__logo-img {
-  height: 36px;
-  width: auto;
-}
-
-.nav__logo-text {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--slate-200);
-  letter-spacing: 0.1em;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.2em;
 }
 
 .nav__links {
@@ -380,175 +78,109 @@ body {
 
 .nav__links a {
   font-size: 0.875rem;
-  color: var(--slate-400);
+  color: var(--text-muted);
   text-decoration: none;
-  transition: color 0.3s ease;
-  letter-spacing: 0.02em;
+  transition: color 0.2s;
 }
 
 .nav__links a:hover {
-  color: var(--slate-100);
+  color: var(--text);
 }
 
 .nav__cta {
   padding: 10px 24px;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--slate-200);
+  color: var(--text);
   background: transparent;
-  border: 1px solid var(--slate-500);
-  border-radius: 50px;
+  border: 1px solid var(--text-muted);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.nav__cta:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 40px 80px;
+  text-align: center;
+}
+
+.hero__logo-wrap {
+  margin-bottom: 48px;
+}
+
+.hero__logo {
+  width: 340px;
+  max-width: 80vw;
+  height: auto;
+  filter: drop-shadow(0 0 60px var(--cyan-glow));
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    filter: drop-shadow(0 0 40px var(--cyan-glow));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 80px var(--cyan-glow));
+    transform: scale(1.02);
+  }
+}
+
+.hero__headline {
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+  color: var(--text);
+}
+
+.hero__sub {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-muted);
+  max-width: 500px;
+  margin-bottom: 48px;
+  font-weight: 400;
+}
+
+.hero__cta {
+  display: inline-block;
+  padding: 16px 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  border-radius: 100px;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.nav__cta:hover {
-  background: var(--slate-200);
-  color: var(--slate-900);
+.hero__cta:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 30px var(--cyan-glow);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SECTIONS - Clean, spacious, grayscale
-   ═══════════════════════════════════════════════════════════════ */
-
-.section {
-  padding: 160px 40px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.section--full {
-  max-width: none;
-  padding: 160px 80px;
-}
-
-.section__label {
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--slate-500);
-  margin-bottom: 24px;
-}
-
-.section__title {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 700;
-  color: var(--slate-100);
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin-bottom: 24px;
-}
-
-.section__text {
-  font-size: 1.125rem;
-  color: var(--slate-400);
-  max-width: 640px;
-  line-height: 1.7;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PLATFORM FEATURES - Apple-style large cards
-   ═══════════════════════════════════════════════════════════════ */
-
-.features {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 64px;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (max-width: 1024px) {
-  .features {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-}
-
-.feature {
-  position: relative;
-  padding: 40px 36px;
-  background: linear-gradient(
-    135deg,
-    rgba(22, 27, 34, 0.9) 0%,
-    rgba(13, 17, 23, 0.95) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-/* Top accent line */
-.feature::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 32px;
-  right: 32px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0, 212, 255, 0.3) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.feature:hover {
-  transform: translateY(-4px);
-  border-color: rgba(0, 212, 255, 0.15);
-  background: linear-gradient(
-    135deg,
-    rgba(22, 27, 34, 1) 0%,
-    rgba(17, 22, 28, 1) 100%
-  );
-}
-
-.feature:hover::before {
-  opacity: 1;
-}
-
-.feature__number {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--cyan);
-  letter-spacing: 0.15em;
-  margin-bottom: 20px;
-  opacity: 0.8;
-  font-family: 'SF Mono', 'Fira Code', monospace;
-}
-
-.feature__title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--slate-100);
-  margin-bottom: 12px;
-  line-height: 1.3;
-}
-
-.feature__text {
-  font-size: 0.95rem;
-  color: var(--slate-400);
-  line-height: 1.65;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   STATS - Large numbers, minimal
-   ═══════════════════════════════════════════════════════════════ */
-
+/* STATS */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 64px;
-  padding: 120px 40px;
-  border-top: 1px solid var(--slate-700);
-  border-bottom: 1px solid var(--slate-700);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  padding: 80px 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .stat {
@@ -556,116 +188,164 @@ body {
 }
 
 .stat__number {
-  font-size: clamp(3rem, 8vw, 5rem);
-  font-weight: 700;
-  color: var(--slate-100);
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 12px;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
 }
 
 .stat__label {
-  font-size: 0.875rem;
-  color: var(--slate-500);
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--text-dim);
   text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 8px;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SERVICES - Glass Grid with Stagger Animation
-   ═══════════════════════════════════════════════════════════════ */
+/* SECTIONS */
+.section {
+  padding: 120px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
+.section--center {
+  text-align: center;
+}
+
+.section--center .section__text {
+  margin: 0 auto 48px;
+}
+
+.section__label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+}
+
+.section__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  line-height: 1.1;
+}
+
+.section__text {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+/* SERVICES */
 .services {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2px;
-  background: var(--slate-700);
-  margin-top: 80px;
-  border-radius: 24px;
+  gap: 1px;
+  background: var(--border);
+  margin-top: 64px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
 .service {
-  position: relative;
-  padding: 64px 48px;
-  background: var(--slate-900);
-  transition:
-    background 0.4s ease,
-    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  overflow: hidden;
-}
-
-/* Service glow effect */
-.service::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    var(--cyan-subtle) 0%,
-    transparent 50%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
+  padding: 48px 40px;
+  background: var(--bg);
+  transition: background 0.3s ease;
 }
 
 .service:hover {
-  background: var(--slate-800);
-}
-
-.service:hover::after {
-  opacity: 1;
+  background: var(--surface);
 }
 
 .service__number {
-  position: relative;
-  z-index: 1;
+  display: block;
   font-size: 0.75rem;
   color: var(--cyan);
-  margin-bottom: 24px;
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'SF Mono', monospace;
+  margin-bottom: 16px;
   opacity: 0.7;
 }
 
 .service__title {
-  position: relative;
-  z-index: 1;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: var(--slate-100);
-  margin-bottom: 16px;
+  color: var(--text);
+  margin-bottom: 12px;
 }
 
 .service__text {
-  position: relative;
-  z-index: 1;
   font-size: 1rem;
-  color: var(--slate-400);
-  line-height: 1.7;
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   FOOTER - Ultra minimal
-   ═══════════════════════════════════════════════════════════════ */
+/* FEATURES */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 64px;
+}
 
+.feature {
+  padding: 40px 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  transform: translateY(-4px);
+}
+
+.feature__number {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--cyan);
+  font-family: 'SF Mono', monospace;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+.feature__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.feature__text {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* FOOTER */
 .footer {
-  padding: 80px 40px;
-  border-top: 1px solid var(--slate-700);
+  padding: 60px 40px;
+  border-top: 1px solid var(--border);
 }
 
 .footer__inner {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .footer__logo {
-  height: 32px;
-  width: auto;
-  opacity: 0.6;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
 }
 
 .footer__links {
@@ -675,68 +355,51 @@ body {
 
 .footer__links a {
   font-size: 0.875rem;
-  color: var(--slate-500);
+  color: var(--text-dim);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.2s;
 }
 
 .footer__links a:hover {
-  color: var(--slate-300);
+  color: var(--text);
 }
 
 .footer__copy {
   font-size: 0.75rem;
-  color: var(--slate-600);
+  color: var(--text-dim);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════════ */
+/* REVEAL ANIMATION */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 768px) {
-  .nav {
-    padding: 16px 20px;
-  }
-
-  .nav--scrolled {
-    padding: 12px 20px;
-  }
-
   .nav__links {
     display: none;
   }
 
-  .hero {
-    padding: 120px 24px 80px;
-  }
-
-  .hero__logo-container {
-    margin-bottom: 32px;
-  }
-
-  .hero__logo {
-    width: min(300px, 90vw);
-  }
-
-  .section {
-    padding: 80px 24px;
-  }
-
-  .features {
-    gap: 20px;
-  }
-
-  .feature {
-    padding: 32px;
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 20px;
   }
 
   .services {
     grid-template-columns: 1fr;
-    border-radius: 16px;
-  }
-
-  .service {
-    padding: 40px 32px;
   }
 
   .footer__inner {
@@ -748,110 +411,5 @@ body {
   .footer__links {
     flex-wrap: wrap;
     justify-content: center;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   🏆 TEAM FLUID-2 CHAMPION: Spring-Physics Stagger System
-   Apple-like entrance animations with spring easing
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Spring-physics keyframe with overshoot */
-@keyframes springFadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(40px) translateZ(0);
-  }
-  60% {
-    opacity: 1;
-    transform: translateY(-8px) translateZ(0);
-  }
-  80% {
-    transform: translateY(4px) translateZ(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) translateZ(0);
-  }
-}
-
-/* Scale-in with spring */
-@keyframes springScaleIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.9) translateZ(0);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.03) translateZ(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateZ(0);
-  }
-}
-
-/* Base fade-up with spring physics */
-.fade-up {
-  animation: springFadeUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-  will-change: opacity, transform;
-  transform: translateZ(0);
-}
-
-/* Staggered delays with progressive timing */
-.fade-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
-.fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
-.fade-up-delay-3 { animation-delay: 0.35s; opacity: 0; }
-.fade-up-delay-4 { animation-delay: 0.5s; opacity: 0; }
-.fade-up-delay-5 { animation-delay: 0.65s; opacity: 0; }
-
-/* Scale variant for cards */
-.scale-in {
-  animation: springScaleIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-  will-change: opacity, transform;
-}
-
-/* Scroll-triggered reveal classes (applied via JS) */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px) translateZ(0);
-  transition:
-    opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
-    transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.reveal.revealed {
-  opacity: 1;
-  transform: translateY(0) translateZ(0);
-}
-
-/* Stagger children on reveal */
-.reveal-stagger > * {
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0s; opacity: 1; transform: translateY(0); }
-.reveal-stagger.revealed > *:nth-child(2) { transition-delay: 0.08s; opacity: 1; transform: translateY(0); }
-.reveal-stagger.revealed > *:nth-child(3) { transition-delay: 0.16s; opacity: 1; transform: translateY(0); }
-.reveal-stagger.revealed > *:nth-child(4) { transition-delay: 0.24s; opacity: 1; transform: translateY(0); }
-
-/* ═══════════════════════════════════════════════════════════════
-   REDUCED MOTION - Accessibility
-   ═══════════════════════════════════════════════════════════════ */
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .hero__logo {
-    animation: none;
-    filter: drop-shadow(0 0 60px var(--cyan-glow));
   }
 }
