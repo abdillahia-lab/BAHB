@@ -250,29 +250,24 @@ export default function LandingPage3() {
           />
         </div>
 
-        {/* Tagline */}
-        <p className="hero__tagline fade-up fade-up-delay-1">
-          Ex Alto Omnia
-        </p>
-
         {/* Single word headline */}
-        <h1 className="hero__headline fade-up fade-up-delay-2">
+        <h1 className="hero__headline fade-up fade-up-delay-1">
           Omniscient
         </h1>
 
         {/* Subheadline */}
-        <p className="hero__sub fade-up fade-up-delay-3">
+        <p className="hero__sub fade-up fade-up-delay-2">
           Aerial intelligence and cybersecurity advisory
           for critical infrastructure.
         </p>
 
         {/* CTA - Magnetic Button with Cursor Glow */}
-        <a href="#contact" className="hero__cta fade-up fade-up-delay-4">
+        <a href="#contact" className="hero__cta fade-up fade-up-delay-3">
           Schedule Consultation
         </a>
 
         {/* Scroll indicator */}
-        <div className="hero__scroll fade-up fade-up-delay-5">
+        <div className="hero__scroll fade-up fade-up-delay-4">
           <span>Scroll</span>
           <div className="hero__scroll-line" />
         </div>

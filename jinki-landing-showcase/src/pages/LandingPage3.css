@@ -94,11 +94,14 @@ body {
   position: relative;
   perspective: 1000px;
   transform-style: preserve-3d;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero__logo {
-  width: min(500px, 80vw);
+  width: min(420px, 85vw);
   height: auto;
   position: relative;
   z-index: 2;
@@ -180,12 +183,12 @@ body {
 
 /* Main headline - Single powerful word */
 .hero__headline {
-  font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 700;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 600;
   color: var(--slate-100);
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 20px;
   text-align: center;
 }
 
