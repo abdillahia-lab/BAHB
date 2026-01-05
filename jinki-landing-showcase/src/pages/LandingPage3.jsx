@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import Lenis from 'lenis'
 import './LandingPage3.css'
@@ -7,6 +7,138 @@ import './LandingPage3.css'
 const logoUrl = '/jinki-logo.svg'
 
 const ease = [0.25, 0.1, 0.25, 1]
+
+// ═══════════════════════════════════════════════════════════════
+// ASCII LIQUID GLASS - Animated ASCII art with fluid morphing
+// ═══════════════════════════════════════════════════════════════
+function AsciiLiquidGlass() {
+  const [frame, setFrame] = useState(0)
+  const chars = ['░', '▒', '▓', '█', '▄', '▀', '■', '□', '▪', '▫', '●', '○', '◐', '◑', '◒', '◓']
+  const waveChars = ['~', '≈', '∼', '≋', '〰', '∿']
+
+  // Eye ASCII frames for liquid morphing effect
+  const eyeFrames = [
+    [
+      "            ░░░░░░░░░░░░            ",
+      "        ░░▒▒▓▓██████▓▓▒▒░░        ",
+      "      ░▒▓██            ██▓▒░      ",
+      "    ░▒▓█    ▄▄████▄▄    █▓▒░    ",
+      "   ░▓█   ▄██▀▀    ▀▀██▄   █▓░   ",
+      "  ░▓█  ▄█▀   ●●●●   ▀█▄  █▓░  ",
+      "  ▒█  ██   ●●▓▓▓▓●●   ██  █▒  ",
+      "  ▓█  █   ●▓▓████▓▓●   █  █▓  ",
+      "  ▓█  █   ●▓██▀▀██▓●   █  █▓  ",
+      "  ▒█  ██   ●●▓▓▓▓●●   ██  █▒  ",
+      "  ░▓█  ▀█▄   ●●●●   ▄█▀  █▓░  ",
+      "   ░▓█   ▀██▄▄    ▄▄██▀   █▓░   ",
+      "    ░▒▓█    ▀▀████▀▀    █▓▒░    ",
+      "      ░▒▓██            ██▓▒░      ",
+      "        ░░▒▒▓▓██████▓▓▒▒░░        ",
+      "            ░░░░░░░░░░░░            ",
+    ],
+    [
+      "            ▒▒▒▒▒▒▒▒▒▒▒▒            ",
+      "        ▒▒▓▓████████████▓▓▒▒        ",
+      "      ▒▓██                ██▓▒      ",
+      "    ▒▓█      ▄▄████▄▄      █▓▒    ",
+      "   ▒▓█    ▄██▀▀    ▀▀██▄    █▓▒   ",
+      "  ▒▓█   ▄█▀    ○○○○    ▀█▄   █▓▒  ",
+      "  ▓█   ██    ○○████○○    ██   █▓  ",
+      "  █▓   █    ○████████○    █   ▓█  ",
+      "  █▓   █    ○████████○    █   ▓█  ",
+      "  ▓█   ██    ○○████○○    ██   █▓  ",
+      "  ▒▓█   ▀█▄    ○○○○    ▄█▀   █▓▒  ",
+      "   ▒▓█    ▀██▄▄    ▄▄██▀    █▓▒   ",
+      "    ▒▓█      ▀▀████▀▀      █▓▒    ",
+      "      ▒▓██                ██▓▒      ",
+      "        ▒▒▓▓████████████▓▓▒▒        ",
+      "            ▒▒▒▒▒▒▒▒▒▒▒▒            ",
+    ],
+    [
+      "            ▓▓▓▓▓▓▓▓▓▓▓▓            ",
+      "        ▓▓██████████████████▓▓        ",
+      "      ▓██▀                ▀██▓      ",
+      "    ▓█▀      ▄▄▀▀▀▀▄▄      ▀█▓    ",
+      "   ▓█     ▄▀▀        ▀▀▄     █▓   ",
+      "  ▓█    ▄▀      ◐◐      ▀▄    █▓  ",
+      "  █▓   █      ◐◐██◐◐      █   ▓█  ",
+      "  █    █     ◐██████◐     █    █  ",
+      "  █    █     ◐██████◐     █    █  ",
+      "  █▓   █      ◐◐██◐◐      █   ▓█  ",
+      "  ▓█    ▀▄      ◐◐      ▄▀    █▓  ",
+      "   ▓█     ▀▀▄        ▄▀▀     █▓   ",
+      "    ▓█▀      ▀▀▄▄▄▄▀▀      ▀█▓    ",
+      "      ▓██▄                ▄██▓      ",
+      "        ▓▓██████████████████▓▓        ",
+      "            ▓▓▓▓▓▓▓▓▓▓▓▓            ",
+    ],
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrame(f => (f + 1) % eyeFrames.length)
+    }, 800)
+    return () => clearInterval(interval)
+  }, [])
+
+  const currentFrame = eyeFrames[frame]
+
+  return (
+    <div className="ascii-glass">
+      <div className="ascii-glass__container">
+        <pre className="ascii-glass__art">
+          {currentFrame.map((line, i) => (
+            <motion.span
+              key={i}
+              className="ascii-glass__line"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03, duration: 0.3 }}
+            >
+              {line}
+            </motion.span>
+          ))}
+        </pre>
+        <div className="ascii-glass__glow" />
+        <div className="ascii-glass__reflection" />
+      </div>
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LIQUID WAVE ASCII - Flowing wave animation
+// ═══════════════════════════════════════════════════════════════
+function LiquidWaveAscii() {
+  const [offset, setOffset] = useState(0)
+  const wave = '░▒▓█▓▒░  '
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOffset(o => (o + 1) % wave.length)
+    }, 100)
+    return () => clearInterval(interval)
+  }, [])
+
+  const generateWaveLine = (rowOffset) => {
+    let line = ''
+    for (let i = 0; i < 50; i++) {
+      const charIndex = (i + offset + rowOffset) % wave.length
+      line += wave[charIndex]
+    }
+    return line
+  }
+
+  return (
+    <div className="liquid-wave">
+      {[0, 2, 4, 6, 8].map(rowOffset => (
+        <div key={rowOffset} className="liquid-wave__row">
+          {generateWaveLine(rowOffset)}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function useSmoothScroll() {
   useEffect(() => {
@@ -122,8 +254,8 @@ export default function LandingPage3() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 150])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
   const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95])
-  const logoY = useTransform(scrollYProgress, [0, 1], [0, -80])
-  const logoRotate = useTransform(scrollYProgress, [0, 1], [0, 15])
+  const asciiY = useTransform(scrollYProgress, [0, 1], [0, -60])
+  const asciiRotate = useTransform(scrollYProgress, [0, 1], [0, 10])
 
   const industries = [
     {
@@ -158,6 +290,11 @@ export default function LandingPage3() {
 
   return (
     <div className="page">
+      {/* Liquid wave background */}
+      <div className="liquid-bg">
+        <LiquidWaveAscii />
+      </div>
+
       {/* NAV */}
       <motion.header
         className="nav"
@@ -167,7 +304,7 @@ export default function LandingPage3() {
       >
         <div className="nav__inner">
           <a href="/" className="nav__logo">
-            <img src={logoUrl} alt="Jinki Intelligence" />
+            <span className="nav__logo-text">JINKI</span>
           </a>
           <nav className="nav__links">
             <a href="#industries">Industries</a>
@@ -184,15 +321,15 @@ export default function LandingPage3() {
           <div className="hero__grid"/>
         </div>
 
+        {/* ASCII Liquid Glass Eye */}
         <motion.div
-          className="hero__logo"
-          style={{ y: logoY, rotate: logoRotate }}
-          initial={{ opacity: 0, scale: 0.8 }}
+          className="hero__ascii"
+          style={{ y: asciiY, rotate: asciiRotate }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.2, ease }}
         >
-          <img src={logoUrl} alt="Jinki Intelligence" />
-          <div className="hero__logo-glow"/>
+          <AsciiLiquidGlass />
         </motion.div>
 
         <motion.div className="hero__content" style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}>
@@ -289,12 +426,7 @@ export default function LandingPage3() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.08, ease }}
                 >
-                  <span className="feature__icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </span>
+                  <span className="feature__icon">◉</span>
                   {f}
                 </motion.div>
               ))}
@@ -302,12 +434,22 @@ export default function LandingPage3() {
           </FadeUp>
 
           <FadeUp delay={0.2} className="platform__visual">
-            <div className="eye-visual">
-              <div className="eye-visual__ring eye-visual__ring--1"/>
-              <div className="eye-visual__ring eye-visual__ring--2"/>
-              <div className="eye-visual__ring eye-visual__ring--3"/>
-              <div className="eye-visual__core"/>
-              <div className="eye-visual__glow"/>
+            <div className="platform__ascii">
+              <pre className="ascii-box">
+{`┌──────────────────────────────┐
+│  ╔═══════════════════════╗  │
+│  ║   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄   ║  │
+│  ║  █ JINKI PLATFORM █  ║  │
+│  ║   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀   ║  │
+│  ╠═══════════════════════╣  │
+│  ║  ○ Thermal    [████] ║  │
+│  ║  ○ LiDAR      [████] ║  │
+│  ║  ○ NDVI       [████] ║  │
+│  ║  ○ OGI        [████] ║  │
+│  ╚═══════════════════════╝  │
+│    ◄ 59min  ●  ±1cm RTK ►   │
+└──────────────────────────────┘`}
+              </pre>
             </div>
           </FadeUp>
         </div>
@@ -323,8 +465,13 @@ export default function LandingPage3() {
 
         <FadeUp delay={0.2} className="advisor">
           <div className="advisor__avatar">
-            <span>AA</span>
-            <div className="advisor__avatar-ring"/>
+            <pre className="ascii-avatar">
+{`┌─────┐
+│ ◉ ◉ │
+│  ▽  │
+│ ─── │
+└─────┘`}
+            </pre>
           </div>
           <h3>Abdillahi A.</h3>
           <p className="advisor__role">Principal Security Architect</p>
@@ -344,13 +491,12 @@ export default function LandingPage3() {
       {/* CTA */}
       <section id="contact" className="section section--cta">
         <FadeUp className="cta">
-          <div className="cta__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <circle cx="12" cy="12" r="4"/>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
-            </svg>
-          </div>
+          <pre className="cta__ascii">
+{`    ◉
+   ╱ ╲
+  ╱   ╲
+ ◉─────◉`}
+          </pre>
           <h2>Ready to See Everything?</h2>
           <p className="cta__tagline">Ex Alto Omnia — From Above, All Things</p>
           <p>Schedule a consultation. Prevent the next million-dollar outage.</p>
@@ -365,7 +511,7 @@ export default function LandingPage3() {
       <footer className="footer">
         <div className="footer__inner">
           <div className="footer__brand">
-            <img src={logoUrl} alt="Jinki Intelligence" className="footer__logo"/>
+            <span className="footer__logo">◉ JINKI INTELLIGENCE</span>
             <span className="footer__tagline">Ex Alto Omnia</span>
           </div>
           <span className="footer__copy">© 2026 Jinki Intelligence. All rights reserved.</span>
