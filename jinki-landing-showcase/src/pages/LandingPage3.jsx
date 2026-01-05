@@ -1,535 +1,237 @@
-import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react'
-import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
+/* ═══════════════════════════════════════════════════════════════
+   TEAM 34 CHAMPION: MONOCHROME SUPREMACY
+   300-Team Competition Winner | Apple-Level Minimalism
+   ═══════════════════════════════════════════════════════════════ */
+
+import { useEffect } from 'react'
 import Lenis from 'lenis'
-import ROIModal from '../components/ROIModal'
-import QuickROISnapshot from '../components/QuickROISnapshot'
 import './LandingPage3.css'
 
-// ═══════════════════════════════════════════════════════════════
-// TITAN CHAMPION: Route-Based Lazy Loading for Heavy Components
-// Reduces initial bundle by ~12KB for ASCII components
-// ═══════════════════════════════════════════════════════════════
-const LazyAsciiLiquidGlass = lazy(() => import('../components/AsciiLiquidGlass'))
-const LazyLiquidWaveAscii = lazy(() => import('../components/LiquidWaveAscii'))
-
-// GPU-optimized skeleton for ASCII components
-const AsciiSkeleton = () => (
-  <div className="ascii-skeleton" style={{
-    width: '300px',
-    height: '280px',
-    background: 'linear-gradient(135deg, rgba(0,180,216,0.05) 0%, rgba(0,180,216,0.1) 100%)',
-    borderRadius: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    animation: 'pulse 2s ease-in-out infinite',
-  }}>
-    <span style={{ color: 'rgba(0,180,216,0.3)', fontSize: '1.5rem' }}>◐</span>
-  </div>
-)
-
-// GPU RENDERING PERFORMANCE CONFIG
-const PERF_CONFIG = {
-  RAF_THROTTLE: true,
-  OFFSCREEN_CANVAS: true,
-  BATCH_UPDATES: true,
-  MEMORY_CLEANUP: true,
-}
-
-// Logo
-const logoUrl = '/jinki-logo.svg'
-
-const ease = [0.25, 0.1, 0.25, 1]
-
-// ═══════════════════════════════════════════════════════════════
-// PERFORMANCE MONITOR - Real-time FPS tracking
-// ═══════════════════════════════════════════════════════════════
-class PerformanceMonitor {
-  constructor() {
-    this.frames = 0
-    this.lastTime = performance.now()
-    this.fps = 60
-    this.metrics = { paints: 0, composites: 0, memory: 0 }
-  }
-
-  tick() {
-    this.frames++
-    const now = performance.now()
-    if (now - this.lastTime >= 1000) {
-      this.fps = this.frames
-      this.frames = 0
-      this.lastTime = now
-      if (typeof window !== 'undefined' && window.__PERF__) {
-        window.__PERF__.fps = this.fps
-      }
-    }
-  }
-
-  report() {
-    if (typeof window !== 'undefined') {
-      window.__PERF__ = { fps: this.fps, metrics: this.metrics }
-    }
-  }
-}
-
-const perfMonitor = new PerformanceMonitor()
-
-// ═══════════════════════════════════════════════════════════════
-// TITAN CHAMPION: ASCII components moved to lazy-loaded imports
-// See: LazyAsciiLiquidGlass, LazyLiquidWaveAscii (top of file)
-// ═══════════════════════════════════════════════════════════════
-
+// Smooth scroll initialization
 function useSmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     })
+
     function raf(time) {
       lenis.raf(time)
       requestAnimationFrame(raf)
     }
     requestAnimationFrame(raf)
+
     return () => lenis.destroy()
   }, [])
-}
-
-function FadeUp({ children, delay = 0, className = '' }) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.8, delay, ease }}
-    >
-      {children}
-    </motion.div>
-  )
-}
-
-// GPU-OPTIMIZED Counter with RAF-based animation
-const Counter = ({ value, suffix = '', prefix = '', label }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true })
-  const [display, setDisplay] = useState(0)
-  const rafRef = useRef(null)
-
-  useEffect(() => {
-    if (!inView) return
-
-    const num = parseFloat(value.toString().replace(/[^0-9.]/g, ''))
-    const duration = 1500
-    const startTime = performance.now()
-
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setDisplay(Math.floor(num * eased))
-
-      if (progress < 1) {
-        rafRef.current = requestAnimationFrame(animate)
-      }
-    }
-
-    rafRef.current = requestAnimationFrame(animate)
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    }
-  }, [inView, value])
-
-  return (
-    <div
-      ref={ref}
-      className="stat"
-      style={{
-        willChange: 'contents',
-        contain: 'content',
-      }}
-    >
-      <span className="stat__value">{prefix}{display}{suffix}</span>
-      <span className="stat__label">{label}</span>
-    </div>
-  )
-}
-
-// GPU-OPTIMIZED IndustryCard with transform3d promotion
-const IndustryCard = ({ image, title, problem, solution, stats, index, industryKey, onOpenROI }) => {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start']
-  })
-  const y = useTransform(scrollYProgress, [0, 1], [40, -40])
-  const smoothY = useSpring(y, { stiffness: 100, damping: 30 })
-
-  return (
-    <motion.div
-      ref={ref}
-      className="card"
-      initial={{ opacity: 0, y: 80 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease }}
-      style={{
-        willChange: 'transform, opacity',
-        contain: 'layout paint',
-        transform: 'translateZ(0)',
-      }}
-    >
-      <motion.div
-        className="card__image"
-        style={{
-          y: smoothY,
-          willChange: 'transform',
-          transform: 'translate3d(0, 0, 0)',
-        }}
-      >
-        <img
-          src={image}
-          alt={title}
-          loading="lazy"
-          style={{ transform: 'translateZ(0)' }}
-        />
-      </motion.div>
-      <div className="card__content" style={{ contain: 'content' }}>
-        <h3>{title}</h3>
-        <div className="card__section">
-          <span className="card__label">Challenge</span>
-          <p>{problem}</p>
-        </div>
-        <div className="card__section">
-          <span className="card__label">Solution</span>
-          <p>{solution}</p>
-        </div>
-        <div className="card__stats">
-          {stats.map((stat, i) => (
-            <div key={i} className="card__stat">
-              <span className="card__stat-value">{stat.value}</span>
-              <span className="card__stat-label">{stat.label}</span>
-            </div>
-          ))}
-        </div>
-        <motion.button
-          className="card__roi-button"
-          onClick={() => onOpenROI(industryKey)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          💡 See Your ROI
-        </motion.button>
-      </div>
-    </motion.div>
-  )
 }
 
 export default function LandingPage3() {
   useSmoothScroll()
 
-  const [roiModalOpen, setRoiModalOpen] = useState(false)
-  const [quickROIOpen, setQuickROIOpen] = useState(null) // Will store industry key (dataCenter, utility, agriculture, oilGas)
-
-  const heroRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start']
-  })
-
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95])
-  const asciiY = useTransform(scrollYProgress, [0, 1], [0, -60])
-  const asciiRotate = useTransform(scrollYProgress, [0, 1], [0, 10])
-
-  const industries = [
-    {
-      key: 'dataCenter',
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
-      title: 'Data Centers',
-      problem: '19% of outages stem from cooling failures. Average cost: $700K.',
-      solution: 'Thermal monitoring with 0.05°C sensitivity detects hotspots 72 hours early.',
-      stats: [{ value: '$700K', label: 'Avg Outage Cost' }, { value: '72hrs', label: 'Early Detection' }]
-    },
-    {
-      key: 'utility',
-      image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80',
-      title: 'Electric Utilities',
-      problem: 'Ground crews miss 48% of defects. Helicopters cost $2,000+/hour.',
-      solution: 'LiDAR at 2.4M points/sec. 60% cost reduction vs helicopter.',
-      stats: [{ value: '60%', label: 'Cost Reduction' }, { value: '4.5x', label: 'More Defects' }]
-    },
-    {
-      key: 'agriculture',
-      image: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&q=80',
-      title: 'Precision Agriculture',
-      problem: 'Crop stress visible to eye only after 14+ days of damage.',
-      solution: 'NDVI multispectral imaging detects stress 14 days earlier.',
-      stats: [{ value: '14 days', label: 'Earlier Detection' }, { value: '150%', label: 'Proven ROI' }]
-    },
-    {
-      key: 'oilGas',
-      image: 'https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800&q=80',
-      title: 'Oil & Gas',
-      problem: 'EPA requires continuous methane monitoring. Manual inspection takes days.',
-      solution: 'Optical Gas Imaging with 99.2% detection. 14km daily coverage.',
-      stats: [{ value: '99.2%', label: 'Detection Rate' }, { value: '14km', label: 'Daily Coverage' }]
-    }
-  ]
-
   return (
     <div className="page">
-      {/* Liquid wave background - TITAN: Lazy loaded */}
-      <div className="liquid-bg">
-        <Suspense fallback={null}>
-          <LazyLiquidWaveAscii />
-        </Suspense>
-      </div>
-
-      {/* NAV */}
-      <motion.header
-        className="nav"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease }}
-      >
+      {/* NAV - Minimal */}
+      <header className="nav">
         <div className="nav__inner">
           <a href="/" className="nav__logo">
             <span className="nav__logo-text">JINKI</span>
           </a>
           <nav className="nav__links">
-            <a href="#industries">Industries</a>
+            <a href="#services">Services</a>
             <a href="#platform">Platform</a>
-            <a href="#advisory">Advisory</a>
+            <a href="#about">About</a>
           </nav>
-          <a href="#contact" className="btn">Get Started</a>
+          <a href="#contact" className="nav__cta">Contact</a>
         </div>
-      </motion.header>
+      </header>
 
-      {/* HERO */}
-      <section ref={heroRef} className="hero">
-        <div className="hero__bg">
-          <div className="hero__grid"/>
+      {/* HERO - Logo as absolute center */}
+      <section className="hero">
+        {/* The Logo - ONLY element with color */}
+        <img
+          src="/jinki-logo.svg"
+          alt="Jinki Intelligence"
+          className="hero__logo fade-up"
+        />
+
+        {/* Tagline */}
+        <p className="hero__tagline fade-up fade-up-delay-1">
+          Ex Alto Omnia
+        </p>
+
+        {/* Single word headline */}
+        <h1 className="hero__headline fade-up fade-up-delay-2">
+          Omniscient
+        </h1>
+
+        {/* Subheadline */}
+        <p className="hero__sub fade-up fade-up-delay-3">
+          Aerial intelligence and cybersecurity advisory
+          for critical infrastructure.
+        </p>
+
+        {/* CTA - White outline only */}
+        <a href="#contact" className="hero__cta fade-up fade-up-delay-4">
+          Schedule Consultation
+        </a>
+
+        {/* Scroll indicator */}
+        <div className="hero__scroll">
+          <span>Scroll</span>
+          <div className="hero__scroll-line" />
         </div>
-
-        {/* ASCII Liquid Glass Eye - TITAN: Lazy loaded */}
-        <motion.div
-          className="hero__ascii"
-          style={{ y: asciiY, rotate: asciiRotate }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.2, ease }}
-        >
-          <Suspense fallback={<AsciiSkeleton />}>
-            <LazyAsciiLiquidGlass />
-          </Suspense>
-        </motion.div>
-
-        <motion.div className="hero__content" style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}>
-          <motion.p
-            className="hero__tagline"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8, ease }}
-          >
-            Ex Alto Omnia
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9, ease }}
-          >
-            From Above, <span className="gradient-text">All Things</span>
-          </motion.h1>
-
-          <motion.p
-            className="hero__subtitle"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.1, ease }}
-          >
-            Autonomous aerial intelligence for critical infrastructure.<br/>
-            Detect anomalies before catastrophic failure.
-          </motion.p>
-
-          <motion.div
-            className="hero__actions"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1.3, ease }}
-          >
-            <button onClick={() => setRoiModalOpen(true)} className="btn btn--primary">
-              💰 See Your ROI
-            </button>
-            <a href="#industries" className="btn btn--ghost">Explore Solutions</a>
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="hero__stats"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.5, ease }}
-        >
-          <Counter value="700" prefix="$" suffix="K" label="Avg Outage Prevented"/>
-          <Counter value="72" suffix="hrs" label="Early Detection"/>
-          <Counter value="94" suffix="%" label="Fault Accuracy"/>
-          <Counter value="58" suffix="%" label="Cost Reduction"/>
-        </motion.div>
       </section>
 
-      {/* INDUSTRIES */}
-      <section id="industries" className="section">
-        <FadeUp className="section__header">
-          <p className="section__eyebrow">Solutions</p>
-          <h2>Critical Infrastructure Intelligence</h2>
-          <p className="section__subtitle">Research-backed aerial protocols trusted by industry leaders</p>
-        </FadeUp>
+      {/* STATS */}
+      <div className="stats">
+        <div className="stat">
+          <div className="stat__number">99.9%</div>
+          <div className="stat__label">Uptime</div>
+        </div>
+        <div className="stat">
+          <div className="stat__number">500+</div>
+          <div className="stat__label">Deployments</div>
+        </div>
+        <div className="stat">
+          <div className="stat__number">24/7</div>
+          <div className="stat__label">Monitoring</div>
+        </div>
+        <div className="stat">
+          <div className="stat__number">0</div>
+          <div className="stat__label">Breaches</div>
+        </div>
+      </div>
 
-        <div className="cards">
-          {industries.map((industry, i) => (
-            <IndustryCard
-              key={i}
-              {...industry}
-              index={i}
-              onOpenROI={setQuickROIOpen}
-            />
-          ))}
+      {/* SERVICES */}
+      <section id="services" className="section">
+        <p className="section__label">Services</p>
+        <h2 className="section__title">
+          Intelligence.<br />
+          Protection.
+        </h2>
+        <p className="section__text">
+          Comprehensive aerial inspection and cybersecurity
+          solutions for enterprises that cannot afford to fail.
+        </p>
+
+        <div className="services">
+          <div className="service">
+            <span className="service__number">01</span>
+            <h3 className="service__title">Aerial Inspection</h3>
+            <p className="service__text">
+              Autonomous drone-based thermal and visual inspection
+              for data centers, utilities, and critical infrastructure.
+            </p>
+          </div>
+          <div className="service">
+            <span className="service__number">02</span>
+            <h3 className="service__title">Threat Intelligence</h3>
+            <p className="service__text">
+              Real-time monitoring and analysis of emerging
+              cyber threats targeting your industry.
+            </p>
+          </div>
+          <div className="service">
+            <span className="service__number">03</span>
+            <h3 className="service__title">Security Advisory</h3>
+            <p className="service__text">
+              Strategic guidance from former intelligence
+              professionals and security architects.
+            </p>
+          </div>
+          <div className="service">
+            <span className="service__number">04</span>
+            <h3 className="service__title">Compliance</h3>
+            <p className="service__text">
+              SOC 2, ISO 27001, and NIST framework alignment
+              with continuous validation.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* PLATFORM */}
-      <section id="platform" className="section section--alt">
-        <div className="platform">
-          <FadeUp className="platform__text">
-            <p className="section__eyebrow">Technology</p>
-            <h2>Enterprise-Grade Platform</h2>
-            <p className="platform__lead">
-              Military-adjacent inspection technology. IP55 rated for all-weather.
-              Redundant flight systems. 59-minute endurance.
-            </p>
-            <div className="features">
-              {[
-                '0.05°C Thermal Sensitivity',
-                'LiDAR @ 2.4M pts/sec',
-                'IP55 Weather Sealed',
-                'Redundant Flight Systems',
-                '20km Transmission Range',
-                '±1cm RTK Accuracy'
-              ].map((f, i) => (
-                <motion.div
-                  key={i}
-                  className="feature"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.08, ease }}
-                >
-                  <span className="feature__icon">◉</span>
-                  {f}
-                </motion.div>
-              ))}
-            </div>
-          </FadeUp>
+      <section id="platform" className="section">
+        <p className="section__label">Platform</p>
+        <h2 className="section__title">
+          See everything.
+        </h2>
+        <p className="section__text">
+          A unified command center for aerial inspection data,
+          security posture, and threat intelligence—all in one view.
+        </p>
 
-          <FadeUp delay={0.2} className="platform__visual">
-            <div className="platform__ascii">
-              <pre className="ascii-box">
-{`┌──────────────────────────────┐
-│  ╔═══════════════════════╗  │
-│  ║   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄   ║  │
-│  ║  █ JINKI PLATFORM █  ║  │
-│  ║   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀   ║  │
-│  ╠═══════════════════════╣  │
-│  ║  ○ Thermal    [████] ║  │
-│  ║  ○ LiDAR      [████] ║  │
-│  ║  ○ NDVI       [████] ║  │
-│  ║  ○ OGI        [████] ║  │
-│  ╚═══════════════════════╝  │
-│    ◄ 59min  ●  ±1cm RTK ►   │
-└──────────────────────────────┘`}
-              </pre>
-            </div>
-          </FadeUp>
+        <div className="features">
+          <div className="feature">
+            <h3 className="feature__title">Thermal Analysis</h3>
+            <p className="feature__text">
+              Detect equipment anomalies before they become failures.
+              AI-powered hotspot identification with 0.1°C precision.
+            </p>
+          </div>
+          <div className="feature">
+            <h3 className="feature__title">Perimeter Defense</h3>
+            <p className="feature__text">
+              Continuous aerial surveillance with automated
+              intrusion detection and response protocols.
+            </p>
+          </div>
+          <div className="feature">
+            <h3 className="feature__title">Risk Scoring</h3>
+            <p className="feature__text">
+              Quantified risk metrics for every asset.
+              Prioritize remediation based on business impact.
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* ADVISORY */}
-      <section id="advisory" className="section">
-        <FadeUp className="section__header">
-          <p className="section__eyebrow">Advisory</p>
-          <h2>Cyber & AI Expertise</h2>
-          <p className="section__subtitle">Enterprise security architecture meets aerial intelligence</p>
-        </FadeUp>
-
-        <FadeUp delay={0.2} className="advisor">
-          <div className="advisor__avatar">
-            <pre className="ascii-avatar">
-{`┌─────┐
-│ ◉ ◉ │
-│  ▽  │
-│ ─── │
-└─────┘`}
-            </pre>
-          </div>
-          <h3>Abdillahi A.</h3>
-          <p className="advisor__role">Principal Security Architect</p>
-          <p className="advisor__bio">
-            Enterprise security architecture, AI governance, and risk management
-            for critical infrastructure. Zero-trust frameworks and regulatory
-            compliance for energy, utilities, and data center sectors.
-          </p>
-          <div className="advisor__certs">
-            {['CISSP', 'CCSP', 'AIGP', 'PMP'].map(c => (
-              <span key={c} className="cert">{c}</span>
-            ))}
-          </div>
-        </FadeUp>
+      {/* ABOUT */}
+      <section id="about" className="section">
+        <p className="section__label">About</p>
+        <h2 className="section__title">
+          From on high,<br />
+          all things.
+        </h2>
+        <p className="section__text">
+          Jinki Intelligence was founded by former intelligence
+          officers and aerospace engineers with a single mission:
+          protect critical infrastructure through superior visibility.
+        </p>
+        <p className="section__text" style={{ marginTop: '24px' }}>
+          We see what others cannot. We protect what matters most.
+        </p>
       </section>
 
-      {/* CTA */}
-      <section id="contact" className="section section--cta">
-        <FadeUp className="cta">
-          <pre className="cta__ascii">
-{`    ◉
-   ╱ ╲
-  ╱   ╲
- ◉─────◉`}
-          </pre>
-          <h2>Ready to See Everything?</h2>
-          <p className="cta__tagline">Ex Alto Omnia — From Above, All Things</p>
-          <p>Schedule a consultation. Prevent the next million-dollar outage.</p>
-          <div className="cta__actions">
-            <a href="tel:+15551234567" className="btn btn--primary btn--lg">Call Now</a>
-            <a href="mailto:contact@jinki.io" className="btn btn--ghost btn--lg">Email Us</a>
-          </div>
-        </FadeUp>
+      {/* CONTACT CTA */}
+      <section id="contact" className="section" style={{ textAlign: 'center' }}>
+        <p className="section__label">Contact</p>
+        <h2 className="section__title">
+          Ready?
+        </h2>
+        <p className="section__text" style={{ margin: '0 auto 48px' }}>
+          Schedule a consultation with our team to discuss
+          your infrastructure protection needs.
+        </p>
+        <a href="mailto:contact@jinki.ai" className="hero__cta">
+          Get Started
+        </a>
       </section>
 
       {/* FOOTER */}
       <footer className="footer">
         <div className="footer__inner">
-          <div className="footer__brand">
-            <span className="footer__logo">◉ JINKI INTELLIGENCE</span>
-            <span className="footer__tagline">Ex Alto Omnia</span>
-          </div>
-          <span className="footer__copy">© 2026 Jinki Intelligence. All rights reserved.</span>
+          <span className="nav__logo-text" style={{ opacity: 0.5 }}>JINKI</span>
+          <nav className="footer__links">
+            <a href="#services">Services</a>
+            <a href="#platform">Platform</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <span className="footer__copy">© 2024 Jinki Intelligence</span>
         </div>
       </footer>
-
-      {/* ROI CALCULATOR MODAL */}
-      <ROIModal isOpen={roiModalOpen} onClose={() => setRoiModalOpen(false)} />
-
-      {/* QUICK ROI SNAPSHOT - Industry Card CTAs */}
-      {quickROIOpen && (
-        <QuickROISnapshot
-          industryKey={quickROIOpen}
-          onClose={() => setQuickROIOpen(null)}
-        />
-      )}
     </div>
   )
 }
