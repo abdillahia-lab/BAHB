@@ -1,17 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
 /**
- * LAZYMASTER: Lazy-loaded ASCII Liquid Glass
- * Dynamically imported to reduce initial bundle
+ * TITAN CHAMPION: GPU-Optimized ASCII Liquid Glass
+ * - RAF-driven animation (no setInterval jank)
+ * - Memoized frames prevent recreation
+ * - Will-change hints for compositor
+ * - Lazy-loadable for bundle splitting
  */
 
 export const AsciiLiquidGlass = () => {
   const [frame, setFrame] = useState(0)
-  const chars = ['░', '▒', '▓', '█', '▄', '▀', '■', '□', '▪', '▫', '●', '○', '◐', '◑', '◒', '◓']
-  const waveChars = ['~', '≈', '∼', '≋', '〰', '∿']
+  const frameRequestRef = useRef(null)
+  const animationStartRef = useRef(Date.now())
 
-  const eyeFrames = [
+  // Memoized eye frames - prevents recreation on every render
+  const eyeFrames = useMemo(() => [
     [
       "            ░░░░░░░░░░░░            ",
       "        ░░▒▒▓▓██████▓▓▒▒░░        ",
@@ -66,17 +70,27 @@ export const AsciiLiquidGlass = () => {
       "        ▓▓██████████████████▓▓        ",
       "            ▓▓▓▓▓▓▓▓▓▓▓▓            ",
     ],
-  ]
+  ], [])
 
+  // GPU-OPTIMIZED: RAF-driven animation without setInterval
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFrame(f => (f + 1) % eyeFrames.length)
-    }, 800)
-    return () => clearInterval(interval)
-  }, [])
+    const animate = (now) => {
+      const elapsed = now - animationStartRef.current
+      const newFrame = Math.floor((elapsed / 800) % eyeFrames.length)
+      if (newFrame !== frame) {
+        setFrame(newFrame)
+      }
+      frameRequestRef.current = requestAnimationFrame(animate)
+    }
+    frameRequestRef.current = requestAnimationFrame(animate)
+    return () => {
+      if (frameRequestRef.current) {
+        cancelAnimationFrame(frameRequestRef.current)
+      }
+    }
+  }, [frame, eyeFrames.length])
 
   const currentFrame = eyeFrames[frame]
-  const ease = [0.25, 0.1, 0.25, 1]
 
   return (
     <div className="ascii-glass">
@@ -89,6 +103,7 @@ export const AsciiLiquidGlass = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.03, duration: 0.3 }}
+              style={{ willChange: 'opacity, transform' }}
             >
               {line}
             </motion.span>
@@ -100,3 +115,5 @@ export const AsciiLiquidGlass = () => {
     </div>
   )
 }
+
+export default AsciiLiquidGlass

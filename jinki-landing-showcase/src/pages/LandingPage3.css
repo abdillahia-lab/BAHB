@@ -507,6 +507,29 @@ body {
   letter-spacing: 0.05em;
 }
 
+.card__roi-button {
+  margin-top: 18px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #00d4ff 0%, #00b8d4 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+  width: 100%;
+}
+
+.card__roi-button:hover {
+  box-shadow: 0 6px 16px rgba(0, 212, 255, 0.3);
+}
+
+.card__roi-button:active {
+  transform: scale(0.98);
+}
+
 /* ═══ PLATFORM ═══ */
 .platform {
   display: grid;

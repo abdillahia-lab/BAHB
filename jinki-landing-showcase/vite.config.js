@@ -7,16 +7,17 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    // STRATEGY: Aggressive code splitting for maximum lazy loading benefit
+    // STRATEGY: Lazy-loaded 3D pages don't load Three.js into main bundle
     rollupOptions: {
       output: {
         manualChunks: {
-          // Core vendor libraries - loaded immediately
+          // Core vendor libraries - loaded immediately for all pages
           'vendor-core': ['react', 'react-dom', 'react-router-dom'],
-          // Animation libraries - loaded on demand
+          // Animation libraries - loaded immediately (required by landing page)
           'vendor-animation': ['framer-motion', 'gsap', 'lenis'],
-          // Three.js ecosystem - only for pages that use it
-          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei'],
+          // CRITICAL: Three.js is ONLY loaded when 3D routes are accessed via lazy() + Suspense
+          // This prevents 56.7kB from blocking initial page load
+          'vendor-three': ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
           // Utilities
           'utils': ['lucide-react']
         },

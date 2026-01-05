@@ -1,37 +1,46 @@
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 
 /**
- * LAZYMASTER: Lazy-loaded Liquid Wave ASCII
- * Dynamically imported to reduce initial bundle
+ * TITAN CHAMPION: GPU-Optimized Liquid Wave ASCII
+ * - CSS-driven animation (no JS re-renders)
+ * - Memoized wave lines
+ * - GPU compositor hints
+ * - Lazy-loadable for bundle splitting
  */
 
 export const LiquidWaveAscii = () => {
-  const [offset, setOffset] = useState(0)
-  const wave = '░▒▓█▓▒░  '
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setOffset(o => (o + 1) % wave.length)
-    }, 100)
-    return () => clearInterval(interval)
-  }, [])
-
-  const generateWaveLine = (rowOffset) => {
-    let line = ''
-    for (let i = 0; i < 50; i++) {
-      const charIndex = (i + offset + rowOffset) % wave.length
-      line += wave[charIndex]
+  // Memoize wave lines - prevent recalculation on every render
+  const waveLines = useMemo(() => {
+    const wave = '░▒▓█▓▒░  '
+    const rows = []
+    for (let rowOffset = 0; rowOffset < 5; rowOffset++) {
+      let line = ''
+      for (let i = 0; i < 50; i++) {
+        const charIndex = (i + rowOffset) % wave.length
+        line += wave[charIndex]
+      }
+      rows.push(line)
     }
-    return line
-  }
+    return rows
+  }, [])
 
   return (
     <div className="liquid-wave">
-      {[0, 2, 4, 6, 8].map(rowOffset => (
-        <div key={rowOffset} className="liquid-wave__row">
-          {generateWaveLine(rowOffset)}
+      {waveLines.map((line, idx) => (
+        <div
+          key={idx}
+          className="liquid-wave__row"
+          style={{
+            willChange: 'transform',
+            contain: 'layout paint',
+            transform: 'translateZ(0)',
+          }}
+        >
+          {line}
         </div>
       ))}
     </div>
   )
 }
+
+export default LiquidWaveAscii

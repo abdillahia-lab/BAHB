@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════
+   ROI MODAL - Backdrop and Container
+   ═══════════════════════════════════════════════════════════════ */
+
+.roi-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 990;
+  cursor: pointer;
+}
+
+.roi-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 90%;
+  max-width: 700px;
+}
+
+/* Smooth scrolling for modal content */
+.roi-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.roi-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.roi-modal::-webkit-scrollbar-thumb {
+  background: rgba(0, 180, 216, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.roi-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 180, 216, 0.6);
+}
+
+@media (max-width: 768px) {
+  .roi-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .roi-modal {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 12px 12px 0 0;
+    top: auto;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+}

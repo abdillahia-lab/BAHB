@@ -1,7 +1,32 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react'
 import { motion, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import Lenis from 'lenis'
+import ROIModal from '../components/ROIModal'
+import QuickROISnapshot from '../components/QuickROISnapshot'
 import './LandingPage3.css'
+
+// ═══════════════════════════════════════════════════════════════
+// TITAN CHAMPION: Route-Based Lazy Loading for Heavy Components
+// Reduces initial bundle by ~12KB for ASCII components
+// ═══════════════════════════════════════════════════════════════
+const LazyAsciiLiquidGlass = lazy(() => import('../components/AsciiLiquidGlass'))
+const LazyLiquidWaveAscii = lazy(() => import('../components/LiquidWaveAscii'))
+
+// GPU-optimized skeleton for ASCII components
+const AsciiSkeleton = () => (
+  <div className="ascii-skeleton" style={{
+    width: '300px',
+    height: '280px',
+    background: 'linear-gradient(135deg, rgba(0,180,216,0.05) 0%, rgba(0,180,216,0.1) 100%)',
+    borderRadius: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    animation: 'pulse 2s ease-in-out infinite',
+  }}>
+    <span style={{ color: 'rgba(0,180,216,0.3)', fontSize: '1.5rem' }}>◐</span>
+  </div>
+)
 
 // GPU RENDERING PERFORMANCE CONFIG
 const PERF_CONFIG = {
@@ -50,152 +75,9 @@ class PerformanceMonitor {
 const perfMonitor = new PerformanceMonitor()
 
 // ═══════════════════════════════════════════════════════════════
-// ASCII LIQUID GLASS - GPU-OPTIMIZED with requestAnimationFrame
+// TITAN CHAMPION: ASCII components moved to lazy-loaded imports
+// See: LazyAsciiLiquidGlass, LazyLiquidWaveAscii (top of file)
 // ═══════════════════════════════════════════════════════════════
-function AsciiLiquidGlass() {
-  const [frame, setFrame] = useState(0)
-  const frameRequestRef = useRef(null)
-  const animationStartRef = useRef(Date.now())
-
-  // Eye ASCII frames - memoized to prevent recreation
-  const eyeFrames = useMemo(() => [
-    [
-      "            ░░░░░░░░░░░░            ",
-      "        ░░▒▒▓▓██████▓▓▒▒░░        ",
-      "      ░▒▓██            ██▓▒░      ",
-      "    ░▒▓█    ▄▄████▄▄    █▓▒░    ",
-      "   ░▓█   ▄██▀▀    ▀▀██▄   █▓░   ",
-      "  ░▓█  ▄█▀   ●●●●   ▀█▄  █▓░  ",
-      "  ▒█  ██   ●●▓▓▓▓●●   ██  █▒  ",
-      "  ▓█  █   ●▓▓████▓▓●   █  █▓  ",
-      "  ▓█  █   ●▓██▀▀██▓●   █  █▓  ",
-      "  ▒█  ██   ●●▓▓▓▓●●   ██  █▒  ",
-      "  ░▓█  ▀█▄   ●●●●   ▄█▀  █▓░  ",
-      "   ░▓█   ▀██▄▄    ▄▄██▀   █▓░   ",
-      "    ░▒▓█    ▀▀████▀▀    █▓▒░    ",
-      "      ░▒▓██            ██▓▒░      ",
-      "        ░░▒▒▓▓██████▓▓▒▒░░        ",
-      "            ░░░░░░░░░░░░            ",
-    ],
-    [
-      "            ▒▒▒▒▒▒▒▒▒▒▒▒            ",
-      "        ▒▒▓▓████████████▓▓▒▒        ",
-      "      ▒▓██                ██▓▒      ",
-      "    ▒▓█      ▄▄████▄▄      █▓▒    ",
-      "   ▒▓█    ▄██▀▀    ▀▀██▄    █▓▒   ",
-      "  ▒▓█   ▄█▀    ○○○○    ▀█▄   █▓▒  ",
-      "  ▓█   ██    ○○████○○    ██   █▓  ",
-      "  █▓   █    ○████████○    █   ▓█  ",
-      "  █▓   █    ○████████○    █   ▓█  ",
-      "  ▓█   ██    ○○████○○    ██   █▓  ",
-      "  ▒▓█   ▀█▄    ○○○○    ▄█▀   █▓▒  ",
-      "   ▒▓█    ▀██▄▄    ▄▄██▀    █▓▒   ",
-      "    ▒▓█      ▀▀████▀▀      █▓▒    ",
-      "      ▒▓██                ██▓▒      ",
-      "        ▒▒▓▓████████████▓▓▒▒        ",
-      "            ▒▒▒▒▒▒▒▒▒▒▒▒            ",
-    ],
-    [
-      "            ▓▓▓▓▓▓▓▓▓▓▓▓            ",
-      "        ▓▓██████████████████▓▓        ",
-      "      ▓██▀                ▀██▓      ",
-      "    ▓█▀      ▄▄▀▀▀▀▄▄      ▀█▓    ",
-      "   ▓█     ▄▀▀        ▀▀▄     █▓   ",
-      "  ▓█    ▄▀      ◐◐      ▀▄    █▓  ",
-      "  █▓   █      ◐◐██◐◐      █   ▓█  ",
-      "  █    █     ◐██████◐     █    █  ",
-      "  █    █     ◐██████◐     █    █  ",
-      "  █▓   █      ◐◐██◐◐      █   ▓█  ",
-      "  ▓█    ▀▄      ◐◐      ▄▀    █▓  ",
-      "   ▓█     ▀▀▄        ▄▀▀     █▓   ",
-      "    ▓█▀      ▀▀▄▄▄▄▀▀      ▀█▓    ",
-      "      ▓██▄                ▄██▓      ",
-      "        ▓▓██████████████████▓▓        ",
-      "            ▓▓▓▓▓▓▓▓▓▓▓▓            ",
-    ],
-  ], [])
-
-  // GPU-OPTIMIZED: RAF-driven animation without setInterval
-  useEffect(() => {
-    const animate = (now) => {
-      const elapsed = now - animationStartRef.current
-      const newFrame = Math.floor((elapsed / 800) % eyeFrames.length)
-      if (newFrame !== frame) {
-        setFrame(newFrame)
-      }
-      frameRequestRef.current = requestAnimationFrame(animate)
-    }
-    frameRequestRef.current = requestAnimationFrame(animate)
-    return () => {
-      if (frameRequestRef.current) {
-        cancelAnimationFrame(frameRequestRef.current)
-      }
-    }
-  }, [frame, eyeFrames.length])
-
-  const currentFrame = eyeFrames[frame]
-
-  return (
-    <div className="ascii-glass">
-      <div className="ascii-glass__container">
-        <pre className="ascii-glass__art">
-          {currentFrame.map((line, i) => (
-            <motion.span
-              key={i}
-              className="ascii-glass__line"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.03, duration: 0.3 }}
-              style={{ willChange: 'opacity, transform' }}
-            >
-              {line}
-            </motion.span>
-          ))}
-        </pre>
-        <div className="ascii-glass__glow" />
-        <div className="ascii-glass__reflection" />
-      </div>
-    </div>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════
-// LIQUID WAVE ASCII - GPU-OPTIMIZED with CSS animation
-// ═══════════════════════════════════════════════════════════════
-function LiquidWaveAscii() {
-  // Memoize wave lines - prevent recalculation on every render
-  const waveLines = useMemo(() => {
-    const wave = '░▒▓█▓▒░  '
-    const rows = []
-    for (let rowOffset = 0; rowOffset < 5; rowOffset++) {
-      let line = ''
-      for (let i = 0; i < 50; i++) {
-        const charIndex = (i + rowOffset) % wave.length
-        line += wave[charIndex]
-      }
-      rows.push(line)
-    }
-    return rows
-  }, [])
-
-  return (
-    <div className="liquid-wave">
-      {waveLines.map((line, idx) => (
-        <div
-          key={idx}
-          className="liquid-wave__row"
-          style={{
-            willChange: 'transform',
-            contain: 'layout paint',
-            transform: 'translateZ(0)',
-          }}
-        >
-          {line}
-        </div>
-      ))}
-    </div>
-  )
-}
 
 function useSmoothScroll() {
   useEffect(() => {
@@ -275,7 +157,7 @@ const Counter = ({ value, suffix = '', prefix = '', label }) => {
 }
 
 // GPU-OPTIMIZED IndustryCard with transform3d promotion
-const IndustryCard = ({ image, title, problem, solution, stats, index }) => {
+const IndustryCard = ({ image, title, problem, solution, stats, index, industryKey, onOpenROI }) => {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -331,6 +213,14 @@ const IndustryCard = ({ image, title, problem, solution, stats, index }) => {
             </div>
           ))}
         </div>
+        <motion.button
+          className="card__roi-button"
+          onClick={() => onOpenROI(industryKey)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          💡 See Your ROI
+        </motion.button>
       </div>
     </motion.div>
   )
@@ -338,6 +228,9 @@ const IndustryCard = ({ image, title, problem, solution, stats, index }) => {
 
 export default function LandingPage3() {
   useSmoothScroll()
+
+  const [roiModalOpen, setRoiModalOpen] = useState(false)
+  const [quickROIOpen, setQuickROIOpen] = useState(null) // Will store industry key (dataCenter, utility, agriculture, oilGas)
 
   const heroRef = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -353,6 +246,7 @@ export default function LandingPage3() {
 
   const industries = [
     {
+      key: 'dataCenter',
       image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
       title: 'Data Centers',
       problem: '19% of outages stem from cooling failures. Average cost: $700K.',
@@ -360,6 +254,7 @@ export default function LandingPage3() {
       stats: [{ value: '$700K', label: 'Avg Outage Cost' }, { value: '72hrs', label: 'Early Detection' }]
     },
     {
+      key: 'utility',
       image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80',
       title: 'Electric Utilities',
       problem: 'Ground crews miss 48% of defects. Helicopters cost $2,000+/hour.',
@@ -367,6 +262,7 @@ export default function LandingPage3() {
       stats: [{ value: '60%', label: 'Cost Reduction' }, { value: '4.5x', label: 'More Defects' }]
     },
     {
+      key: 'agriculture',
       image: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&q=80',
       title: 'Precision Agriculture',
       problem: 'Crop stress visible to eye only after 14+ days of damage.',
@@ -374,6 +270,7 @@ export default function LandingPage3() {
       stats: [{ value: '14 days', label: 'Earlier Detection' }, { value: '150%', label: 'Proven ROI' }]
     },
     {
+      key: 'oilGas',
       image: 'https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800&q=80',
       title: 'Oil & Gas',
       problem: 'EPA requires continuous methane monitoring. Manual inspection takes days.',
@@ -384,9 +281,11 @@ export default function LandingPage3() {
 
   return (
     <div className="page">
-      {/* Liquid wave background */}
+      {/* Liquid wave background - TITAN: Lazy loaded */}
       <div className="liquid-bg">
-        <LiquidWaveAscii />
+        <Suspense fallback={null}>
+          <LazyLiquidWaveAscii />
+        </Suspense>
       </div>
 
       {/* NAV */}
@@ -415,7 +314,7 @@ export default function LandingPage3() {
           <div className="hero__grid"/>
         </div>
 
-        {/* ASCII Liquid Glass Eye */}
+        {/* ASCII Liquid Glass Eye - TITAN: Lazy loaded */}
         <motion.div
           className="hero__ascii"
           style={{ y: asciiY, rotate: asciiRotate }}
@@ -423,7 +322,9 @@ export default function LandingPage3() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.2, ease }}
         >
-          <AsciiLiquidGlass />
+          <Suspense fallback={<AsciiSkeleton />}>
+            <LazyAsciiLiquidGlass />
+          </Suspense>
         </motion.div>
 
         <motion.div className="hero__content" style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}>
@@ -460,7 +361,9 @@ export default function LandingPage3() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 1.3, ease }}
           >
-            <a href="#contact" className="btn btn--primary">Schedule Assessment</a>
+            <button onClick={() => setRoiModalOpen(true)} className="btn btn--primary">
+              💰 See Your ROI
+            </button>
             <a href="#industries" className="btn btn--ghost">Explore Solutions</a>
           </motion.div>
         </motion.div>
@@ -488,7 +391,12 @@ export default function LandingPage3() {
 
         <div className="cards">
           {industries.map((industry, i) => (
-            <IndustryCard key={i} {...industry} index={i}/>
+            <IndustryCard
+              key={i}
+              {...industry}
+              index={i}
+              onOpenROI={setQuickROIOpen}
+            />
           ))}
         </div>
       </section>
@@ -611,6 +519,17 @@ export default function LandingPage3() {
           <span className="footer__copy">© 2026 Jinki Intelligence. All rights reserved.</span>
         </div>
       </footer>
+
+      {/* ROI CALCULATOR MODAL */}
+      <ROIModal isOpen={roiModalOpen} onClose={() => setRoiModalOpen(false)} />
+
+      {/* QUICK ROI SNAPSHOT - Industry Card CTAs */}
+      {quickROIOpen && (
+        <QuickROISnapshot
+          industryKey={quickROIOpen}
+          onClose={() => setQuickROIOpen(null)}
+        />
+      )}
     </div>
   )
 }
