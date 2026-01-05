@@ -1,6 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════
-   TEAM 34 CHAMPION: MONOCHROME SUPREMACY
-   Apple-Level Minimalism | Logo as Only Color Source
+   JINKI INTELLIGENCE - CHAMPIONSHIP IMPLEMENTATION
+   7 Winning Teams Combined | Apple-Level Experience
+   ═══════════════════════════════════════════════════════════════
+
+   IMPLEMENTED:
+   🏆 LOGO Magnetic Dimensional Presence (565/600)
+   🏆 OPT-3 RAF Throttling (548/600)
+   🏆 NAV Adaptive Smart Navigation (544/600)
+   🏆 GLASS-1 Premium Card System (538/600)
+   🏆 FLUID-2 Spring Stagger System (535/600)
+   🏆 FLUID-3 Magnetic Button (520/600)
+   🏆 OPT-1 CSS Containment (512/600)
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
@@ -17,6 +27,18 @@
   /* The ONLY color - Logo cyan core */
   --cyan: #00d4ff;
   --cyan-glow: rgba(0, 212, 255, 0.4);
+  --cyan-intense: rgba(0, 212, 255, 0.6);
+  --cyan-subtle: rgba(0, 212, 255, 0.15);
+
+  /* FLUID-2: Spring Physics Variables */
+  --spring-tension: 0.15;
+  --spring-friction: 0.85;
+  --stagger-delay: 0.08s;
+
+  /* GLASS-1: Glassmorphism Variables */
+  --glass-bg: rgba(22, 27, 34, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 20px;
 }
 
 *, *::before, *::after {
@@ -63,24 +85,87 @@ body {
   position: relative;
 }
 
-/* The Logo - Only element with color */
+/* ═══════════════════════════════════════════════════════════════
+   🏆 TEAM LOGO CHAMPION: Magnetic Dimensional Presence
+   Triple-layered glow + 3D perspective breathing
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero__logo-container {
+  position: relative;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  margin-bottom: 48px;
+}
+
 .hero__logo {
   width: min(500px, 80vw);
   height: auto;
-  margin-bottom: 48px;
-  filter: drop-shadow(0 0 60px var(--cyan-glow));
-  animation: logoBreath 6s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+  /* Triple-layered glow system */
+  filter:
+    drop-shadow(0 0 20px var(--cyan-subtle))
+    drop-shadow(0 0 60px var(--cyan-glow))
+    drop-shadow(0 0 120px var(--cyan-intense));
+  animation: logoDimensionalBreath 6s ease-in-out infinite;
+  will-change: transform, filter;
+  transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: none;
 }
 
-@keyframes logoBreath {
+/* Magnetic cursor attraction zone */
+.hero__logo:hover {
+  animation-play-state: paused;
+}
+
+/* 3D Dimensional Breathing Animation */
+@keyframes logoDimensionalBreath {
   0%, 100% {
-    filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.3));
-    transform: scale(1);
+    filter:
+      drop-shadow(0 0 15px var(--cyan-subtle))
+      drop-shadow(0 0 40px var(--cyan-glow))
+      drop-shadow(0 0 80px rgba(0, 212, 255, 0.2));
+    transform: translateZ(0) scale(1) rotateX(0deg);
+  }
+  25% {
+    transform: translateZ(20px) scale(1.01) rotateX(1deg);
   }
   50% {
-    filter: drop-shadow(0 0 80px rgba(0, 212, 255, 0.5));
-    transform: scale(1.02);
+    filter:
+      drop-shadow(0 0 25px var(--cyan-glow))
+      drop-shadow(0 0 80px var(--cyan-intense))
+      drop-shadow(0 0 160px rgba(0, 212, 255, 0.4));
+    transform: translateZ(40px) scale(1.03) rotateX(0deg);
   }
+  75% {
+    transform: translateZ(20px) scale(1.01) rotateX(-1deg);
+  }
+}
+
+/* Ambient glow layer behind logo */
+.hero__logo-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse at center,
+    var(--cyan-subtle) 0%,
+    transparent 60%
+  );
+  filter: blur(60px);
+  opacity: 0.6;
+  animation: glowPulse 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
 }
 
 /* Tagline */
@@ -115,12 +200,17 @@ body {
   margin-bottom: 48px;
 }
 
-/* CTA Button - White outline only, no cyan */
+/* ═══════════════════════════════════════════════════════════════
+   🏆 TEAM FLUID-3 CHAMPION: Magnetic Button with Cursor Glow
+   ═══════════════════════════════════════════════════════════════ */
+
 .hero__cta {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
-  padding: 16px 40px;
+  padding: 18px 44px;
   font-size: 1rem;
   font-weight: 500;
   color: var(--slate-100);
@@ -128,14 +218,62 @@ body {
   border: 1px solid var(--slate-400);
   border-radius: 50px;
   text-decoration: none;
-  transition: all 0.3s ease;
   cursor: pointer;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Magnetic cursor-following glow */
+.hero__cta::before {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    var(--cyan-glow) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  left: var(--mouse-x, 50%);
+  top: var(--mouse-y, 50%);
+}
+
+.hero__cta:hover::before {
+  opacity: 0.6;
 }
 
 .hero__cta:hover {
+  border-color: var(--cyan);
+  box-shadow:
+    0 0 30px var(--cyan-subtle),
+    inset 0 0 20px var(--cyan-subtle);
+}
+
+.hero__cta:active {
+  transform: scale(0.97) translateZ(0);
+}
+
+/* Filled variant for bottom CTA */
+.hero__cta--filled {
   background: var(--slate-100);
   color: var(--slate-900);
   border-color: var(--slate-100);
+}
+
+.hero__cta--filled:hover {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--slate-900);
 }
 
 /* Scroll indicator */
@@ -167,7 +305,8 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   NAV - Minimal, grayscale
+   🏆 TEAM NAV CHAMPION: Scroll-Adaptive Smart Navigation
+   Progressive glassmorphism + height compression
    ═══════════════════════════════════════════════════════════════ */
 
 .nav {
@@ -176,10 +315,32 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 20px 40px;
-  background: rgba(13, 17, 23, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 24px 40px;
+  background: rgba(13, 17, 23, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  will-change: transform, padding, background, backdrop-filter;
+  transform: translateZ(0);
+  contain: layout style paint;
+  transition:
+    padding 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    background 0.4s ease,
+    backdrop-filter 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+/* Scrolled state - applied via JS */
+.nav--scrolled {
+  padding: 14px 40px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .nav__inner {
@@ -283,27 +444,75 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FEATURES - Grid layout, minimal cards
+   🏆 TEAM GLASS-1 CHAMPION: Premium Glass Card System
+   Multi-layer frosted glass with Apple-style depth
    ═══════════════════════════════════════════════════════════════ */
 
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 48px;
+  gap: 32px;
   margin-top: 80px;
 }
 
 .feature {
+  position: relative;
   padding: 48px;
-  background: var(--slate-800);
-  border: 1px solid var(--slate-700);
-  border-radius: 16px;
-  transition: all 0.3s ease;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  overflow: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.3s ease,
+    box-shadow 0.4s ease;
+  will-change: transform;
+  contain: layout paint;
+}
+
+/* Glass shine effect */
+.feature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+}
+
+/* Inner glow on hover */
+.feature::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    var(--cyan-subtle) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
 .feature:hover {
-  border-color: var(--slate-500);
-  transform: translateY(-4px);
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(0, 212, 255, 0.2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 40px var(--cyan-subtle);
+}
+
+.feature:hover::after {
+  opacity: 1;
 }
 
 .feature__icon {
@@ -314,6 +523,8 @@ body {
 }
 
 .feature__title {
+  position: relative;
+  z-index: 1;
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--slate-100);
@@ -321,9 +532,11 @@ body {
 }
 
 .feature__text {
+  position: relative;
+  z-index: 1;
   font-size: 1rem;
   color: var(--slate-400);
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -360,35 +573,65 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SERVICES - Clean list
+   SERVICES - Glass Grid with Stagger Animation
    ═══════════════════════════════════════════════════════════════ */
 
 .services {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
+  gap: 2px;
   background: var(--slate-700);
   margin-top: 80px;
+  border-radius: 24px;
+  overflow: hidden;
 }
 
 .service {
+  position: relative;
   padding: 64px 48px;
   background: var(--slate-900);
-  transition: background 0.3s ease;
+  transition:
+    background 0.4s ease,
+    transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+}
+
+/* Service glow effect */
+.service::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    var(--cyan-subtle) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
 .service:hover {
   background: var(--slate-800);
 }
 
+.service:hover::after {
+  opacity: 1;
+}
+
 .service__number {
+  position: relative;
+  z-index: 1;
   font-size: 0.75rem;
-  color: var(--slate-500);
+  color: var(--cyan);
   margin-bottom: 24px;
   font-family: 'SF Mono', 'Fira Code', monospace;
+  opacity: 0.7;
 }
 
 .service__title {
+  position: relative;
+  z-index: 1;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--slate-100);
@@ -396,9 +639,11 @@ body {
 }
 
 .service__text {
+  position: relative;
+  z-index: 1;
   font-size: 1rem;
   color: var(--slate-400);
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -450,6 +695,14 @@ body {
    ═══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
+  .nav {
+    padding: 16px 20px;
+  }
+
+  .nav--scrolled {
+    padding: 12px 20px;
+  }
+
   .nav__links {
     display: none;
   }
@@ -458,17 +711,33 @@ body {
     padding: 120px 24px 80px;
   }
 
+  .hero__logo-container {
+    margin-bottom: 32px;
+  }
+
   .hero__logo {
     width: min(300px, 90vw);
-    margin-bottom: 32px;
   }
 
   .section {
     padding: 80px 24px;
   }
 
+  .features {
+    gap: 20px;
+  }
+
+  .feature {
+    padding: 32px;
+  }
+
   .services {
     grid-template-columns: 1fr;
+    border-radius: 16px;
+  }
+
+  .service {
+    padding: 40px 32px;
   }
 
   .footer__inner {
@@ -484,28 +753,92 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ANIMATIONS - Subtle, Apple-like
+   🏆 TEAM FLUID-2 CHAMPION: Spring-Physics Stagger System
+   Apple-like entrance animations with spring easing
    ═══════════════════════════════════════════════════════════════ */
 
-@keyframes fadeUp {
-  from {
+/* Spring-physics keyframe with overshoot */
+@keyframes springFadeUp {
+  0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px) translateZ(0);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-8px) translateZ(0);
+  }
+  80% {
+    transform: translateY(4px) translateZ(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
   }
 }
 
-.fade-up {
-  animation: fadeUp 0.8s ease-out forwards;
+/* Scale-in with spring */
+@keyframes springScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateZ(0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03) translateZ(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
 }
 
+/* Base fade-up with spring physics */
+.fade-up {
+  animation: springFadeUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+/* Staggered delays with progressive timing */
 .fade-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
 .fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
-.fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
-.fade-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
+.fade-up-delay-3 { animation-delay: 0.35s; opacity: 0; }
+.fade-up-delay-4 { animation-delay: 0.5s; opacity: 0; }
+.fade-up-delay-5 { animation-delay: 0.65s; opacity: 0; }
+
+/* Scale variant for cards */
+.scale-in {
+  animation: springScaleIn 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Scroll-triggered reveal classes (applied via JS) */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px) translateZ(0);
+  transition:
+    opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
+}
+
+/* Stagger children on reveal */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0s; opacity: 1; transform: translateY(0); }
+.reveal-stagger.revealed > *:nth-child(2) { transition-delay: 0.08s; opacity: 1; transform: translateY(0); }
+.reveal-stagger.revealed > *:nth-child(3) { transition-delay: 0.16s; opacity: 1; transform: translateY(0); }
+.reveal-stagger.revealed > *:nth-child(4) { transition-delay: 0.24s; opacity: 1; transform: translateY(0); }
 
 /* ═══════════════════════════════════════════════════════════════
    REDUCED MOTION - Accessibility
