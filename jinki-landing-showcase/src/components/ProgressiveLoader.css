@@ -1,0 +1,107 @@
+.progressive-loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  text-align: center;
+}
+
+.progressive-loader__bar {
+  width: 300px;
+  height: 4px;
+  background: rgba(0, 180, 216, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.progressive-loader__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00b4d8 0%, #00e5ff 100%);
+  border-radius: 2px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.5);
+}
+
+.progressive-loader__text {
+  font-size: 14px;
+  color: var(--slate-300, #8b949e);
+  font-weight: 500;
+  animation: fadeInOut 0.6s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Shimmer Skeleton */
+.shimmer-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #e8e8e8 25%, #f0f0f0 50%, #e8e8e8 75%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: shimmer 2s infinite;
+}
+
+.shimmer-skeleton__shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  animation: shimmerMove 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes shimmerMove {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Content Skeleton */
+.content-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .shimmer-skeleton {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  }
+
+  .progressive-loader__bar {
+    background: rgba(0, 180, 216, 0.3);
+  }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-skeleton,
+  .shimmer-skeleton__shimmer {
+    animation: none;
+  }
+
+  .progressive-loader__text {
+    animation: none;
+  }
+
+  .progressive-loader__fill {
+    transition: none;
+  }
+}

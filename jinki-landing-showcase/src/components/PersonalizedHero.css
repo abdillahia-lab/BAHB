@@ -1,0 +1,257 @@
+/* PersonalizedHero Component Styles */
+
+.personalized-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: 60px;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 60px 40px;
+  text-align: left;
+  color: white;
+}
+
+.hero-badge {
+  display: inline-block;
+  border: 2px solid;
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+}
+
+.hero-badge span {
+  display: block;
+}
+
+.hero-title {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  opacity: 0.95;
+  max-width: 600px;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+  max-width: 700px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.metric-label {
+  font-size: 12px;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.hero-cta:active {
+  transform: translateY(0);
+}
+
+.cta-arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 20px;
+}
+
+.hero-cta:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+.hero-risk-context {
+  margin-top: 40px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 500px;
+  opacity: 0.9;
+}
+
+.risk-icon {
+  font-size: 18px;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.hero-accent {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  transform-origin: top;
+  z-index: 3;
+}
+
+/* Default Hero Fallback */
+.default-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.default-hero .hero-content {
+  text-align: center;
+  max-width: 100%;
+  padding: 60px 40px;
+}
+
+.default-hero h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.default-hero p {
+  font-size: 18px;
+  margin-bottom: 40px;
+  opacity: 0.9;
+}
+
+.default-hero .hero-cta {
+  background-color: white;
+  color: #667eea;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .personalized-hero {
+    min-height: 70vh;
+  }
+
+  .hero-content {
+    padding: 40px 20px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+  }
+
+  .hero-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .hero-cta {
+    padding: 14px 32px;
+    font-size: 14px;
+  }
+
+  .hero-risk-context {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .personalized-hero {
+    min-height: 60vh;
+  }
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+  }
+
+  .hero-metrics {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .metric-value {
+    font-size: 24px;
+  }
+
+  .hero-content {
+    padding: 30px 15px;
+  }
+}
