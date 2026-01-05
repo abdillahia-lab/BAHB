@@ -354,6 +354,7 @@ export default function LandingPage3() {
 
         <div className="features">
           <div className="feature reveal">
+            <span className="feature__number">01</span>
             <h3 className="feature__title">Thermal Analysis</h3>
             <p className="feature__text">
               Detect equipment anomalies before they become failures.
@@ -361,6 +362,7 @@ export default function LandingPage3() {
             </p>
           </div>
           <div className="feature reveal">
+            <span className="feature__number">02</span>
             <h3 className="feature__title">Perimeter Defense</h3>
             <p className="feature__text">
               Continuous aerial surveillance with automated
@@ -368,6 +370,7 @@ export default function LandingPage3() {
             </p>
           </div>
           <div className="feature reveal">
+            <span className="feature__number">03</span>
             <h3 className="feature__title">Risk Scoring</h3>
             <p className="feature__text">
               Quantified risk metrics for every asset.
