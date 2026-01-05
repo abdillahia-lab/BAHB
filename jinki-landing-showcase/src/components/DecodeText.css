@@ -1,0 +1,117 @@
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-2: DECODE TEXT STYLING
+   Premium Cyber-Intelligence Aesthetic
+   ═══════════════════════════════════════════════════════════════ */
+
+.decode-text {
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ACTIVE STATE: While decoding */
+.decode-text--active {
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  letter-spacing: 0.05em;
+  color: var(--cyan, #00d4ff);
+  text-shadow:
+    0 0 10px rgba(0, 212, 255, 0.6),
+    0 0 20px rgba(0, 212, 255, 0.3);
+  animation: decode-pulse 0.15s ease-in-out infinite;
+}
+
+/* COMPLETE STATE: After decode finishes */
+.decode-text--complete {
+  animation: decode-flash 0.4s ease-out forwards;
+}
+
+/* Pulsing effect during decode */
+@keyframes decode-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Cyan flash then fade to normal on completion */
+@keyframes decode-flash {
+  0% {
+    color: var(--cyan, #00d4ff);
+    text-shadow:
+      0 0 20px rgba(0, 212, 255, 0.8),
+      0 0 40px rgba(0, 212, 255, 0.4);
+    filter: brightness(1.5);
+  }
+  30% {
+    color: var(--cyan, #00d4ff);
+    text-shadow:
+      0 0 15px rgba(0, 212, 255, 0.6),
+      0 0 30px rgba(0, 212, 255, 0.3);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+    filter: brightness(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT: Glitch finish (optional, add class manually)
+   ═══════════════════════════════════════════════════════════════ */
+.decode-text--glitch-finish.decode-text--complete {
+  animation: decode-glitch-flash 0.6s ease-out forwards;
+}
+
+@keyframes decode-glitch-flash {
+  0%, 100% {
+    transform: translate(0, 0);
+    color: inherit;
+    text-shadow: none;
+  }
+  10% {
+    transform: translate(-2px, 1px);
+    color: var(--cyan, #00d4ff);
+    text-shadow:
+      2px -1px 0 rgba(255, 0, 0, 0.4),
+      -2px 1px 0 rgba(0, 255, 255, 0.4);
+  }
+  20% {
+    transform: translate(1px, -1px);
+    color: var(--cyan, #00d4ff);
+  }
+  30% {
+    transform: translate(-1px, 2px);
+  }
+  40% {
+    transform: translate(2px, -2px);
+  }
+  50% {
+    transform: translate(0, 0);
+    color: var(--cyan, #00d4ff);
+    text-shadow:
+      0 0 20px rgba(0, 212, 255, 0.8),
+      0 0 40px rgba(0, 212, 255, 0.4);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY: Reduced motion support
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .decode-text--active {
+    animation: none;
+    font-family: inherit;
+    color: inherit;
+    text-shadow: none;
+  }
+
+  .decode-text--complete {
+    animation: none;
+  }
+
+  .decode-text--glitch-finish.decode-text--complete {
+    animation: none;
+  }
+}

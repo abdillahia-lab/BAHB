@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-1: Terminal Frame Borders
+   Cyber-Minimal Aesthetic | 60fps Guaranteed
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --ascii-cyan: #00d4ff;
+  --ascii-cyan-glow: rgba(0, 212, 255, 0.6);
+  --ascii-slate: #484f58;
+  --ascii-slate-dark: #30363d;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTAINER
+   ═══════════════════════════════════════════════════════════════ */
+
+.ascii-frame {
+  position: relative;
+  padding: 32px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  isolation: isolate; /* Create stacking context */
+}
+
+/* Content wrapper */
+.ascii-frame__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BORDERS - Positioned absolutely for overlay
+   ═══════════════════════════════════════════════════════════════ */
+
+.ascii-frame__border {
+  position: absolute;
+  color: var(--ascii-slate);
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+/* Top border */
+.ascii-frame__border--top {
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Bottom border */
+.ascii-frame__border--bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Side borders - using pseudo-elements for repeating vertical bars */
+.ascii-frame__sides {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.ascii-frame__border--left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  writing-mode: vertical-lr;
+  color: var(--ascii-slate);
+}
+
+.ascii-frame__border--right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  writing-mode: vertical-lr;
+  color: var(--ascii-slate);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINES - Horizontal bars
+   ═══════════════════════════════════════════════════════════════ */
+
+.ascii-frame__line--h {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--ascii-slate) 0px,
+    var(--ascii-slate) 8px,
+    transparent 8px,
+    transparent 10px
+  );
+  margin: 0 -1px; /* Overlap with corners */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CORNERS - The magic happens here
+   ═══════════════════════════════════════════════════════════════ */
+
+.ascii-frame__corner {
+  display: inline-block;
+  color: var(--ascii-slate);
+  font-weight: 400;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+
+  /* GPU optimization */
+  will-change: color, text-shadow;
+  transform: translateZ(0); /* Force GPU layer */
+  backface-visibility: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLITCH ANIMATION - Cyan pulses on corners
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Top-left corner glitch */
+.ascii-frame__corner--tl {
+  animation: glitchCorner 6s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+/* Top-right corner glitch */
+.ascii-frame__corner--tr {
+  animation: glitchCorner 6s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+/* Bottom-left corner glitch */
+.ascii-frame__corner--bl {
+  animation: glitchCorner 6s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+/* Bottom-right corner glitch */
+.ascii-frame__corner--br {
+  animation: glitchCorner 6s ease-in-out infinite;
+  animation-delay: 4.5s;
+}
+
+@keyframes glitchCorner {
+  0%, 90%, 100% {
+    color: var(--ascii-slate);
+    text-shadow: none;
+  }
+
+  92% {
+    color: var(--ascii-cyan);
+    text-shadow:
+      0 0 8px var(--ascii-cyan-glow),
+      0 0 16px var(--ascii-cyan-glow);
+  }
+
+  94% {
+    color: var(--ascii-slate);
+    text-shadow: none;
+  }
+
+  96% {
+    color: var(--ascii-cyan);
+    text-shadow:
+      0 0 12px var(--ascii-cyan-glow),
+      0 0 20px var(--ascii-cyan-glow),
+      0 0 30px var(--ascii-cyan-glow);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLITCH INTENSITY VARIANTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Low intensity - subtle, slower */
+.ascii-frame--glitch-low .ascii-frame__corner {
+  animation-duration: 8s;
+}
+
+.ascii-frame--glitch-low .ascii-frame__corner--tl { animation-delay: 0s; }
+.ascii-frame--glitch-low .ascii-frame__corner--tr { animation-delay: 2s; }
+.ascii-frame--glitch-low .ascii-frame__corner--bl { animation-delay: 4s; }
+.ascii-frame--glitch-low .ascii-frame__corner--br { animation-delay: 6s; }
+
+/* High intensity - faster, more frequent */
+.ascii-frame--glitch-high .ascii-frame__corner {
+  animation-duration: 4s;
+}
+
+.ascii-frame--glitch-high .ascii-frame__corner--tl { animation-delay: 0s; }
+.ascii-frame--glitch-high .ascii-frame__corner--tr { animation-delay: 1s; }
+.ascii-frame--glitch-high .ascii-frame__corner--bl { animation-delay: 2s; }
+.ascii-frame--glitch-high .ascii-frame__corner--br { animation-delay: 3s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Stats variant - tighter padding */
+.ascii-frame--stats {
+  padding: 24px 32px;
+}
+
+.ascii-frame--stats .ascii-frame__border {
+  font-size: 14px;
+}
+
+/* Hero variant - larger, more dramatic */
+.ascii-frame--hero {
+  padding: 48px;
+}
+
+.ascii-frame--hero .ascii-frame__border {
+  font-size: 18px;
+}
+
+.ascii-frame--hero .ascii-frame__corner {
+  font-size: 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOVER EFFECTS - Interactive feedback
+   ═══════════════════════════════════════════════════════════════ */
+
+.ascii-frame:hover .ascii-frame__border {
+  color: var(--ascii-slate-dark);
+}
+
+.ascii-frame:hover .ascii-frame__corner {
+  color: var(--ascii-cyan);
+  text-shadow:
+    0 0 8px var(--ascii-cyan-glow),
+    0 0 16px var(--ascii-cyan-glow);
+}
+
+.ascii-frame:hover .ascii-frame__line--h {
+  background: repeating-linear-gradient(
+    to right,
+    var(--ascii-cyan) 0px,
+    var(--ascii-cyan) 8px,
+    transparent 8px,
+    transparent 10px
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .ascii-frame {
+    padding: 20px;
+  }
+
+  .ascii-frame__border {
+    font-size: 14px;
+  }
+
+  .ascii-frame--hero {
+    padding: 32px 20px;
+  }
+
+  .ascii-frame--hero .ascii-frame__border {
+    font-size: 14px;
+  }
+
+  .ascii-frame--hero .ascii-frame__corner {
+    font-size: 18px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY - Respect prefers-reduced-motion
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .ascii-frame__corner {
+    animation: none !important;
+  }
+
+  .ascii-frame:hover .ascii-frame__corner {
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Contain paint and layout for better rendering */
+.ascii-frame {
+  contain: layout paint;
+}
+
+/* Force GPU acceleration on animated elements */
+.ascii-frame__corner {
+  contain: layout style paint;
+}
