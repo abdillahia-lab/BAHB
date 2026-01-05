@@ -1,0 +1,24 @@
+{
+  "name": "ralph-wiggum",
+  "version": "1.0.0",
+  "description": "Continuous self-referential AI loops for iterative development. Ralph is a Bash loop that repeatedly feeds prompts to Claude until task completion.",
+  "author": {
+    "name": "BAHB Team"
+  },
+  "commands": [
+    {
+      "name": "ralph-loop",
+      "path": "commands/ralph-loop.md"
+    },
+    {
+      "name": "cancel-ralph",
+      "path": "commands/cancel-ralph.md"
+    }
+  ],
+  "hooks": [
+    {
+      "type": "stop",
+      "path": "hooks/stop-hook.sh"
+    }
+  ]
+}
