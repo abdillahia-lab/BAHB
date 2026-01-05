@@ -1,0 +1,1490 @@
+/* ═══════════════════════════════════════════════════════════════
+   MEGA 8 - HOLOGRAM
+   Premium holographic/iridescent effects with metallic sheens
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --holo-primary: #ff0080;
+  --holo-secondary: #7928ca;
+  --holo-tertiary: #00d4ff;
+  --holo-accent: #00ff88;
+  --holo-dark: #0a0a14;
+  --holo-darker: #050508;
+  --holo-text: #f0f0ff;
+  --holo-text-dim: #a0a0c0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.mega8 {
+  min-height: 100vh;
+  background: var(--holo-darker);
+  color: var(--holo-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRISM WAVE BACKGROUND
+   ═══════════════════════════════════════════════════════════════ */
+
+.prism-wave {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.prism-wave__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  mix-blend-mode: screen;
+}
+
+.prism-wave__layer--1 {
+  background: linear-gradient(
+    135deg,
+    #ff0080 0%,
+    #7928ca 25%,
+    #00d4ff 50%,
+    #00ff88 75%,
+    #ff0080 100%
+  );
+  background-size: 400% 400%;
+  animation: prismFlow1 20s ease-in-out infinite;
+}
+
+.prism-wave__layer--2 {
+  background: radial-gradient(
+    circle at 30% 50%,
+    #7928ca 0%,
+    transparent 50%
+  ),
+  radial-gradient(
+    circle at 70% 50%,
+    #00d4ff 0%,
+    transparent 50%
+  );
+  animation: prismPulse 15s ease-in-out infinite;
+}
+
+.prism-wave__layer--3 {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #ff0080,
+    #7928ca,
+    #00d4ff,
+    #00ff88,
+    #ff0080
+  );
+  background-size: 200% 200%;
+  background-position: center;
+  animation: prismRotate 30s linear infinite;
+  opacity: 0.08;
+}
+
+@keyframes prismFlow1 {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes prismPulse {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.2); opacity: 0.25; }
+}
+
+@keyframes prismRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOLOGRAPHIC SCROLL PROGRESS
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    #ff0080 0%,
+    #7928ca 25%,
+    #00d4ff 50%,
+    #00ff88 75%,
+    #ff0080 100%
+  );
+  background-size: 200% 100%;
+  transform-origin: left;
+  z-index: 1000;
+  animation: rainbowShift 3s linear infinite;
+  box-shadow: 0 0 20px rgba(127, 40, 202, 0.5);
+}
+
+@keyframes rainbowShift {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOIL TEXT - Metallic chrome effect
+   ═══════════════════════════════════════════════════════════════ */
+
+.foil-text {
+  background: linear-gradient(
+    135deg,
+    #ff0080 0%,
+    #ffd700 20%,
+    #00d4ff 40%,
+    #7928ca 60%,
+    #00ff88 80%,
+    #ff0080 100%
+  );
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: foilShimmer 4s linear infinite;
+  position: relative;
+  font-weight: 700;
+  filter: brightness(1.2) contrast(1.1);
+}
+
+@keyframes foilShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RAINBOW TEXT
+   ═══════════════════════════════════════════════════════════════ */
+
+.rainbow-text {
+  background: linear-gradient(
+    90deg,
+    #ff0080,
+    #7928ca,
+    #00d4ff,
+    #00ff88,
+    #ff0080
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbowFlow 3s linear infinite;
+  font-weight: 600;
+}
+
+@keyframes rainbowFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 1.5rem 0;
+  background: rgba(10, 10, 20, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.holo-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 128, 0.05),
+    rgba(121, 40, 202, 0.05),
+    rgba(0, 212, 255, 0.05)
+  );
+  pointer-events: none;
+}
+
+.holo-nav__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.holo-nav__logo {
+  position: relative;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.holo-nav__logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  display: block;
+}
+
+.holo-nav__logo-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: logoShine 3s ease-in-out infinite;
+}
+
+@keyframes logoShine {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(200%); }
+}
+
+.holo-nav__links {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.holo-nav__link {
+  color: var(--holo-text);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.holo-nav__link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff0080, #7928ca, #00d4ff);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.holo-nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOLOGRAPHIC BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-btn {
+  position: relative;
+  padding: 0.75rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  color: var(--holo-text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  isolation: isolate;
+  display: inline-block;
+}
+
+.holo-btn span {
+  position: relative;
+  z-index: 2;
+}
+
+.holo-btn__shine {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+
+.holo-btn:hover .holo-btn__shine {
+  transform: translateX(200%) skewX(-15deg);
+}
+
+.holo-btn--primary {
+  background: linear-gradient(135deg, #ff0080, #7928ca);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(255, 0, 128, 0.3);
+}
+
+.holo-btn--primary:hover {
+  box-shadow: 0 12px 48px rgba(255, 0, 128, 0.5);
+  transform: translateY(-2px);
+}
+
+.holo-btn--glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.holo-btn--glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.holo-btn--large {
+  padding: 1.1rem 3rem;
+  font-size: 1.05rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem 4rem;
+  overflow: hidden;
+}
+
+.holo-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.holo-hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 0, 128, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 100px 100px;
+  opacity: 0.5;
+}
+
+.holo-hero__gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(121, 40, 202, 0.15),
+    transparent 60%
+  );
+}
+
+.holo-hero__eye {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  width: 400px;
+  height: 400px;
+}
+
+.holo-hero__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 900px;
+  margin-top: 15rem;
+}
+
+.holo-hero__tagline {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.holo-hero__title {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+  color: var(--holo-text);
+}
+
+.holo-hero__subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--holo-text-dim);
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+
+.holo-hero__actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.holo-hero__stats {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 3rem;
+  max-width: 1000px;
+  margin-top: 5rem;
+  padding: 3rem 2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOLOGRAPHIC EYE
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-eye {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.holo-eye__outer {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255, 255, 255, 0.1),
+    transparent 50%
+  );
+  box-shadow:
+    inset 0 0 60px rgba(121, 40, 202, 0.4),
+    0 0 80px rgba(255, 0, 128, 0.3);
+  animation: eyePulse 4s ease-in-out infinite;
+}
+
+.holo-eye__iris {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from calc(var(--pulse, 0) * 1deg),
+    #ff0080,
+    #7928ca,
+    #00d4ff,
+    #00ff88,
+    #ff0080
+  );
+  animation: irisRotate 8s linear infinite;
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(121, 40, 202, 0.6);
+}
+
+.holo-eye__pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(0, 0, 0, 0.8),
+    #000 70%
+  );
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.8),
+    0 0 30px rgba(121, 40, 202, 0.8);
+}
+
+.holo-eye__reflection {
+  position: absolute;
+  top: 20%;
+  left: 25%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent);
+  animation: reflectionGlint 3s ease-in-out infinite;
+}
+
+.holo-eye__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid;
+  opacity: 0.6;
+  animation: ringPulse 3s ease-in-out infinite;
+}
+
+.holo-eye__ring--1 {
+  inset: -10px;
+  border-color: rgba(255, 0, 128, 0.5);
+  animation-delay: 0s;
+}
+
+.holo-eye__ring--2 {
+  inset: -20px;
+  border-color: rgba(121, 40, 202, 0.4);
+  animation-delay: 0.5s;
+}
+
+.holo-eye__ring--3 {
+  inset: -30px;
+  border-color: rgba(0, 212, 255, 0.3);
+  animation-delay: 1s;
+}
+
+.holo-eye__glow {
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(121, 40, 202, 0.3),
+    transparent 70%
+  );
+  filter: blur(30px);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.holo-eye__prism {
+  position: absolute;
+  inset: -50px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(255, 0, 128, 0.15),
+    transparent,
+    rgba(0, 212, 255, 0.15),
+    transparent
+  );
+  animation: prismSpin 6s linear infinite;
+}
+
+.holo-eye__rays {
+  position: absolute;
+  inset: -50px;
+  pointer-events: none;
+  animation: raysRotate 20s linear infinite;
+}
+
+.holo-eye__ray-group {
+  transform-origin: center;
+}
+
+@keyframes eyePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes irisRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes reflectionGlint {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes prismSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes raysRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOLOGRAPHIC STAT COUNTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-stat {
+  position: relative;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.holo-stat:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+.holo-stat__value {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.holo-stat__foil {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(
+    135deg,
+    #ffd700 0%,
+    #ff0080 25%,
+    #00d4ff 50%,
+    #7928ca 75%,
+    #ffd700 100%
+  );
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: foilShimmer 3s linear infinite;
+}
+
+.holo-stat__label {
+  font-size: 0.85rem;
+  color: var(--holo-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+.holo-stat__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  animation: statShine 4s ease-in-out infinite;
+}
+
+@keyframes statShine {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(200%); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-section {
+  position: relative;
+  padding: 8rem 2rem;
+  z-index: 1;
+}
+
+.holo-section__header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 5rem;
+}
+
+.holo-section__eyebrow {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.holo-section__title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+  color: var(--holo-text);
+}
+
+.holo-section__subtitle {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--holo-text-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   IRIDESCENT CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-cards {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  perspective: 1000px;
+}
+
+.iridescent-card {
+  position: relative;
+  background: rgba(10, 10, 20, 0.6);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transform-style: preserve-3d;
+}
+
+.iridescent-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px) rotateX(2deg);
+  box-shadow:
+    0 20px 60px rgba(121, 40, 202, 0.3),
+    0 0 80px rgba(255, 0, 128, 0.2);
+}
+
+.iridescent-card__shine {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at calc(var(--mouse-x, 0.5) * 100%) calc(var(--mouse-y, 0.5) * 100%),
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.iridescent-card:hover .iridescent-card__shine {
+  opacity: 1;
+}
+
+.iridescent-card__hologram {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    calc(var(--mouse-x, 0.5) * 360deg),
+    #ff0080,
+    #7928ca,
+    #00d4ff,
+    #00ff88,
+    #ff0080
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  border-radius: 24px;
+}
+
+.iridescent-card:hover .iridescent-card__hologram {
+  opacity: 0.3;
+  animation: hologramPulse 2s ease-in-out infinite;
+}
+
+@keyframes hologramPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+.iridescent-card__image {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.iridescent-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.iridescent-card:hover .iridescent-card__image img {
+  transform: scale(1.08);
+}
+
+.iridescent-card__image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 128, 0.2),
+    rgba(121, 40, 202, 0.2)
+  );
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.iridescent-card:hover .iridescent-card__image-overlay {
+  opacity: 1;
+}
+
+.iridescent-card__content {
+  position: relative;
+  padding: 2rem;
+  z-index: 2;
+}
+
+.iridescent-card__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--holo-text);
+  background: linear-gradient(
+    135deg,
+    var(--holo-text),
+    #00d4ff
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.iridescent-card__section {
+  margin-bottom: 1.5rem;
+}
+
+.iridescent-card__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #ff0080, #7928ca);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.iridescent-card__section p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--holo-text-dim);
+}
+
+.iridescent-card__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.iridescent-card__stat {
+  text-align: center;
+}
+
+.iridescent-card__stat-value {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+  background: linear-gradient(135deg, #ffd700, #ff0080, #00d4ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.iridescent-card__stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--holo-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.iridescent-card__border {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  border: 1px solid transparent;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 128, 0.3),
+    rgba(121, 40, 202, 0.3),
+    rgba(0, 212, 255, 0.3)
+  ) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.iridescent-card:hover .iridescent-card__border {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLATFORM SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-section--platform {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(121, 40, 202, 0.03) 50%,
+    transparent 100%
+  );
+}
+
+.holo-platform {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 4rem;
+  align-items: center;
+}
+
+.holo-platform__lead {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--holo-text-dim);
+  margin-bottom: 2.5rem;
+}
+
+.holo-features {
+  display: grid;
+  gap: 1rem;
+}
+
+.holo-feature {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--holo-text);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.holo-feature:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(8px);
+}
+
+.holo-feature__icon {
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #ff0080, #00d4ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.holo-feature__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.holo-feature:hover .holo-feature__shine {
+  transform: translateX(200%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS PANEL
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-glass-panel {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3rem 2.5rem;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 0 80px rgba(121, 40, 202, 0.1);
+}
+
+.holo-glass-panel__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 128, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 212, 255, 0.1) 100%
+  );
+  animation: panelShimmer 5s ease-in-out infinite;
+}
+
+@keyframes panelShimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.holo-glass-panel__content {
+  position: relative;
+  z-index: 1;
+}
+
+.holo-platform__badge {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  display: block;
+}
+
+.holo-platform__metrics {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.holo-metric__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--holo-text);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.holo-metric__bar {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.holo-metric__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #ff0080,
+    #7928ca,
+    #00d4ff,
+    #00ff88
+  );
+  border-radius: 10px;
+  animation: metricFill 2s ease-out;
+  box-shadow: 0 0 20px rgba(121, 40, 202, 0.6);
+}
+
+@keyframes metricFill {
+  from { width: 0; }
+}
+
+.holo-platform__footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.holo-platform__separator {
+  color: var(--holo-text-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVISOR
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-advisor {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.holo-advisor__card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 32px;
+  padding: 4rem 3rem 3rem;
+  text-align: center;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  transition: all 0.5s ease;
+}
+
+.holo-advisor__card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 80px rgba(121, 40, 202, 0.3);
+}
+
+.holo-advisor__shine {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(
+    from 0deg at 50% 0%,
+    transparent,
+    rgba(255, 0, 128, 0.1),
+    transparent,
+    rgba(0, 212, 255, 0.1),
+    transparent
+  );
+  animation: advisorShine 8s linear infinite;
+}
+
+@keyframes advisorShine {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.holo-advisor__avatar {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff0080, #7928ca, #00d4ff);
+  padding: 3px;
+  z-index: 1;
+}
+
+.holo-advisor__avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--holo-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.holo-advisor__avatar-icon {
+  font-size: 3rem;
+  font-weight: 800;
+}
+
+.holo-advisor__name {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--holo-text);
+  position: relative;
+  z-index: 1;
+}
+
+.holo-advisor__role {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.holo-advisor__bio {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--holo-text-dim);
+  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.holo-advisor__certs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.holo-cert {
+  position: relative;
+  padding: 0.6rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.holo-cert:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.holo-cert__text {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(90deg, #ff0080, #00d4ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.holo-cert__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.holo-cert:hover .holo-cert__shine {
+  transform: translateX(200%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-section--cta {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(121, 40, 202, 0.1),
+    transparent 70%
+  );
+}
+
+.holo-cta {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.holo-cta__icon {
+  margin-bottom: 2rem;
+}
+
+.holo-cta__triangle {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #ff0080, #7928ca, #00d4ff);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation: trianglePulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(121, 40, 202, 0.6));
+}
+
+@keyframes trianglePulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(180deg); }
+}
+
+.holo-cta__title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.holo-cta__tagline {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.holo-cta__text {
+  font-size: 1.2rem;
+  color: var(--holo-text-dim);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.holo-cta__actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.holo-footer {
+  position: relative;
+  padding: 4rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(10, 10, 20, 0.5);
+  z-index: 1;
+}
+
+.holo-footer__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.holo-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.holo-footer__logo {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.holo-footer__tagline {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.holo-footer__copy {
+  font-size: 0.9rem;
+  color: var(--holo-text-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .holo-nav__inner {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .holo-nav__links {
+    gap: 1.5rem;
+  }
+
+  .holo-hero {
+    padding: 6rem 1.5rem 3rem;
+  }
+
+  .holo-hero__eye {
+    width: 280px;
+    height: 280px;
+  }
+
+  .holo-hero__content {
+    margin-top: 12rem;
+  }
+
+  .holo-hero__actions {
+    flex-direction: column;
+  }
+
+  .holo-hero__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .holo-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .holo-platform {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .holo-section {
+    padding: 5rem 1.5rem;
+  }
+
+  .holo-footer__inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .holo-hero__eye {
+    width: 220px;
+    height: 220px;
+  }
+
+  .holo-hero__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .holo-cta__actions {
+    flex-direction: column;
+  }
+}

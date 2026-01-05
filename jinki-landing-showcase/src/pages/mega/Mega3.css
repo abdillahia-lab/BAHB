@@ -1,0 +1,938 @@
+/* ═══════════════════════════════════════════════════════════════
+   MEGA COMPETITOR 3: "ORGANIC" - Master of flowing, natural forms
+   ═══════════════════════════════════════════════════════════════
+
+   Design Philosophy:
+   - Blob shapes and organic curves
+   - Flowing gradients that breathe
+   - Nature-inspired color palettes
+   - Smooth, liquid transitions
+   - Feels alive and breathing
+*/
+
+:root {
+  /* Nature-inspired Color Palette - Ocean meets Forest */
+  --color-primary: #0ea5e9;      /* Ocean blue */
+  --color-secondary: #10b981;    /* Emerald green */
+  --color-tertiary: #8b5cf6;     /* Purple undertone */
+  --color-accent: #06b6d4;       /* Cyan */
+  --color-glow: #7dd3fc;         /* Light blue glow */
+
+  --color-dark: #0f172a;         /* Deep ocean */
+  --color-text: #e2e8f0;         /* Soft white */
+  --color-text-muted: #94a3b8;   /* Muted gray */
+  --color-bg: #020617;           /* Deep background */
+
+  /* Organic spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 6rem;
+
+  /* Smooth transitions */
+  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL STYLES - Organic foundation
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-page {
+  position: relative;
+  background: linear-gradient(180deg, var(--color-bg) 0%, #0a1628 50%, var(--color-bg) 100%);
+  color: var(--color-text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ORGANIC BACKGROUND - Living, breathing blobs
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  filter: blur(40px);
+  opacity: 0.6;
+  animation: float 20s ease-in-out infinite;
+}
+
+.blob--bg {
+  width: 500px;
+  height: 500px;
+}
+
+.blob--1 {
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+}
+
+.blob--2 {
+  top: 50%;
+  right: 10%;
+  animation-delay: -7s;
+  animation-duration: 25s;
+}
+
+.blob--3 {
+  bottom: 10%;
+  left: 50%;
+  animation-delay: -14s;
+  animation-duration: 30s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -50px) scale(1.1) rotate(5deg);
+  }
+  50% {
+    transform: translate(-20px, 30px) scale(0.9) rotate(-5deg);
+  }
+  75% {
+    transform: translate(40px, 20px) scale(1.05) rotate(3deg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIQUID WAVES - Flowing organic waves
+   ═══════════════════════════════════════════════════════════════ */
+
+.liquid-waves {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30vh;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.wave--0 {
+  animation: wave-drift 18s ease-in-out infinite;
+}
+
+.wave--1 {
+  animation: wave-drift 22s ease-in-out infinite reverse;
+  animation-delay: -5s;
+}
+
+.wave--2 {
+  animation: wave-drift 26s ease-in-out infinite;
+  animation-delay: -10s;
+}
+
+@keyframes wave-drift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5%);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION - Organic floating nav
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: var(--spacing-md) 0;
+  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, rgba(2, 6, 23, 0.8) 0%, rgba(2, 6, 23, 0.4) 100%);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.organic-nav__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.organic-nav__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+  position: relative;
+  transition: transform 0.4s var(--transition-elastic);
+}
+
+.organic-nav__logo:hover {
+  transform: scale(1.05);
+}
+
+.organic-nav__logo-blob {
+  width: 40px;
+  height: 40px;
+  border-radius: 60% 40% 50% 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  animation: blob-morph 8s ease-in-out infinite;
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+}
+
+@keyframes blob-morph {
+  0%, 100% {
+    border-radius: 60% 40% 50% 50%;
+  }
+  25% {
+    border-radius: 40% 60% 60% 40%;
+  }
+  50% {
+    border-radius: 50% 50% 40% 60%;
+  }
+  75% {
+    border-radius: 60% 40% 50% 50%;
+  }
+}
+
+.organic-nav__links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.organic-nav__links a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s var(--transition-smooth);
+  position: relative;
+}
+
+.organic-nav__links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: 2px;
+  transition: width 0.4s var(--transition-smooth);
+}
+
+.organic-nav__links a:hover {
+  color: var(--color-text);
+}
+
+.organic-nav__links a:hover::after {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ORGANIC BUTTONS - Flowing, breathing buttons
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-btn {
+  padding: 0.875rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.4s var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.organic-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.organic-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.organic-btn--primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+}
+
+.organic-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
+}
+
+.organic-btn--ghost {
+  background: transparent;
+  color: var(--color-text);
+  border: 2px solid rgba(14, 165, 233, 0.3);
+}
+
+.organic-btn--ghost:hover {
+  border-color: var(--color-primary);
+  background: rgba(14, 165, 233, 0.1);
+  transform: translateY(-2px);
+}
+
+.organic-btn--lg {
+  padding: 1.125rem 2.5rem;
+  font-size: 1.125rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SECTION - Breathing organic hero
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  z-index: 1;
+}
+
+.organic-hero__eye {
+  width: 300px;
+  height: 300px;
+  margin-bottom: var(--spacing-lg);
+  filter: drop-shadow(0 0 50px rgba(14, 165, 233, 0.4));
+}
+
+.organic-eye {
+  width: 100%;
+  height: 100%;
+}
+
+.organic-hero__content {
+  text-align: center;
+  max-width: 900px;
+  z-index: 2;
+}
+
+.organic-hero__tagline {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+}
+
+.organic-hero h1 {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text);
+}
+
+.organic-gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-tertiary));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-flow 8s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.organic-hero__subtitle {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+}
+
+.organic-hero__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.organic-hero__stats {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATS - Organic blob stats
+   ═══════════════════════════════════════════════════════════════ */
+
+.stat {
+  position: relative;
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-width: 150px;
+}
+
+.stat__blob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(16, 185, 129, 0.1));
+  border-radius: 40% 60% 60% 40%;
+  animation: blob-morph 6s ease-in-out infinite;
+  z-index: -1;
+}
+
+.stat__value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.stat__label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS - Organic flowing sections
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-section {
+  position: relative;
+  padding: var(--spacing-xl) var(--spacing-md);
+  z-index: 1;
+}
+
+.organic-section__header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto var(--spacing-xl);
+}
+
+.organic-section__eyebrow {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+}
+
+.organic-section h2 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-text), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.organic-section__subtitle {
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ORGANIC CARDS - Flowing, breathing cards
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.organic-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(10, 22, 40, 0.4));
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  overflow: hidden;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  transition: all 0.5s var(--transition-smooth);
+}
+
+.organic-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(14, 165, 233, 0.3);
+  box-shadow: 0 20px 60px rgba(14, 165, 233, 0.2);
+}
+
+.organic-card__blob-bg {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.organic-card__image {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.organic-card__image-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+}
+
+.organic-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--transition-smooth);
+}
+
+.organic-card:hover .organic-card__image img {
+  transform: scale(1.05);
+}
+
+.organic-card__content {
+  position: relative;
+  padding: var(--spacing-md);
+  z-index: 1;
+}
+
+.organic-card h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-text), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.organic-card__section {
+  margin-bottom: var(--spacing-md);
+}
+
+.organic-card__label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(14, 165, 233, 0.1);
+  border-radius: 20px;
+}
+
+.organic-card__section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.organic-card__stats {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.organic-card__stat {
+  flex: 1;
+  text-align: center;
+}
+
+.organic-card__stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.organic-card__stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLATFORM SECTION - Organic platform showcase
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-section--platform {
+  background: linear-gradient(180deg, transparent 0%, rgba(14, 165, 233, 0.02) 50%, transparent 100%);
+}
+
+.organic-platform {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+.organic-platform__lead {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+}
+
+.organic-features {
+  display: grid;
+  gap: var(--spacing-md);
+}
+
+.organic-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.05), rgba(16, 185, 129, 0.05));
+  border-radius: 20px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  transition: all 0.4s var(--transition-smooth);
+}
+
+.organic-feature:hover {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(16, 185, 129, 0.1));
+  border-color: rgba(14, 165, 233, 0.3);
+  transform: translateX(10px);
+}
+
+.organic-feature__blob {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  animation: pulse-glow 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.8);
+  }
+}
+
+.organic-feature__text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.organic-platform__visual {
+  position: relative;
+}
+
+.organic-platform__blob-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 50px rgba(14, 165, 233, 0.3));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVISOR SECTION - Organic advisor card
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-advisor {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(10, 22, 40, 0.4));
+  backdrop-filter: blur(10px);
+  border-radius: 40px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.organic-advisor::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.organic-advisor__avatar {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--spacing-md);
+  position: relative;
+}
+
+.organic-advisor__blob {
+  width: 100%;
+  height: 100%;
+  border-radius: 40% 60% 60% 40%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary), var(--color-tertiary));
+  animation: blob-morph 8s ease-in-out infinite;
+  box-shadow: 0 0 40px rgba(14, 165, 233, 0.4);
+}
+
+.organic-advisor h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.organic-advisor__role {
+  font-size: 1.125rem;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+.organic-advisor__bio {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+.organic-advisor__certs {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.organic-cert {
+  padding: 0.5rem 1rem;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  transition: all 0.3s var(--transition-smooth);
+}
+
+.organic-cert:hover {
+  background: rgba(14, 165, 233, 0.2);
+  transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA SECTION - Organic call-to-action
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-section--cta {
+  background: linear-gradient(180deg, transparent 0%, rgba(14, 165, 233, 0.03) 100%);
+}
+
+.organic-cta {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: var(--spacing-xl);
+  position: relative;
+}
+
+.organic-cta__blob-container {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto var(--spacing-lg);
+  filter: drop-shadow(0 0 40px rgba(14, 165, 233, 0.3));
+  opacity: 0.6;
+}
+
+.organic-cta h2 {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-text), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.organic-cta__tagline {
+  font-size: 1.125rem;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+.organic-cta p {
+  font-size: 1.125rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+.organic-cta__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER - Organic footer
+   ═══════════════════════════════════════════════════════════════ */
+
+.organic-footer {
+  position: relative;
+  padding: var(--spacing-xl) var(--spacing-md);
+  border-top: 1px solid rgba(14, 165, 233, 0.1);
+  z-index: 1;
+}
+
+.organic-footer__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.organic-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.organic-footer__logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.organic-footer__tagline {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.organic-footer__copy {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE - Organic mobile experience
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .organic-nav__links {
+    display: none;
+  }
+
+  .organic-hero__eye {
+    width: 200px;
+    height: 200px;
+  }
+
+  .organic-hero__stats {
+    gap: var(--spacing-md);
+  }
+
+  .organic-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .organic-platform {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .organic-footer__inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}

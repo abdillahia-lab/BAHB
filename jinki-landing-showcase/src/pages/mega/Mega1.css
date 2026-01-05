@@ -1,0 +1,907 @@
+/* ═══════════════════════════════════════════════════════════════
+   NEOMORPH - Soft shadows, tactile depth, Apple-like premium
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Neomorphic base palette */
+  --neo-bg: #e0e5ec;
+  --neo-surface: #e0e5ec;
+
+  /* Shadows for depth */
+  --neo-shadow-light: -8px -8px 16px rgba(255, 255, 255, 0.8);
+  --neo-shadow-dark: 8px 8px 16px rgba(163, 177, 198, 0.6);
+  --neo-shadow-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.7);
+  --neo-shadow-inset-dark: inset 4px 4px 8px rgba(163, 177, 198, 0.4);
+
+  /* Soft shadows for buttons */
+  --neo-btn-shadow: -6px -6px 12px rgba(255, 255, 255, 0.9),
+                     6px 6px 12px rgba(163, 177, 198, 0.5);
+  --neo-btn-shadow-pressed: inset -3px -3px 8px rgba(255, 255, 255, 0.8),
+                             inset 3px 3px 8px rgba(163, 177, 198, 0.4);
+
+  /* Accent color - subtle cyan */
+  --neo-accent: #6fb3d2;
+  --neo-accent-soft: #8ac5dd;
+
+  /* Text colors */
+  --neo-text-primary: #4a5568;
+  --neo-text-secondary: #718096;
+  --neo-text-muted: #a0aec0;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.neo-page {
+  background: linear-gradient(135deg, #e0e5ec 0%, #d5dbe5 100%);
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--neo-text-primary);
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1.5rem 0;
+  background: rgba(224, 229, 236, 0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.neo-nav__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.neo-nav__logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--neo-text-primary);
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 16px;
+  background: var(--neo-surface);
+  box-shadow: var(--neo-shadow-light), var(--neo-shadow-dark);
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.neo-nav__logo:active {
+  box-shadow: var(--neo-shadow-inset-light), var(--neo-shadow-inset-dark);
+  transform: scale(0.98);
+}
+
+.neo-nav__links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.neo-nav__link {
+  color: var(--neo-text-secondary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.neo-nav__link:hover {
+  color: var(--neo-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS - Tactile & Pressable
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-btn {
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+}
+
+.neo-btn--primary {
+  background: linear-gradient(145deg, #6fb3d2, #5a9bb8);
+  color: white;
+  box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.4),
+              5px 5px 10px rgba(90, 155, 184, 0.4);
+}
+
+.neo-btn--primary:hover {
+  box-shadow: -6px -6px 12px rgba(255, 255, 255, 0.5),
+              6px 6px 12px rgba(90, 155, 184, 0.5);
+  transform: translateY(-1px);
+}
+
+.neo-btn--primary:active {
+  box-shadow: inset -2px -2px 6px rgba(255, 255, 255, 0.3),
+              inset 2px 2px 6px rgba(90, 155, 184, 0.3);
+  transform: translateY(0);
+}
+
+.neo-btn--secondary {
+  background: var(--neo-surface);
+  color: var(--neo-text-primary);
+  box-shadow: var(--neo-btn-shadow);
+}
+
+.neo-btn--secondary:hover {
+  box-shadow: -7px -7px 14px rgba(255, 255, 255, 0.95),
+              7px 7px 14px rgba(163, 177, 198, 0.55);
+  transform: translateY(-1px);
+}
+
+.neo-btn--secondary:active {
+  box-shadow: var(--neo-btn-shadow-pressed);
+  transform: translateY(0);
+}
+
+.neo-btn--lg {
+  padding: 1.125rem 2.5rem;
+  font-size: 1.125rem;
+}
+
+.neo-btn--xl {
+  padding: 1.375rem 3rem;
+  font-size: 1.25rem;
+  border-radius: 18px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 3rem 4rem;
+  position: relative;
+}
+
+.neo-hero__content {
+  text-align: center;
+  max-width: 900px;
+}
+
+.neo-hero__eye-container {
+  margin-bottom: 3rem;
+}
+
+.neo-hero__tagline {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--neo-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.neo-hero__title {
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--neo-text-primary);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.neo-hero__subtitle {
+  font-size: 1.375rem;
+  line-height: 1.6;
+  color: var(--neo-text-secondary);
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+
+.neo-hero__actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 5rem;
+}
+
+.neo-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NEOMORPHIC EYE - Interactive cyber-eye
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-eye {
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neo-eye__outer {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--neo-surface);
+  box-shadow: -12px -12px 24px rgba(255, 255, 255, 0.8),
+              12px 12px 24px rgba(163, 177, 198, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.neo-eye__middle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #d8dde5, #e8edf5);
+  box-shadow: inset -6px -6px 12px rgba(255, 255, 255, 0.6),
+              inset 6px 6px 12px rgba(163, 177, 198, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+.neo-eye__iris {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #6fb3d2, #5a9bb8);
+  box-shadow: -8px -8px 16px rgba(111, 179, 210, 0.4),
+              8px 8px 16px rgba(90, 155, 184, 0.6),
+              inset -3px -3px 8px rgba(138, 197, 221, 0.4),
+              inset 3px 3px 8px rgba(90, 155, 184, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.neo-eye__pupil {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #2d3748, #1a202c);
+  box-shadow: inset -4px -4px 8px rgba(74, 85, 104, 0.4),
+              inset 4px 4px 8px rgba(26, 32, 44, 0.8),
+              -2px -2px 4px rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.neo-eye__highlight {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.neo-eye__ring {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  top: 5%;
+  left: 5%;
+}
+
+.neo-eye__glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(111, 179, 210, 0.15) 0%, transparent 70%);
+  filter: blur(20px);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATS - Soft elevated counters
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-stat {
+  padding: 2rem 1.5rem;
+  border-radius: 20px;
+  background: var(--neo-surface);
+  box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.8),
+              10px 10px 20px rgba(163, 177, 198, 0.5);
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.neo-stat:hover {
+  transform: translateY(-4px);
+  box-shadow: -12px -12px 24px rgba(255, 255, 255, 0.9),
+              12px 12px 24px rgba(163, 177, 198, 0.6);
+}
+
+.neo-stat__value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--neo-accent);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.neo-stat__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--neo-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-section {
+  padding: 6rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.neo-section__header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.neo-section__eyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--neo-accent);
+  margin-bottom: 1rem;
+}
+
+.neo-section__title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--neo-text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.neo-section__subtitle {
+  font-size: 1.25rem;
+  color: var(--neo-text-secondary);
+  font-weight: 400;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INDUSTRY CARDS - Elevated neomorphic surfaces
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.neo-card {
+  border-radius: 24px;
+  background: var(--neo-surface);
+  box-shadow: -12px -12px 24px rgba(255, 255, 255, 0.7),
+              12px 12px 24px rgba(163, 177, 198, 0.5);
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.neo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: -16px -16px 32px rgba(255, 255, 255, 0.8),
+              16px 16px 32px rgba(163, 177, 198, 0.6);
+}
+
+.neo-card__inner {
+  padding: 2.5rem;
+}
+
+.neo-card__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--neo-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.neo-card__section {
+  margin-bottom: 1.5rem;
+}
+
+.neo-card__label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--neo-accent);
+  padding: 0.375rem 0.875rem;
+  border-radius: 10px;
+  background: var(--neo-surface);
+  box-shadow: inset -2px -2px 4px rgba(255, 255, 255, 0.7),
+              inset 2px 2px 4px rgba(163, 177, 198, 0.3);
+  margin-bottom: 0.75rem;
+}
+
+.neo-card__text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--neo-text-secondary);
+}
+
+.neo-card__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(163, 177, 198, 0.2);
+}
+
+.neo-card__stat {
+  text-align: center;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: var(--neo-surface);
+  box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.6),
+              inset 3px 3px 6px rgba(163, 177, 198, 0.25);
+}
+
+.neo-card__stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--neo-accent);
+  margin-bottom: 0.375rem;
+}
+
+.neo-card__stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--neo-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLATFORM SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-platform {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.neo-platform__lead {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--neo-text-secondary);
+  margin-bottom: 2.5rem;
+}
+
+.neo-features {
+  display: grid;
+  gap: 1rem;
+}
+
+.neo-feature {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  background: var(--neo-surface);
+  box-shadow: -8px -8px 16px rgba(255, 255, 255, 0.7),
+              8px 8px 16px rgba(163, 177, 198, 0.4);
+  transition: all 0.3s ease;
+}
+
+.neo-feature:hover {
+  transform: translateX(4px);
+  box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.8),
+              10px 10px 20px rgba(163, 177, 198, 0.5);
+}
+
+.neo-feature__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #6fb3d2, #5a9bb8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  box-shadow: -3px -3px 6px rgba(111, 179, 210, 0.3),
+              3px 3px 6px rgba(90, 155, 184, 0.5);
+  flex-shrink: 0;
+}
+
+.neo-feature__text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--neo-text-primary);
+}
+
+/* Platform visual display */
+.neo-platform__box {
+  padding: 2.5rem;
+  border-radius: 28px;
+  background: var(--neo-surface);
+  box-shadow: -16px -16px 32px rgba(255, 255, 255, 0.8),
+              16px 16px 32px rgba(163, 177, 198, 0.6);
+}
+
+.neo-platform__display {
+  padding: 2rem;
+  border-radius: 20px;
+  background: var(--neo-surface);
+  box-shadow: inset -6px -6px 12px rgba(255, 255, 255, 0.5),
+              inset 6px 6px 12px rgba(163, 177, 198, 0.3);
+}
+
+.neo-platform__display-header {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--neo-text-primary);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(163, 177, 198, 0.2);
+}
+
+.neo-platform__metrics {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.neo-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.neo-metric__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--neo-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.neo-metric__bar {
+  height: 24px;
+  border-radius: 12px;
+  background: var(--neo-surface);
+  box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.6),
+              inset 3px 3px 6px rgba(163, 177, 198, 0.3);
+  overflow: hidden;
+  position: relative;
+}
+
+.neo-metric__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6fb3d2, #5a9bb8);
+  border-radius: 12px;
+  box-shadow: -2px -2px 4px rgba(111, 179, 210, 0.3),
+              2px 2px 4px rgba(90, 155, 184, 0.4);
+  transition: width 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.neo-platform__footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(163, 177, 198, 0.2);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--neo-text-secondary);
+}
+
+.neo-platform__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neo-accent);
+  box-shadow: 0 0 8px rgba(111, 179, 210, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVISOR SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-advisor {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem;
+  border-radius: 28px;
+  background: var(--neo-surface);
+  box-shadow: -16px -16px 32px rgba(255, 255, 255, 0.8),
+              16px 16px 32px rgba(163, 177, 198, 0.6);
+}
+
+.neo-advisor__avatar {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  background: var(--neo-surface);
+  box-shadow: -12px -12px 24px rgba(255, 255, 255, 0.8),
+              12px 12px 24px rgba(163, 177, 198, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neo-advisor__avatar-inner {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #6fb3d2, #5a9bb8);
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset -4px -4px 8px rgba(138, 197, 221, 0.4),
+              inset 4px 4px 8px rgba(90, 155, 184, 0.4);
+}
+
+.neo-advisor__name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--neo-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.neo-advisor__role {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--neo-accent);
+  margin-bottom: 1.5rem;
+}
+
+.neo-advisor__bio {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--neo-text-secondary);
+  margin-bottom: 2rem;
+}
+
+.neo-advisor__certs {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.neo-cert {
+  padding: 0.625rem 1.25rem;
+  border-radius: 12px;
+  background: var(--neo-surface);
+  box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.6),
+              inset 3px 3px 6px rgba(163, 177, 198, 0.3);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--neo-text-primary);
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-cta {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 4rem 3rem;
+  border-radius: 32px;
+  background: var(--neo-surface);
+  box-shadow: -20px -20px 40px rgba(255, 255, 255, 0.8),
+              20px 20px 40px rgba(163, 177, 198, 0.6);
+}
+
+.neo-cta__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  background: var(--neo-surface);
+  box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.8),
+              10px 10px 20px rgba(163, 177, 198, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neo-cta__triangle {
+  width: 0;
+  height: 0;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-bottom: 28px solid var(--neo-accent);
+  filter: drop-shadow(0 2px 4px rgba(111, 179, 210, 0.3));
+}
+
+.neo-cta__title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--neo-text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.neo-cta__tagline {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--neo-accent);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.neo-cta__text {
+  font-size: 1.125rem;
+  color: var(--neo-text-secondary);
+  margin-bottom: 3rem;
+}
+
+.neo-cta__actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.neo-footer {
+  padding: 3rem;
+  margin-top: 4rem;
+  border-top: 1px solid rgba(163, 177, 198, 0.2);
+}
+
+.neo-footer__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.neo-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.neo-footer__logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--neo-text-primary);
+  letter-spacing: 0.05em;
+}
+
+.neo-footer__tagline {
+  font-size: 0.875rem;
+  color: var(--neo-text-muted);
+  font-style: italic;
+}
+
+.neo-footer__copy {
+  font-size: 0.875rem;
+  color: var(--neo-text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .neo-hero__title {
+    font-size: 3.5rem;
+  }
+
+  .neo-platform {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .neo-hero__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .neo-nav__links {
+    display: none;
+  }
+
+  .neo-hero__title {
+    font-size: 2.5rem;
+  }
+
+  .neo-hero__subtitle {
+    font-size: 1.125rem;
+  }
+
+  .neo-hero__actions {
+    flex-direction: column;
+  }
+
+  .neo-hero__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .neo-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .neo-section__title {
+    font-size: 2rem;
+  }
+
+  .neo-cta__actions {
+    flex-direction: column;
+  }
+
+  .neo-footer__inner {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+}

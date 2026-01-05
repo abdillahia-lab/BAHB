@@ -1,0 +1,337 @@
+/* ═══════════════════════════════════════════════════════════════
+   MEGA 5: VOID - Extreme Minimalism
+   Less than less. Maximum whitespace. Single accent. Pure function.
+   ═══════════════════════════════════════════════════════════════ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --void-black: #000000;
+  --void-white: #FFFFFF;
+  --void-gray: #999999;
+  --void-accent: #000000; /* Pure monochrome - no color */
+}
+
+body {
+  background: var(--void-white);
+  color: var(--void-black);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.void {
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV - Minimal presence
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 3rem 4rem;
+  z-index: 100;
+  mix-blend-mode: difference;
+}
+
+.void-nav__logo {
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  color: var(--void-white);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO - Maximum negative space
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.void-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--void-black);
+  border-radius: 50%;
+  margin-bottom: 6rem;
+}
+
+.void-hero__title {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+.void-hero__sub {
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
+  color: var(--void-gray);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 6rem;
+}
+
+.void-cta {
+  display: inline-block;
+  padding: 1rem 3rem;
+  border: 1px solid var(--void-black);
+  color: var(--void-black);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.void-cta:hover {
+  background: var(--void-black);
+  color: var(--void-white);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CAPABILITY - Single statement in vast space
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-capability {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+  text-align: center;
+}
+
+.void-capability p {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  color: var(--void-black);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STAT - One number, infinite space
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-stat {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+}
+
+.void-stat > div {
+  text-align: center;
+}
+
+.void-stat__value {
+  display: block;
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.void-stat__label {
+  display: block;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  color: var(--void-gray);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLATFORM - One line of truth
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-platform {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+  text-align: center;
+}
+
+.void-platform p {
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  color: var(--void-gray);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  max-width: 900px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVISORY - Minimal credentials
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-advisory {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+}
+
+.void-advisory > div {
+  text-align: center;
+}
+
+.void-advisory__name {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.void-advisory__title {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  color: var(--void-gray);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+}
+
+.void-advisory__certs {
+  font-size: 0.75rem;
+  color: var(--void-gray);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTACT - Final gesture
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-contact {
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem;
+  text-align: center;
+}
+
+.void-contact > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.void-contact__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
+.void-contact__actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.void-link {
+  color: var(--void-black);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.void-link:hover {
+  border-bottom-color: var(--void-black);
+}
+
+.void-divider {
+  color: var(--void-gray);
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER - Barely there
+   ═══════════════════════════════════════════════════════════════ */
+
+.void-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 3rem 4rem 4rem;
+  font-size: 0.75rem;
+  color: var(--void-gray);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE - Maintain void at all sizes
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .void-nav {
+    padding: 2rem;
+  }
+
+  .void-footer {
+    padding: 2rem;
+  }
+
+  .void-hero {
+    padding: 6rem 1.5rem;
+  }
+
+  .void-capability,
+  .void-stat,
+  .void-platform,
+  .void-advisory,
+  .void-contact {
+    min-height: 60vh;
+    padding: 6rem 1.5rem;
+  }
+
+  .void-contact__actions {
+    gap: 1.5rem;
+  }
+
+  .void-dot {
+    margin-bottom: 4rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELECTION - Pure black
+   ═══════════════════════════════════════════════════════════════ */
+
+::selection {
+  background: var(--void-black);
+  color: var(--void-white);
+}
+
+::-moz-selection {
+  background: var(--void-black);
+  color: var(--void-white);
+}

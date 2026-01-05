@@ -1,0 +1,1025 @@
+/* ═══════════════════════════════════════════════════════════════
+   COMPETITOR 6: "MICRO" - Delightful Micro-Interactions
+   Every element responds, transforms, and delights
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --slate-900: #0d1117;
+  --slate-800: #161b22;
+  --slate-700: #21262d;
+  --slate-600: #30363d;
+  --slate-400: #6e7681;
+  --slate-300: #8b949e;
+  --slate-100: #c9d1d9;
+  --white: #f0f6fc;
+
+  --cyan: #00b4d8;
+  --cyan-bright: #00e5ff;
+  --cyan-dim: #0077b6;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  background: var(--slate-900);
+  color: var(--white);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.micro-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(0, 180, 216, 0.08) 0%, transparent 50%),
+    var(--slate-900);
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM CURSOR & TRAIL
+   ═══════════════════════════════════════════════════════════════ */
+
+.custom-cursor-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 180, 216, 0.8);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.6);
+  transition: transform 0.15s ease-out;
+  z-index: 10000;
+}
+
+.cursor-trail {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.5);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.interactive {
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOATING PARTICLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.floating-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 180, 216, 0.6);
+  filter: blur(1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 12px 24px;
+  background: rgba(13, 17, 23, 0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.micro-nav__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.micro-nav__logo {
+  text-decoration: none;
+}
+
+.micro-nav__logo-text {
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 15px rgba(0, 180, 216, 0.5);
+  display: inline-block;
+}
+
+.micro-nav__links {
+  display: flex;
+  gap: 32px;
+}
+
+.micro-nav__links a {
+  font-size: 0.875rem;
+  color: var(--slate-300);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.micro-nav__links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--cyan);
+  transition: width 0.3s ease;
+}
+
+.micro-nav__links a:hover::after {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RIPPLE BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+.ripple-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ripple-btn.btn--lg {
+  padding: 16px 32px;
+  font-size: 1rem;
+}
+
+.ripple-btn--primary {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--cyan-dim) 100%);
+  color: var(--slate-900);
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+}
+
+.ripple-btn--ghost {
+  background: transparent;
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  width: 20px;
+  height: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.micro-hero__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.micro-hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 180, 216, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 216, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+}
+
+.micro-hero__eye {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 40px;
+}
+
+.micro-hero__content {
+  max-width: 700px;
+  z-index: 2;
+}
+
+.micro-hero__tagline {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin-bottom: 20px;
+}
+
+.micro-hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  color: var(--white);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--cyan-bright) 0%, var(--cyan) 50%, var(--cyan-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.micro-hero__subtitle {
+  font-size: 1.125rem;
+  color: var(--slate-300);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.micro-hero__actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.micro-hero__stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 80px;
+  padding-top: 40px;
+  border-top: 1px solid var(--slate-700);
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MORPHING EYE
+   ═══════════════════════════════════════════════════════════════ */
+
+.morphing-eye {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.morphing-eye__outer {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 30px rgba(0, 180, 216, 0.4);
+}
+
+.morphing-eye__middle {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  border-style: dashed;
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+}
+
+.morphing-eye__inner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--cyan-bright), var(--cyan));
+  box-shadow:
+    0 0 30px var(--cyan),
+    0 0 60px rgba(0, 180, 216, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
+  z-index: 10;
+}
+
+.morphing-eye__glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 180, 216, 0.2) 0%, transparent 60%);
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOUNCY COUNTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.bouncy-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bouncy-stat__value {
+  display: block;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.bouncy-stat__label {
+  font-size: 0.8125rem;
+  color: var(--slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bouncy-stat__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-section {
+  padding: 120px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.micro-section--alt {
+  max-width: none;
+  background: var(--slate-800);
+  border-top: 1px solid var(--slate-700);
+  border-bottom: 1px solid var(--slate-700);
+}
+
+.micro-section--alt .micro-platform {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.micro-section--cta {
+  text-align: center;
+}
+
+.micro-section__header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.micro-section__eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+}
+
+.micro-section__header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  color: var(--white);
+}
+
+.micro-section__subtitle {
+  font-size: 1.0625rem;
+  color: var(--slate-300);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TILT CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.tilt-card {
+  position: relative;
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  border-radius: 16px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tilt-card__glow {
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.3), transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+  z-index: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tilt-card__image {
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.tilt-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.tilt-card:hover .tilt-card__image img {
+  transform: scale(1.1);
+}
+
+.tilt-card__content {
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+  background: var(--slate-800);
+}
+
+.tilt-card__content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--white);
+}
+
+.tilt-card__section {
+  margin-bottom: 14px;
+}
+
+.tilt-card__label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.tilt-card__section p {
+  font-size: 0.9rem;
+  color: var(--slate-300);
+  line-height: 1.5;
+}
+
+.tilt-card__stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--slate-700);
+}
+
+.tilt-card__stat {
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.tilt-card__stat-value {
+  display: block;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.tilt-card__stat-label {
+  font-size: 0.6875rem;
+  color: var(--slate-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLATFORM
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-platform {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.micro-platform__text h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  color: var(--white);
+}
+
+.micro-platform__lead {
+  font-size: 1.0625rem;
+  color: var(--slate-300);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.micro-features {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.interactive-feature {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.9375rem;
+  color: var(--slate-100);
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.interactive-feature__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--cyan);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.interactive-feature__pulse {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  pointer-events: none;
+}
+
+.micro-platform__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.micro-platform__box {
+  position: relative;
+}
+
+.micro-ascii-box {
+  font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+  font-size: clamp(0.65rem, 1.3vw, 0.9rem);
+  line-height: 1.4;
+  color: var(--cyan);
+  text-shadow:
+    0 0 8px rgba(0, 180, 216, 0.6),
+    0 0 20px rgba(0, 180, 216, 0.3);
+  padding: 28px 32px;
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(0, 180, 216, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 180, 216, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVISOR
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-advisor {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.micro-advisor__card {
+  text-align: center;
+  padding: 48px;
+  background: var(--slate-800);
+  border: 1px solid var(--slate-700);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.micro-advisor__avatar {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.micro-avatar-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
+  animation: avatarPulse 3s ease-in-out infinite;
+}
+
+@keyframes avatarPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.micro-avatar-core {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan-bright), var(--cyan-dim));
+  color: var(--slate-900);
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(0, 180, 216, 0.6);
+}
+
+.micro-advisor__card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--white);
+}
+
+.micro-advisor__role {
+  color: var(--cyan);
+  font-size: 0.9375rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.micro-advisor__bio {
+  color: var(--slate-300);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.micro-advisor__certs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.micro-cert {
+  padding: 8px 16px;
+  background: rgba(0, 180, 216, 0.1);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-cta {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.micro-cta__icon {
+  font-size: 4rem;
+  color: var(--cyan);
+  margin-bottom: 24px;
+  text-shadow:
+    0 0 20px rgba(0, 180, 216, 0.8),
+    0 0 50px rgba(0, 180, 216, 0.4);
+  display: flex;
+  justify-content: center;
+}
+
+.micro-cta h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  color: var(--white);
+}
+
+.micro-cta__tagline {
+  font-size: 0.9375rem;
+  color: var(--cyan);
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+.micro-cta p {
+  font-size: 1.0625rem;
+  color: var(--slate-300);
+  margin-bottom: 32px;
+}
+
+.micro-cta__actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.micro-footer {
+  padding: 32px 24px;
+  border-top: 1px solid var(--slate-700);
+  background: var(--slate-800);
+}
+
+.micro-footer__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.micro-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.micro-footer__logo {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+  display: inline-block;
+}
+
+.micro-footer__tagline {
+  font-size: 0.75rem;
+  color: var(--slate-400);
+  font-style: italic;
+  letter-spacing: 0.1em;
+}
+
+.micro-footer__copy {
+  font-size: 0.75rem;
+  color: var(--slate-400);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAGNETIC ELEMENT
+   ═══════════════════════════════════════════════════════════════ */
+
+.magnetic-element {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .micro-platform {
+    grid-template-columns: 1fr;
+    gap: 60px;
+    text-align: center;
+  }
+
+  .micro-features {
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 16px;
+    cursor: auto;
+  }
+
+  .custom-cursor-container {
+    display: none;
+  }
+
+  .micro-nav__links {
+    display: none;
+  }
+
+  .micro-section {
+    padding: 80px 20px;
+  }
+
+  .micro-hero__stats {
+    gap: 24px;
+  }
+
+  .bouncy-stat__value {
+    font-size: 1.75rem;
+  }
+
+  .morphing-eye {
+    width: 150px;
+    height: 150px;
+  }
+
+  .morphing-eye__outer {
+    width: 140px;
+    height: 140px;
+  }
+
+  .morphing-eye__middle {
+    width: 90px;
+    height: 90px;
+  }
+
+  .morphing-eye__inner {
+    width: 45px;
+    height: 45px;
+  }
+
+  .morphing-eye__glow {
+    width: 180px;
+    height: 180px;
+  }
+
+  .micro-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .micro-cta__icon {
+    font-size: 3rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    cursor: auto;
+  }
+
+  .custom-cursor-container {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOUCH DEVICE SUPPORT
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (hover: none) and (pointer: coarse) {
+  html {
+    cursor: auto;
+  }
+
+  .custom-cursor-container {
+    display: none;
+  }
+
+  .interactive {
+    cursor: pointer;
+  }
+
+  /* Enhanced tap targets for mobile */
+  .ripple-btn {
+    min-height: 44px;
+  }
+
+  .micro-nav__links a {
+    padding: 8px;
+  }
+
+  /* Disable 3D tilt on touch devices */
+  .tilt-card {
+    transform: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-data: reduce) {
+  .floating-particles {
+    display: none;
+  }
+
+  .particle {
+    display: none;
+  }
+}

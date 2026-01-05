@@ -1,0 +1,1300 @@
+/* ═══════════════════════════════════════════════════════════════
+   MEGA 10: ARCHITECT - Blueprint & Schematic Design System
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --blueprint-bg: #0a1929;
+  --blueprint-dark: #051018;
+  --blueprint-blue: #64c8ff;
+  --blueprint-blue-dim: #3a8fb0;
+  --blueprint-blue-bright: #90e0ff;
+  --blueprint-glow: rgba(100, 200, 255, 0.4);
+  --grid-color: rgba(100, 200, 255, 0.15);
+  --text-primary: #e8f4f8;
+  --text-secondary: #a0c4d4;
+  --font-technical: 'Courier New', 'Courier', monospace;
+  --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-page {
+  position: relative;
+  min-height: 100vh;
+  background: var(--blueprint-bg);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BLUEPRINT GRID BACKGROUND
+   ═══════════════════════════════════════════════════════════════ */
+
+.blueprint-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.blueprint-grid__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.blueprint-grid__coords {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--blueprint-blue);
+  text-align: right;
+  line-height: 1.6;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.coord {
+  letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TITLE BLOCK - Standard architectural drawing title block
+   ═══════════════════════════════════════════════════════════════ */
+
+.title-block {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(10, 25, 41, 0.9);
+  border: 1px solid var(--blueprint-blue);
+  padding: 12px 16px;
+  font-family: var(--font-technical);
+  font-size: 10px;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px var(--blueprint-glow);
+}
+
+.title-block__main {
+  border-bottom: 1px solid var(--blueprint-blue-dim);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.title-block__row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.title-block__row .label {
+  color: var(--blueprint-blue-dim);
+  min-width: 60px;
+}
+
+.title-block__row .value {
+  color: var(--blueprint-blue);
+  font-weight: 600;
+}
+
+.title-block__meta {
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION - Blueprint style
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 25, 41, 0.95);
+  border-bottom: 1px solid var(--blueprint-blue);
+  backdrop-filter: blur(10px);
+}
+
+.architect-nav__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.architect-nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-technical);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blueprint-blue);
+  letter-spacing: 3px;
+}
+
+.logo-blueprint {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 0 8px var(--blueprint-glow));
+}
+
+.architect-nav__links {
+  display: flex;
+  gap: 32px;
+  font-family: var(--font-technical);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.architect-nav__links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.architect-nav__links a::before {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--blueprint-blue);
+  transition: width 0.3s ease;
+}
+
+.architect-nav__links a:hover {
+  color: var(--blueprint-blue);
+}
+
+.architect-nav__links a:hover::before {
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS - Technical style
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-family: var(--font-technical);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  border: 1px solid var(--blueprint-blue);
+  background: transparent;
+  color: var(--blueprint-blue);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.architect-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(100, 200, 255, 0.1);
+  transition: left 0.3s ease;
+}
+
+.architect-btn:hover::before {
+  left: 0;
+}
+
+.architect-btn:hover {
+  background: rgba(100, 200, 255, 0.05);
+  box-shadow: 0 0 20px var(--blueprint-glow);
+}
+
+.btn-arrow,
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.architect-btn--primary {
+  background: var(--blueprint-blue);
+  color: var(--blueprint-dark);
+  font-weight: 600;
+}
+
+.architect-btn--primary:hover {
+  background: var(--blueprint-blue-bright);
+  box-shadow: 0 0 30px var(--blueprint-glow);
+}
+
+.architect-btn--secondary {
+  background: transparent;
+}
+
+.architect-btn--lg {
+  padding: 16px 32px;
+  font-size: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 40px 80px;
+  z-index: 1;
+}
+
+.architect-hero__content {
+  max-width: 1400px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Schematic Eye */
+.architect-hero__schematic {
+  max-width: 500px;
+  margin: 0 auto 60px;
+  position: relative;
+}
+
+.schematic-eye {
+  position: relative;
+}
+
+.schematic-eye__svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 30px var(--blueprint-glow));
+}
+
+.measurement-text,
+.section-text,
+.callout-text,
+.status-text {
+  font-family: var(--font-technical);
+  letter-spacing: 0.5px;
+}
+
+.schematic-eye__specs {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-family: var(--font-technical);
+  font-size: 9px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+/* Hero Text */
+.architect-hero__text {
+  margin-bottom: 60px;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--blueprint-blue);
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+}
+
+.eyebrow-line {
+  width: 60px;
+  height: 1px;
+  background: var(--blueprint-blue);
+}
+
+.architect-hero__title {
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 32px;
+  font-family: var(--font-technical);
+  letter-spacing: 8px;
+  color: var(--text-primary);
+}
+
+.title-line {
+  display: block;
+}
+
+.gradient-blueprint {
+  background: linear-gradient(135deg, var(--blueprint-blue) 0%, var(--blueprint-blue-bright) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px var(--blueprint-glow));
+}
+
+.architect-hero__tagline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-family: var(--font-technical);
+  font-size: 13px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.tagline-marker {
+  font-size: 10px;
+}
+
+.architect-hero__description {
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto 40px;
+  font-family: var(--font-display);
+}
+
+.architect-hero__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Hero Stats */
+.architect-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.structural-stat {
+  position: relative;
+  text-align: center;
+  padding: 20px;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  background: rgba(100, 200, 255, 0.03);
+}
+
+.structural-stat__blueprint {
+  margin-bottom: 16px;
+}
+
+.stat-blueprint {
+  width: 100%;
+  height: 60px;
+  opacity: 0.5;
+}
+
+.structural-stat__value {
+  font-family: var(--font-technical);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--blueprint-blue);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  line-height: 1;
+  text-shadow: 0 0 20px var(--blueprint-glow);
+}
+
+.value-unit {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+.structural-stat__label {
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.structural-stat__dimension {
+  font-family: var(--font-technical);
+  font-size: 9px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-section {
+  position: relative;
+  padding: 120px 40px;
+  z-index: 1;
+}
+
+.architect-section--platform {
+  background: rgba(5, 16, 24, 0.5);
+}
+
+.architect-section--cta {
+  padding: 160px 40px;
+}
+
+/* Section Headers */
+.section-header {
+  max-width: 900px;
+  margin: 0 auto 80px;
+  text-align: center;
+}
+
+.section-header__marker {
+  margin-bottom: 32px;
+}
+
+.section-header__marker svg {
+  width: 200px;
+  height: 40px;
+  margin: 0 auto;
+  display: block;
+}
+
+.marker-text {
+  font-family: var(--font-technical);
+}
+
+.section-header__title {
+  font-family: var(--font-technical);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 300;
+  letter-spacing: 6px;
+  color: var(--blueprint-blue);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.section-header__subtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.section-header__notation {
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ISOMETRIC CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.iso-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.iso-card {
+  position: relative;
+  background: rgba(10, 25, 41, 0.6);
+  border: 2px solid var(--blueprint-blue);
+  padding: 32px;
+  backdrop-filter: blur(10px);
+  transition: all 0.4s ease;
+}
+
+.iso-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(100, 200, 255, 0.2);
+  border-color: var(--blueprint-blue-bright);
+}
+
+.iso-card__border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.border-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.iso-card__section {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--blueprint-blue);
+  letter-spacing: 1px;
+  background: var(--blueprint-dark);
+  padding: 4px 8px;
+  border: 1px solid var(--blueprint-blue);
+}
+
+.iso-card__image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid var(--blueprint-blue);
+}
+
+.iso-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) brightness(0.6) contrast(1.2);
+  transition: all 0.4s ease;
+}
+
+.iso-card:hover .iso-card__image img {
+  filter: grayscale(80%) brightness(0.7) contrast(1.1);
+}
+
+.iso-card__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.overlay-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.iso-card__content {
+  position: relative;
+}
+
+.iso-card__title {
+  font-family: var(--font-technical);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--blueprint-blue);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.iso-card__spec {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.spec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-technical);
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.spec-number {
+  color: var(--blueprint-blue-dim);
+}
+
+.spec-status {
+  color: var(--blueprint-blue);
+  background: rgba(100, 200, 255, 0.1);
+  padding: 4px 8px;
+  border: 1px solid var(--blueprint-blue);
+}
+
+.iso-card__block {
+  margin-bottom: 20px;
+}
+
+.block-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--blueprint-blue);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.label-icon {
+  font-size: 8px;
+}
+
+.block-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding-left: 16px;
+}
+
+.iso-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.metric {
+  text-align: center;
+  padding: 16px;
+  background: rgba(100, 200, 255, 0.03);
+  border: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.metric__blueprint {
+  margin-bottom: 12px;
+}
+
+.metric__blueprint svg {
+  width: 100%;
+  height: 30px;
+  opacity: 0.4;
+}
+
+.metric__value {
+  font-family: var(--font-technical);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--blueprint-blue);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.metric__label {
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.iso-card__drawing-number {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-family: var(--font-technical);
+  font-size: 9px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+  background: var(--blueprint-dark);
+  padding: 4px 8px;
+  border: 1px solid var(--blueprint-blue-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLATFORM SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.platform-specs {
+  position: relative;
+}
+
+.specs-title {
+  font-family: var(--font-technical);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--blueprint-blue);
+  letter-spacing: 3px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--blueprint-blue);
+}
+
+.spec-group {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: rgba(100, 200, 255, 0.02);
+  border-left: 3px solid var(--blueprint-blue);
+}
+
+.spec-group__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-technical);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blueprint-blue);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+.spec-icon {
+  font-size: 10px;
+}
+
+.spec-detail {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+  font-family: var(--font-technical);
+  font-size: 12px;
+}
+
+.spec-detail:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.detail-value {
+  color: var(--blueprint-blue);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.platform-diagram {
+  position: relative;
+  background: rgba(5, 16, 24, 0.8);
+  border: 2px solid var(--blueprint-blue);
+  padding: 40px;
+}
+
+.diagram-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 20px var(--blueprint-glow));
+}
+
+.diagram-title {
+  font-family: var(--font-technical);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVISORY SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.advisory-card {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(10, 25, 41, 0.6);
+  border: 2px solid var(--blueprint-blue);
+  padding: 60px;
+  text-align: center;
+}
+
+.advisory-card__border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.advisory-card__avatar {
+  max-width: 150px;
+  margin: 0 auto 32px;
+}
+
+.avatar-blueprint {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 20px var(--blueprint-glow));
+}
+
+.advisory-card__name {
+  font-family: var(--font-technical);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--blueprint-blue);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.advisory-card__title {
+  font-family: var(--font-technical);
+  font-size: 16px;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.advisory-card__spec-number {
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.advisory-card__bio {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.advisory-card__certifications {
+  margin-bottom: 32px;
+}
+
+.cert-label {
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--blueprint-blue);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+.cert-list {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cert-badge {
+  width: 80px;
+}
+
+.cert-badge svg {
+  width: 100%;
+  height: auto;
+}
+
+.cert-text {
+  font-family: var(--font-technical);
+}
+
+.advisory-card__expertise {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.expertise-label {
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--blueprint-blue);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.expertise-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.expertise-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-technical);
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+.expertise-icon {
+  color: var(--blueprint-blue);
+  font-size: 10px;
+}
+
+.advisory-card__footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(100, 200, 255, 0.2);
+  font-family: var(--font-technical);
+  font-size: 9px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-cta {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 80px 60px;
+  background: rgba(10, 25, 41, 0.8);
+  border: 3px solid var(--blueprint-blue);
+  text-align: center;
+}
+
+.architect-cta__border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cta-border-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.architect-cta__diagram {
+  max-width: 200px;
+  margin: 0 auto 40px;
+}
+
+.cta-diagram {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 20px var(--blueprint-glow));
+}
+
+.architect-cta__title {
+  font-family: var(--font-technical);
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 700;
+  color: var(--blueprint-blue);
+  letter-spacing: 6px;
+  margin-bottom: 32px;
+  line-height: 1.2;
+}
+
+.architect-cta__tagline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  font-family: var(--font-technical);
+  font-size: 12px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 2px;
+}
+
+.tagline-line {
+  width: 100px;
+  height: 2px;
+}
+
+.architect-cta__description {
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.architect-cta__actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.architect-cta__spec {
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+
+.architect-footer {
+  position: relative;
+  background: rgba(5, 16, 24, 0.9);
+  border-top: 2px solid var(--blueprint-blue);
+  padding: 60px 40px 40px;
+  z-index: 1;
+}
+
+.architect-footer__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.architect-footer__main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.footer-logo {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.footer-logo-svg {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 0 8px var(--blueprint-glow));
+}
+
+.footer-logo__text {
+  font-family: var(--font-technical);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blueprint-blue);
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+
+.footer-logo__tagline {
+  font-family: var(--font-technical);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+.footer-meta {
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.footer-meta__line {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 6px;
+  justify-content: flex-end;
+}
+
+.architect-footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-technical);
+  font-size: 10px;
+  color: var(--blueprint-blue-dim);
+  letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .platform-grid {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  .iso-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .title-block {
+    font-size: 8px;
+    padding: 8px 12px;
+  }
+
+  .architect-nav__inner {
+    padding: 16px 20px;
+  }
+
+  .architect-nav__links {
+    gap: 16px;
+    font-size: 10px;
+  }
+
+  .architect-hero {
+    padding: 100px 20px 60px;
+  }
+
+  .architect-hero__schematic {
+    max-width: 350px;
+    margin-bottom: 40px;
+  }
+
+  .architect-hero__title {
+    letter-spacing: 4px;
+  }
+
+  .architect-hero__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .architect-section {
+    padding: 80px 20px;
+  }
+
+  .iso-card {
+    padding: 20px;
+  }
+
+  .iso-cards {
+    gap: 40px;
+  }
+
+  .platform-diagram {
+    padding: 20px;
+  }
+
+  .advisory-card {
+    padding: 40px 20px;
+  }
+
+  .architect-cta {
+    padding: 60px 30px;
+  }
+
+  .architect-cta__actions {
+    flex-direction: column;
+  }
+
+  .architect-footer__main {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .footer-meta {
+    text-align: left;
+  }
+
+  .footer-meta__line {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .architect-footer__bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .expertise-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .architect-hero__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .iso-card__metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes blueprintPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes blueprintGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px var(--blueprint-glow));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px var(--blueprint-glow));
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+  background: var(--blueprint-blue);
+  color: var(--blueprint-dark);
+}
