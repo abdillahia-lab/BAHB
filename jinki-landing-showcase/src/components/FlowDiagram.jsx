@@ -25,123 +25,163 @@ export default function FlowDiagram() {
 
   return (
     <div className="flow-diagram" ref={containerRef}>
-      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" className="flow-svg">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" className="flow-svg">
         <defs>
-          {/* Chrome gradient for hub */}
-          <linearGradient id="chromeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          {/* Chrome gradient */}
+          <linearGradient id="chrome" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#e8eaed" />
-            <stop offset="50%" stopColor="#9aa0a6" />
-            <stop offset="100%" stopColor="#5f6368" />
+            <stop offset="50%" stopColor="#808080" />
+            <stop offset="100%" stopColor="#c0c0c0" />
           </linearGradient>
 
-          {/* Cyan gradient */}
-          <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#00d4ff" stopOpacity="0" />
-            <stop offset="50%" stopColor="#00d4ff" stopOpacity="0.8" />
+          {/* Cyan core gradient */}
+          <radialGradient id="cyanCore" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="30%" stopColor="#80ffff" />
+            <stop offset="100%" stopColor="#00d4ff" />
+          </radialGradient>
+
+          {/* Hub ambient glow */}
+          <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#00d4ff" stopOpacity="0.4" />
+            <stop offset="60%" stopColor="#00d4ff" stopOpacity="0.1" />
             <stop offset="100%" stopColor="#00d4ff" stopOpacity="0" />
-          </linearGradient>
+          </radialGradient>
 
           {/* Glow filter */}
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur" />
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
 
-          {/* Hub glow */}
-          <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#00d4ff" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#00d4ff" stopOpacity="0" />
-          </radialGradient>
+          {/* Strong glow for core */}
+          <filter id="coreGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* Line gradient */}
+          <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#30363d" />
+            <stop offset="50%" stopColor="#00d4ff" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#30363d" />
+          </linearGradient>
         </defs>
 
-        {/* Central Hub Glow */}
-        <circle cx="450" cy="150" r="100" fill="url(#hubGlow)" className="hub-glow" />
+        {/* Hub ambient glow */}
+        <circle cx="450" cy="160" r="120" fill="url(#hubGlow)" className="hub-ambient" />
 
         {/* Connection Lines - Input */}
-        <line x1="120" y1="80" x2="380" y2="130" stroke="#30363d" strokeWidth="1" className="flow-line" />
-        <line x1="120" y1="150" x2="380" y2="150" stroke="#30363d" strokeWidth="1" className="flow-line" />
-        <line x1="120" y1="220" x2="380" y2="170" stroke="#30363d" strokeWidth="1" className="flow-line" />
+        <line x1="140" y1="80" x2="370" y2="140" stroke="#30363d" strokeWidth="2" className="flow-line" />
+        <line x1="140" y1="160" x2="370" y2="160" stroke="#30363d" strokeWidth="2" className="flow-line" />
+        <line x1="140" y1="240" x2="370" y2="180" stroke="#30363d" strokeWidth="2" className="flow-line" />
 
         {/* Connection Lines - Output */}
-        <line x1="520" y1="130" x2="780" y2="80" stroke="#30363d" strokeWidth="1" className="flow-line" />
-        <line x1="520" y1="150" x2="780" y2="150" stroke="#30363d" strokeWidth="1" className="flow-line" />
-        <line x1="520" y1="170" x2="780" y2="220" stroke="#30363d" strokeWidth="1" className="flow-line" />
+        <line x1="530" y1="140" x2="760" y2="80" stroke="#30363d" strokeWidth="2" className="flow-line" />
+        <line x1="530" y1="160" x2="760" y2="160" stroke="#30363d" strokeWidth="2" className="flow-line" />
+        <line x1="530" y1="180" x2="760" y2="240" stroke="#30363d" strokeWidth="2" className="flow-line" />
 
-        {/* Animated flow particles */}
-        <circle r="3" fill="#00d4ff" filter="url(#glow)" className="particle p1">
-          <animate attributeName="cx" values="120;380" dur="2s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="80;130" dur="2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" />
+        {/* Animated particles - Input */}
+        <circle r="4" fill="#00d4ff" filter="url(#glow)" className="particle">
+          <animate attributeName="cx" values="140;370" dur="2.5s" repeatCount="indefinite" />
+          <animate attributeName="cy" values="80;140" dur="2.5s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0;1;1;0" dur="2.5s" repeatCount="indefinite" />
         </circle>
-        <circle r="3" fill="#00d4ff" filter="url(#glow)" className="particle p2">
-          <animate attributeName="cx" values="120;380" dur="2.2s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="150;150" dur="2.2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" dur="2.2s" repeatCount="indefinite" />
+        <circle r="4" fill="#00d4ff" filter="url(#glow)" className="particle">
+          <animate attributeName="cx" values="140;370" dur="2.8s" repeatCount="indefinite" begin="0.3s" />
+          <animate attributeName="cy" values="160;160" dur="2.8s" repeatCount="indefinite" begin="0.3s" />
+          <animate attributeName="opacity" values="0;1;1;0" dur="2.8s" repeatCount="indefinite" begin="0.3s" />
         </circle>
-        <circle r="3" fill="#00d4ff" filter="url(#glow)" className="particle p3">
-          <animate attributeName="cx" values="120;380" dur="1.8s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="220;170" dur="1.8s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite" />
-        </circle>
-        <circle r="3" fill="#00d4ff" filter="url(#glow)" className="particle p4">
-          <animate attributeName="cx" values="520;780" dur="2s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="130;80" dur="2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" />
-        </circle>
-        <circle r="3" fill="#00d4ff" filter="url(#glow)" className="particle p5">
-          <animate attributeName="cx" values="520;780" dur="2.2s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="150;150" dur="2.2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" dur="2.2s" repeatCount="indefinite" />
-        </circle>
-        <circle r="3" fill="#00d4ff" filter="url(#glow)" className="particle p6">
-          <animate attributeName="cx" values="520;780" dur="1.8s" repeatCount="indefinite" />
-          <animate attributeName="cy" values="170;220" dur="1.8s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite" />
+        <circle r="4" fill="#00d4ff" filter="url(#glow)" className="particle">
+          <animate attributeName="cx" values="140;370" dur="2.3s" repeatCount="indefinite" begin="0.6s" />
+          <animate attributeName="cy" values="240;180" dur="2.3s" repeatCount="indefinite" begin="0.6s" />
+          <animate attributeName="opacity" values="0;1;1;0" dur="2.3s" repeatCount="indefinite" begin="0.6s" />
         </circle>
 
-        {/* Central Hub */}
+        {/* Animated particles - Output */}
+        <circle r="4" fill="#00d4ff" filter="url(#glow)" className="particle">
+          <animate attributeName="cx" values="530;760" dur="2.5s" repeatCount="indefinite" begin="1.2s" />
+          <animate attributeName="cy" values="140;80" dur="2.5s" repeatCount="indefinite" begin="1.2s" />
+          <animate attributeName="opacity" values="0;1;1;0" dur="2.5s" repeatCount="indefinite" begin="1.2s" />
+        </circle>
+        <circle r="4" fill="#00d4ff" filter="url(#glow)" className="particle">
+          <animate attributeName="cx" values="530;760" dur="2.8s" repeatCount="indefinite" begin="1.5s" />
+          <animate attributeName="cy" values="160;160" dur="2.8s" repeatCount="indefinite" begin="1.5s" />
+          <animate attributeName="opacity" values="0;1;1;0" dur="2.8s" repeatCount="indefinite" begin="1.5s" />
+        </circle>
+        <circle r="4" fill="#00d4ff" filter="url(#glow)" className="particle">
+          <animate attributeName="cx" values="530;760" dur="2.3s" repeatCount="indefinite" begin="1.8s" />
+          <animate attributeName="cy" values="180;240" dur="2.3s" repeatCount="indefinite" begin="1.8s" />
+          <animate attributeName="opacity" values="0;1;1;0" dur="2.3s" repeatCount="indefinite" begin="1.8s" />
+        </circle>
+
+        {/* Central Hub - Orbital Rings like logo */}
         <g className="hub">
-          <circle cx="450" cy="150" r="60" fill="#161b22" stroke="#30363d" strokeWidth="2" />
-          <circle cx="450" cy="150" r="45" fill="none" stroke="url(#chromeGradient)" strokeWidth="1" opacity="0.5" />
-          <circle cx="450" cy="150" r="20" fill="#00d4ff" opacity="0.8" filter="url(#glow)" className="hub-core" />
-          <circle cx="450" cy="150" r="8" fill="#fff" opacity="0.9" />
+          {/* Outer orbital ring */}
+          <ellipse cx="450" cy="160" rx="70" ry="25" fill="none" stroke="url(#chrome)" strokeWidth="4"
+                   transform="rotate(-10, 450, 160)" className="hub-ring ring-outer" />
+          {/* Inner orbital ring */}
+          <ellipse cx="450" cy="160" rx="55" ry="20" fill="none" stroke="url(#chrome)" strokeWidth="3"
+                   transform="rotate(8, 450, 160)" className="hub-ring ring-inner" opacity="0.7" />
+
+          {/* Hub body */}
+          <circle cx="450" cy="160" r="40" fill="#0d1117" stroke="url(#chrome)" strokeWidth="3" />
+          <circle cx="450" cy="160" r="30" fill="none" stroke="#30363d" strokeWidth="1" />
+
+          {/* Cyan core with glow */}
+          <circle cx="450" cy="160" r="22" fill="url(#cyanCore)" filter="url(#coreGlow)" className="hub-core" />
+          <circle cx="450" cy="160" r="10" fill="#00d4ff" />
+          <circle cx="450" cy="160" r="5" fill="#ffffff" opacity="0.9" />
+
+          {/* Highlight */}
+          <circle cx="443" cy="152" r="4" fill="#ffffff" opacity="0.6" />
         </g>
 
         {/* Input Nodes */}
-        <g className="node node-input n1">
-          <circle cx="80" cy="80" r="28" fill="#161b22" stroke="#30363d" strokeWidth="1.5" />
-          <text x="80" y="85" textAnchor="middle" fill="#8b949e" fontSize="11" fontWeight="500">Drones</text>
+        <g className="node n1">
+          <circle cx="100" cy="80" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+          <text x="100" y="76" textAnchor="middle" fill="#00d4ff" fontSize="14">✈</text>
+          <text x="100" y="92" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Drones</text>
         </g>
-        <g className="node node-input n2">
-          <circle cx="80" cy="150" r="28" fill="#161b22" stroke="#30363d" strokeWidth="1.5" />
-          <text x="80" y="155" textAnchor="middle" fill="#8b949e" fontSize="11" fontWeight="500">Sensors</text>
+        <g className="node n2">
+          <circle cx="100" cy="160" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+          <text x="100" y="156" textAnchor="middle" fill="#00d4ff" fontSize="14">📡</text>
+          <text x="100" y="172" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Sensors</text>
         </g>
-        <g className="node node-input n3">
-          <circle cx="80" cy="220" r="28" fill="#161b22" stroke="#30363d" strokeWidth="1.5" />
-          <text x="80" y="225" textAnchor="middle" fill="#8b949e" fontSize="11" fontWeight="500">Threats</text>
+        <g className="node n3">
+          <circle cx="100" cy="240" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+          <text x="100" y="236" textAnchor="middle" fill="#00d4ff" fontSize="14">⚠</text>
+          <text x="100" y="252" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Threats</text>
         </g>
 
         {/* Output Nodes */}
-        <g className="node node-output n4">
-          <circle cx="820" cy="80" r="28" fill="#161b22" stroke="#30363d" strokeWidth="1.5" />
-          <text x="820" y="85" textAnchor="middle" fill="#8b949e" fontSize="11" fontWeight="500">Alerts</text>
+        <g className="node n4">
+          <circle cx="800" cy="80" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+          <text x="800" y="76" textAnchor="middle" fill="#00d4ff" fontSize="14">🔔</text>
+          <text x="800" y="92" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Alerts</text>
         </g>
-        <g className="node node-output n5">
-          <circle cx="820" cy="150" r="28" fill="#161b22" stroke="#30363d" strokeWidth="1.5" />
-          <text x="820" y="155" textAnchor="middle" fill="#8b949e" fontSize="11" fontWeight="500">Reports</text>
+        <g className="node n5">
+          <circle cx="800" cy="160" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+          <text x="800" y="156" textAnchor="middle" fill="#00d4ff" fontSize="14">📊</text>
+          <text x="800" y="172" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Reports</text>
         </g>
-        <g className="node node-output n6">
-          <circle cx="820" cy="220" r="28" fill="#161b22" stroke="#30363d" strokeWidth="1.5" />
-          <text x="820" y="225" textAnchor="middle" fill="#8b949e" fontSize="11" fontWeight="500">Insights</text>
+        <g className="node n6">
+          <circle cx="800" cy="240" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+          <text x="800" y="236" textAnchor="middle" fill="#00d4ff" fontSize="14">💡</text>
+          <text x="800" y="252" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Insights</text>
         </g>
 
         {/* Labels */}
-        <text x="80" y="275" textAnchor="middle" fill="#6e7681" fontSize="9" fontWeight="600" letterSpacing="0.1em">INPUT</text>
-        <text x="450" y="235" textAnchor="middle" fill="#00d4ff" fontSize="10" fontWeight="600" letterSpacing="0.15em">JINKI HUB</text>
-        <text x="820" y="275" textAnchor="middle" fill="#6e7681" fontSize="9" fontWeight="600" letterSpacing="0.1em">OUTPUT</text>
+        <text x="100" y="300" textAnchor="middle" fill="#6e7681" fontSize="10" fontWeight="600" letterSpacing="0.1em">DATA IN</text>
+        <text x="450" y="235" textAnchor="middle" fill="#00d4ff" fontSize="11" fontWeight="600" letterSpacing="0.15em">JINKI HUB</text>
+        <text x="800" y="300" textAnchor="middle" fill="#6e7681" fontSize="10" fontWeight="600" letterSpacing="0.1em">INTEL OUT</text>
       </svg>
     </div>
   )

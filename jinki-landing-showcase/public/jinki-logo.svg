@@ -1,49 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
   <defs>
-    <!-- Premium chrome gradient -->
+    <!-- Chrome gradient - premium metallic -->
     <linearGradient id="chrome" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e8e8e8"/>
-      <stop offset="20%" stop-color="#ffffff"/>
-      <stop offset="40%" stop-color="#b8b8b8"/>
-      <stop offset="60%" stop-color="#e0e0e0"/>
-      <stop offset="80%" stop-color="#a8a8a8"/>
-      <stop offset="100%" stop-color="#d0d0d0"/>
+      <stop offset="0%" stop-color="#f5f5f5"/>
+      <stop offset="25%" stop-color="#c0c0c0"/>
+      <stop offset="50%" stop-color="#808080"/>
+      <stop offset="75%" stop-color="#b0b0b0"/>
+      <stop offset="100%" stop-color="#e0e0e0"/>
     </linearGradient>
 
-    <!-- Dark chrome for depth -->
+    <!-- Darker chrome for contrast -->
     <linearGradient id="chromeDark" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#707070"/>
-      <stop offset="50%" stop-color="#909090"/>
-      <stop offset="100%" stop-color="#606060"/>
+      <stop offset="0%" stop-color="#505050"/>
+      <stop offset="50%" stop-color="#707070"/>
+      <stop offset="100%" stop-color="#404040"/>
     </linearGradient>
 
-    <!-- Cyan core gradient -->
+    <!-- Cyan core - bright and glowing -->
     <radialGradient id="cyanCore" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#00ffff"/>
-      <stop offset="30%" stop-color="#00e5ff"/>
-      <stop offset="60%" stop-color="#00bcd4"/>
-      <stop offset="100%" stop-color="#0097a7"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="20%" stop-color="#80ffff"/>
+      <stop offset="50%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#0088aa"/>
     </radialGradient>
 
-    <!-- Intense cyan glow -->
-    <radialGradient id="cyanGlow" cx="50%" cy="50%" r="60%">
-      <stop offset="0%" stop-color="#00ffff" stop-opacity="0.8"/>
-      <stop offset="40%" stop-color="#00d4ff" stop-opacity="0.4"/>
+    <!-- Cyan ambient glow -->
+    <radialGradient id="cyanGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#00d4ff" stop-opacity="0.2"/>
       <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
     </radialGradient>
 
-    <!-- Glow filter -->
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <!-- Strong glow for core -->
+    <!-- Glow filters -->
     <filter id="coreGlow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feGaussianBlur stdDeviation="6" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="blur"/>
@@ -51,73 +41,55 @@
       </feMerge>
     </filter>
 
-    <!-- Subtle shadow -->
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.4"/>
     </filter>
   </defs>
 
-  <!-- Ambient glow behind eye -->
-  <ellipse cx="200" cy="65" rx="50" ry="50" fill="url(#cyanGlow)" opacity="0.5"/>
+  <!-- Ambient glow -->
+  <ellipse cx="200" cy="70" rx="70" ry="70" fill="url(#cyanGlow)"/>
 
-  <!-- Outer orbital ring 1 -->
-  <ellipse cx="200" cy="65" rx="58" ry="22" fill="none" stroke="url(#chrome)" stroke-width="3"
-           transform="rotate(-8, 200, 65)" filter="url(#shadow)"/>
-
-  <!-- Outer orbital ring 2 -->
-  <ellipse cx="200" cy="65" rx="52" ry="19" fill="none" stroke="url(#chromeDark)" stroke-width="2"
-           transform="rotate(5, 200, 65)"/>
+  <!-- Outer orbital ring - thick -->
+  <ellipse cx="200" cy="70" rx="75" ry="28" fill="none" stroke="url(#chrome)" stroke-width="8"
+           transform="rotate(-12, 200, 70)" filter="url(#ringGlow)"/>
 
   <!-- Middle orbital ring -->
-  <ellipse cx="200" cy="65" rx="42" ry="15" fill="none" stroke="url(#chrome)" stroke-width="2.5"
-           transform="rotate(-3, 200, 65)"/>
+  <ellipse cx="200" cy="70" rx="60" ry="22" fill="none" stroke="url(#chromeDark)" stroke-width="5"
+           transform="rotate(8, 200, 70)"/>
 
   <!-- Inner orbital ring -->
-  <ellipse cx="200" cy="65" rx="32" ry="11" fill="none" stroke="url(#chromeDark)" stroke-width="1.5"
-           transform="rotate(2, 200, 65)"/>
+  <ellipse cx="200" cy="70" rx="48" ry="17" fill="none" stroke="url(#chrome)" stroke-width="4"
+           transform="rotate(-5, 200, 70)"/>
 
-  <!-- Eye outer ring -->
-  <circle cx="200" cy="65" r="22" fill="none" stroke="url(#chrome)" stroke-width="3" filter="url(#glow)"/>
+  <!-- Eye housing -->
+  <ellipse cx="200" cy="70" rx="32" ry="24" fill="#0d1117" stroke="url(#chrome)" stroke-width="4"/>
 
-  <!-- Eye inner ring -->
-  <circle cx="200" cy="65" r="18" fill="none" stroke="url(#chromeDark)" stroke-width="1.5"/>
+  <!-- Inner eye ring -->
+  <ellipse cx="200" cy="70" rx="24" ry="18" fill="none" stroke="url(#chromeDark)" stroke-width="2"/>
 
-  <!-- Cyan glowing core -->
-  <circle cx="200" cy="65" r="14" fill="url(#cyanCore)" filter="url(#coreGlow)"/>
+  <!-- Cyan core with glow -->
+  <circle cx="200" cy="70" r="18" fill="url(#cyanCore)" filter="url(#coreGlow)"/>
 
-  <!-- Core depth ring -->
-  <circle cx="200" cy="65" r="14" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.6"/>
+  <!-- Core bright center -->
+  <circle cx="200" cy="70" r="8" fill="#00d4ff"/>
+  <circle cx="200" cy="70" r="4" fill="#ffffff" opacity="0.9"/>
 
-  <!-- Pupil -->
-  <circle cx="200" cy="65" r="5" fill="#0a1929"/>
+  <!-- Highlight reflections -->
+  <circle cx="193" cy="63" r="3" fill="#ffffff" opacity="0.7"/>
+  <circle cx="208" cy="76" r="1.5" fill="#ffffff" opacity="0.4"/>
 
-  <!-- Highlight -->
-  <circle cx="195" cy="60" r="2.5" fill="rgba(255,255,255,0.8)"/>
-  <circle cx="206" cy="68" r="1" fill="rgba(255,255,255,0.4)"/>
+  <!-- JINKI text -->
+  <text x="200" y="130" text-anchor="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="28" font-weight="700" fill="url(#chrome)" letter-spacing="0.25em">JINKI</text>
 
-  <!-- Aperture blade hints -->
-  <g opacity="0.3" stroke="#0a1929" stroke-width="0.8" fill="none">
-    <line x1="200" y1="51" x2="193" y2="58"/>
-    <line x1="200" y1="51" x2="207" y2="58"/>
-    <line x1="214" y1="65" x2="207" y2="60"/>
-    <line x1="214" y1="65" x2="207" y2="70"/>
-    <line x1="200" y1="79" x2="193" y2="72"/>
-    <line x1="200" y1="79" x2="207" y2="72"/>
-    <line x1="186" y1="65" x2="193" y2="60"/>
-    <line x1="186" y1="65" x2="193" y2="70"/>
-  </g>
-
-  <!-- Company name -->
-  <text x="200" y="120" text-anchor="middle"
-        font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-        font-size="22" font-weight="600" fill="#f0f6fc" letter-spacing="0.35em">JINKI</text>
-
-  <text x="200" y="142" text-anchor="middle"
-        font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-        font-size="10" font-weight="400" fill="#6e7681" letter-spacing="0.25em">INTELLIGENCE</text>
+  <!-- INTELLIGENCE text -->
+  <text x="200" y="152" text-anchor="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="12" font-weight="500" fill="#8b949e" letter-spacing="0.2em">INTELLIGENCE</text>
 
   <!-- Tagline -->
-  <text x="200" y="165" text-anchor="middle"
-        font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-        font-size="8" font-weight="300" fill="#484f58" letter-spacing="0.3em">EX ALTO OMNIA</text>
+  <text x="200" y="175" text-anchor="middle"
+        font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+        font-size="9" font-weight="400" fill="#6e7681" letter-spacing="0.25em">EX ALTO OMNIA</text>
 </svg>

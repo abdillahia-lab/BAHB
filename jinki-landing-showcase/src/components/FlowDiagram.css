@@ -21,14 +21,37 @@
   display: block;
 }
 
-/* Hub glow animation */
-.hub-glow {
-  animation: pulse 3s ease-in-out infinite;
+/* Hub ambient glow animation */
+.hub-ambient {
+  animation: ambientPulse 4s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.5; }
+@keyframes ambientPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Hub orbital rings */
+.hub-ring {
+  transform-origin: center;
+}
+
+.ring-outer {
+  animation: ringRotate 20s linear infinite;
+}
+
+.ring-inner {
+  animation: ringRotateReverse 15s linear infinite;
+}
+
+@keyframes ringRotate {
+  0% { transform: rotate(-10deg); }
+  100% { transform: rotate(350deg); }
+}
+
+@keyframes ringRotateReverse {
+  0% { transform: rotate(8deg); }
+  100% { transform: rotate(-352deg); }
 }
 
 /* Hub core glow */
@@ -37,8 +60,35 @@
 }
 
 @keyframes corePulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.9; filter: url(#coreGlow) brightness(1); }
+  50% { opacity: 1; filter: url(#coreGlow) brightness(1.2); }
+}
+
+/* Hub hover effect */
+.hub {
+  transition: transform 0.3s ease;
+}
+
+.hub:hover {
+  transform: scale(1.02);
+}
+
+.hub:hover .hub-core {
+  animation: corePulseIntense 1s ease-in-out infinite;
+}
+
+@keyframes corePulseIntense {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; filter: url(#coreGlow) brightness(1.4); }
+}
+
+/* Flow lines glow on hover */
+.flow-line {
+  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}
+
+.flow-svg:hover .flow-line {
+  stroke: #404850;
 }
 
 /* Particles */
