@@ -1,8 +1,43 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './FlowDiagram.css'
+
+const nodeData = {
+  drones: {
+    icon: '✈',
+    label: 'Drones',
+    example: 'MQ-9 Reaper feeds, DJI patrol units, autonomous scouts'
+  },
+  sensors: {
+    icon: '📡',
+    label: 'Sensors',
+    example: 'Radar arrays, thermal imaging, acoustic detection'
+  },
+  threats: {
+    icon: '⚠',
+    label: 'Threats',
+    example: 'Unidentified aircraft, perimeter breach, signal anomaly'
+  },
+  alerts: {
+    icon: '🔔',
+    label: 'Alerts',
+    example: 'PRIORITY: Unknown drone detected in sector 7'
+  },
+  reports: {
+    icon: '📊',
+    label: 'Reports',
+    example: 'Daily threat assessment, incident timeline, analytics'
+  },
+  insights: {
+    icon: '💡',
+    label: 'Insights',
+    example: 'Pattern detected: 3x activity increase at 0200hrs'
+  }
+}
 
 export default function FlowDiagram() {
   const containerRef = useRef(null)
+  const [activeTooltip, setActiveTooltip] = useState(null)
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -23,8 +58,31 @@ export default function FlowDiagram() {
     return () => observer.disconnect()
   }, [])
 
+  const handleNodeHover = (nodeKey, x, y) => {
+    setActiveTooltip(nodeKey)
+    setTooltipPos({ x, y })
+  }
+
+  const handleNodeLeave = () => {
+    setActiveTooltip(null)
+  }
+
   return (
     <div className="flow-diagram" ref={containerRef}>
+      {/* Tooltip overlay */}
+      {activeTooltip && (
+        <div
+          className="flow-tooltip"
+          style={{
+            left: tooltipPos.x,
+            top: tooltipPos.y
+          }}
+        >
+          <div className="flow-tooltip__label">{nodeData[activeTooltip].label}</div>
+          <div className="flow-tooltip__example">{nodeData[activeTooltip].example}</div>
+        </div>
+      )}
+
       <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" className="flow-svg">
         <defs>
           {/* Chrome gradient */}
@@ -67,12 +125,14 @@ export default function FlowDiagram() {
             </feMerge>
           </filter>
 
-          {/* Line gradient */}
-          <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#30363d" />
-            <stop offset="50%" stopColor="#00d4ff" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#30363d" />
-          </linearGradient>
+          {/* Node hover glow */}
+          <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
 
         {/* Hub ambient glow */}
@@ -144,36 +204,60 @@ export default function FlowDiagram() {
           <circle cx="443" cy="152" r="4" fill="#ffffff" opacity="0.6" />
         </g>
 
-        {/* Input Nodes */}
-        <g className="node n1">
-          <circle cx="100" cy="80" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+        {/* Input Nodes - Interactive */}
+        <g className="node node-interactive n1"
+           onMouseEnter={() => handleNodeHover('drones', 100, 20)}
+           onMouseLeave={handleNodeLeave}
+           style={{ cursor: 'pointer' }}>
+          <circle cx="100" cy="80" r="32" fill="#161b22" stroke={activeTooltip === 'drones' ? '#00d4ff' : '#30363d'} strokeWidth="2"
+                  filter={activeTooltip === 'drones' ? 'url(#nodeGlow)' : 'none'} />
           <text x="100" y="76" textAnchor="middle" fill="#00d4ff" fontSize="14">✈</text>
           <text x="100" y="92" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Drones</text>
         </g>
-        <g className="node n2">
-          <circle cx="100" cy="160" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+        <g className="node node-interactive n2"
+           onMouseEnter={() => handleNodeHover('sensors', 100, 100)}
+           onMouseLeave={handleNodeLeave}
+           style={{ cursor: 'pointer' }}>
+          <circle cx="100" cy="160" r="32" fill="#161b22" stroke={activeTooltip === 'sensors' ? '#00d4ff' : '#30363d'} strokeWidth="2"
+                  filter={activeTooltip === 'sensors' ? 'url(#nodeGlow)' : 'none'} />
           <text x="100" y="156" textAnchor="middle" fill="#00d4ff" fontSize="14">📡</text>
           <text x="100" y="172" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Sensors</text>
         </g>
-        <g className="node n3">
-          <circle cx="100" cy="240" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+        <g className="node node-interactive n3"
+           onMouseEnter={() => handleNodeHover('threats', 100, 180)}
+           onMouseLeave={handleNodeLeave}
+           style={{ cursor: 'pointer' }}>
+          <circle cx="100" cy="240" r="32" fill="#161b22" stroke={activeTooltip === 'threats' ? '#00d4ff' : '#30363d'} strokeWidth="2"
+                  filter={activeTooltip === 'threats' ? 'url(#nodeGlow)' : 'none'} />
           <text x="100" y="236" textAnchor="middle" fill="#00d4ff" fontSize="14">⚠</text>
           <text x="100" y="252" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Threats</text>
         </g>
 
-        {/* Output Nodes */}
-        <g className="node n4">
-          <circle cx="800" cy="80" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+        {/* Output Nodes - Interactive */}
+        <g className="node node-interactive n4"
+           onMouseEnter={() => handleNodeHover('alerts', 700, 20)}
+           onMouseLeave={handleNodeLeave}
+           style={{ cursor: 'pointer' }}>
+          <circle cx="800" cy="80" r="32" fill="#161b22" stroke={activeTooltip === 'alerts' ? '#00d4ff' : '#30363d'} strokeWidth="2"
+                  filter={activeTooltip === 'alerts' ? 'url(#nodeGlow)' : 'none'} />
           <text x="800" y="76" textAnchor="middle" fill="#00d4ff" fontSize="14">🔔</text>
           <text x="800" y="92" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Alerts</text>
         </g>
-        <g className="node n5">
-          <circle cx="800" cy="160" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+        <g className="node node-interactive n5"
+           onMouseEnter={() => handleNodeHover('reports', 700, 100)}
+           onMouseLeave={handleNodeLeave}
+           style={{ cursor: 'pointer' }}>
+          <circle cx="800" cy="160" r="32" fill="#161b22" stroke={activeTooltip === 'reports' ? '#00d4ff' : '#30363d'} strokeWidth="2"
+                  filter={activeTooltip === 'reports' ? 'url(#nodeGlow)' : 'none'} />
           <text x="800" y="156" textAnchor="middle" fill="#00d4ff" fontSize="14">📊</text>
           <text x="800" y="172" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Reports</text>
         </g>
-        <g className="node n6">
-          <circle cx="800" cy="240" r="32" fill="#161b22" stroke="#30363d" strokeWidth="2" />
+        <g className="node node-interactive n6"
+           onMouseEnter={() => handleNodeHover('insights', 700, 180)}
+           onMouseLeave={handleNodeLeave}
+           style={{ cursor: 'pointer' }}>
+          <circle cx="800" cy="240" r="32" fill="#161b22" stroke={activeTooltip === 'insights' ? '#00d4ff' : '#30363d'} strokeWidth="2"
+                  filter={activeTooltip === 'insights' ? 'url(#nodeGlow)' : 'none'} />
           <text x="800" y="236" textAnchor="middle" fill="#00d4ff" fontSize="14">💡</text>
           <text x="800" y="252" textAnchor="middle" fill="#8b949e" fontSize="9" fontWeight="500">Insights</text>
         </g>

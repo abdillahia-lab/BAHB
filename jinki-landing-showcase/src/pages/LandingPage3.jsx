@@ -188,7 +188,7 @@ export default function LandingPage3() {
             <a href="#platform">Platform</a>
             <a href="#about">About</a>
           </nav>
-          <span className="footer__copy">© 2024 Jinki Intelligence</span>
+          <span className="footer__copy">© 2025 Jinki Intelligence</span>
         </div>
       </footer>
     </div>
