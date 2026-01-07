@@ -1,0 +1,326 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="hubGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#0080ff;stop-opacity:0.6" />
+    </linearGradient>
+
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.6" />
+      <stop offset="50%" style="stop-color:#00d4ff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0" />
+    </radialGradient>
+
+    <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#0080ff;stop-opacity:0.1" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Connection Paths -->
+    <!-- Left to Center Paths -->
+    <path id="drone-path" d="M 180 100 Q 400 100, 520 300" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+    <path id="sensor-path" d="M 180 200 Q 350 200, 520 300" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+    <path id="threat-path" d="M 180 400 Q 350 400, 520 300" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+    <path id="security-path" d="M 180 500 Q 400 500, 520 300" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+
+    <!-- Center to Right Paths -->
+    <path id="alert-path" d="M 680 300 Q 850 100, 1020 100" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+    <path id="report-path" d="M 680 300 Q 850 200, 1020 200" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+    <path id="insight-path" d="M 680 300 Q 850 400, 1020 400" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+    <path id="risk-path" d="M 680 300 Q 850 500, 1020 500" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.3"/>
+  </defs>
+
+  <style>
+    @keyframes flow {
+      0% {
+        stroke-dashoffset: 1000;
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rotateReverse {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+
+    .flow-line {
+      stroke-dasharray: 10 20;
+      animation: flow 3s linear infinite;
+    }
+
+    .flow-particle {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .orbit-ring {
+      transform-origin: 600px 300px;
+    }
+
+    .orbit-1 {
+      animation: rotate 20s linear infinite;
+    }
+
+    .orbit-2 {
+      animation: rotateReverse 15s linear infinite;
+    }
+
+    .node-pulse {
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    text {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="600" fill="#0a0a0a"/>
+
+  <!-- Connection Lines -->
+  <use href="#drone-path"/>
+  <use href="#sensor-path"/>
+  <use href="#threat-path"/>
+  <use href="#security-path"/>
+  <use href="#alert-path"/>
+  <use href="#report-path"/>
+  <use href="#insight-path"/>
+  <use href="#risk-path"/>
+
+  <!-- Animated Flow Lines -->
+  <use href="#drone-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+  <use href="#sensor-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -0.5s"/>
+  <use href="#threat-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -1s"/>
+  <use href="#security-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -1.5s"/>
+  <use href="#alert-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -0.25s"/>
+  <use href="#report-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -0.75s"/>
+  <use href="#insight-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -1.25s"/>
+  <use href="#risk-path" class="flow-line" stroke="#00d4ff" stroke-width="2" opacity="0.6" style="animation-delay: -1.75s"/>
+
+  <!-- LEFT SIDE - INPUT NODES -->
+
+  <!-- Drones -->
+  <g id="drone-node">
+    <circle cx="100" cy="100" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(100, 100)">
+      <!-- Drone Icon -->
+      <circle cx="0" cy="-8" r="6" fill="#00d4ff"/>
+      <circle cx="-15" cy="8" r="4" fill="#00d4ff" opacity="0.7"/>
+      <circle cx="15" cy="8" r="4" fill="#00d4ff" opacity="0.7"/>
+      <circle cx="-8" cy="12" r="4" fill="#00d4ff" opacity="0.7"/>
+      <circle cx="8" cy="12" r="4" fill="#00d4ff" opacity="0.7"/>
+      <line x1="-15" y1="8" x2="0" y2="-8" stroke="#00d4ff" stroke-width="1.5"/>
+      <line x1="15" y1="8" x2="0" y2="-8" stroke="#00d4ff" stroke-width="1.5"/>
+    </g>
+    <text x="100" y="170" text-anchor="middle" fill="#00d4ff" font-size="14">DRONES</text>
+  </g>
+
+  <!-- Sensors -->
+  <g id="sensor-node">
+    <circle cx="100" cy="200" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(100, 200)">
+      <!-- Sensor Icon -->
+      <circle cx="0" cy="0" r="12" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <circle cx="0" cy="0" r="3" fill="#00d4ff"/>
+      <path d="M -8 -8 L -15 -15 M 8 -8 L 15 -15 M 8 8 L 15 15 M -8 8 L -15 15" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="270" text-anchor="middle" fill="#00d4ff" font-size="14">SENSORS</text>
+  </g>
+
+  <!-- Threat Feeds -->
+  <g id="threat-node">
+    <circle cx="100" cy="400" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(100, 400)">
+      <!-- Threat Feed Icon -->
+      <path d="M -12 8 L 0 -12 L 12 8 Z" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <circle cx="0" cy="8" r="3" fill="#00d4ff"/>
+      <path d="M -8 0 L -16 0 M 8 0 L 16 0 M 0 -8 L 0 -16" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="100" y="470" text-anchor="middle" fill="#00d4ff" font-size="14">THREAT FEEDS</text>
+  </g>
+
+  <!-- Security Data -->
+  <g id="security-node">
+    <circle cx="100" cy="500" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(100, 500)">
+      <!-- Security Icon (Shield) -->
+      <path d="M 0 -15 L -10 -10 L -10 2 Q -10 12, 0 15 Q 10 12, 10 2 L 10 -10 Z" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <path d="M -6 0 L -2 4 L 6 -6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+    <text x="100" y="570" text-anchor="middle" fill="#00d4ff" font-size="14">SECURITY DATA</text>
+  </g>
+
+  <!-- CENTER - JINKI INTELLIGENCE HUB -->
+  <g id="hub">
+    <!-- Glow Effect -->
+    <circle cx="600" cy="300" r="120" fill="url(#glowGradient)" opacity="0.4" class="node-pulse"/>
+
+    <!-- Outer Orbital Ring 1 -->
+    <ellipse cx="600" cy="300" rx="110" ry="80" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.3" class="orbit-ring orbit-1" stroke-dasharray="10 5"/>
+
+    <!-- Outer Orbital Ring 2 -->
+    <ellipse cx="600" cy="300" rx="90" ry="100" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.3" class="orbit-ring orbit-2" stroke-dasharray="5 10"/>
+
+    <!-- Main Hub Circle -->
+    <circle cx="600" cy="300" r="70" fill="url(#hubGradient)" stroke="#00d4ff" stroke-width="3" filter="url(#glow)"/>
+
+    <!-- Inner Core -->
+    <circle cx="600" cy="300" r="40" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+    <circle cx="600" cy="300" r="30" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.4"/>
+
+    <!-- Center Pulse -->
+    <circle cx="600" cy="300" r="15" fill="#00d4ff" opacity="0.8" class="node-pulse"/>
+
+    <!-- Hub Text -->
+    <text x="600" y="295" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">JINKI</text>
+    <text x="600" y="312" text-anchor="middle" fill="#00d4ff" font-size="12" font-weight="600">INTELLIGENCE HUB</text>
+  </g>
+
+  <!-- RIGHT SIDE - OUTPUT NODES -->
+
+  <!-- Alerts -->
+  <g id="alert-node">
+    <circle cx="1100" cy="100" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(1100, 100)">
+      <!-- Alert Icon (Bell) -->
+      <path d="M -8 -5 L -8 -10 Q -8 -15, 0 -15 Q 8 -15, 8 -10 L 8 -5 Q 15 -3, 15 5 L -15 5 Q -15 -3, -8 -5" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <line x1="-12" y1="8" x2="12" y2="8" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="0" cy="12" r="2" fill="#00d4ff"/>
+    </g>
+    <text x="1100" y="170" text-anchor="middle" fill="#00d4ff" font-size="14">ALERTS</text>
+  </g>
+
+  <!-- Reports -->
+  <g id="report-node">
+    <circle cx="1100" cy="200" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(1100, 200)">
+      <!-- Report Icon (Document) -->
+      <rect x="-10" y="-12" width="20" height="24" fill="none" stroke="#00d4ff" stroke-width="2" rx="2"/>
+      <line x1="-6" y1="-6" x2="6" y2="-6" stroke="#00d4ff" stroke-width="1.5"/>
+      <line x1="-6" y1="0" x2="6" y2="0" stroke="#00d4ff" stroke-width="1.5"/>
+      <line x1="-6" y1="6" x2="6" y2="6" stroke="#00d4ff" stroke-width="1.5"/>
+    </g>
+    <text x="1100" y="270" text-anchor="middle" fill="#00d4ff" font-size="14">REPORTS</text>
+  </g>
+
+  <!-- Insights -->
+  <g id="insight-node">
+    <circle cx="1100" cy="400" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(1100, 400)">
+      <!-- Insight Icon (Lightbulb) -->
+      <circle cx="0" cy="-5" r="8" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <path d="M -4 3 L -4 8 L 4 8 L 4 3" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <line x1="-6" y1="11" x2="6" y2="11" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="0" y1="-15" x2="0" y2="-18" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="-12" y1="-5" x2="-15" y2="-5" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12" y1="-5" x2="15" y2="-5" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="1100" y="470" text-anchor="middle" fill="#00d4ff" font-size="14">INSIGHTS</text>
+  </g>
+
+  <!-- Risk Scores -->
+  <g id="risk-node">
+    <circle cx="1100" cy="500" r="50" fill="url(#nodeGradient)" stroke="#00d4ff" stroke-width="2"/>
+    <g transform="translate(1100, 500)">
+      <!-- Risk Score Icon (Gauge) -->
+      <path d="M -12 5 Q -12 -8, 0 -12 Q 12 -8, 12 5" fill="none" stroke="#00d4ff" stroke-width="2"/>
+      <line x1="0" y1="5" x2="-8" y2="-5" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="0" cy="5" r="3" fill="#00d4ff"/>
+      <line x1="-10" y1="8" x2="10" y2="8" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <text x="1100" y="570" text-anchor="middle" fill="#00d4ff" font-size="14">RISK SCORES</text>
+  </g>
+
+  <!-- Flow Particles -->
+  <circle cx="180" cy="100" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite">
+      <mpath href="#drone-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="180" cy="200" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-0.5s">
+      <mpath href="#sensor-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="180" cy="400" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-1s">
+      <mpath href="#threat-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="180" cy="500" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-1.5s">
+      <mpath href="#security-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="680" cy="300" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-0.25s">
+      <mpath href="#alert-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="680" cy="300" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-0.75s">
+      <mpath href="#report-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="680" cy="300" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-1.25s">
+      <mpath href="#insight-path"/>
+    </animateMotion>
+  </circle>
+
+  <circle cx="680" cy="300" r="4" fill="#00d4ff" filter="url(#softGlow)" class="flow-particle">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="-1.75s">
+      <mpath href="#risk-path"/>
+    </animateMotion>
+  </circle>
+</svg>

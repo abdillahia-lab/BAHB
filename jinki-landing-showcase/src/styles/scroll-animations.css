@@ -1,0 +1,682 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   TEAM SCROLL-FLUIDITY - Scroll-Based Animation System
+   CSS-First Approach with GPU-Accelerated Transforms
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Animation Timing */
+  --reveal-duration: 0.8s;
+  --reveal-delay-base: 0.1s;
+  --reveal-distance: 40px;
+  --reveal-distance-small: 24px;
+  --reveal-distance-large: 60px;
+
+  /* Easing Functions */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Parallax Speeds */
+  --parallax-speed-slow: 0.3;
+  --parallax-speed-medium: 0.5;
+  --parallax-speed-fast: 0.8;
+
+  /* Progress Indicator */
+  --progress-height: 3px;
+  --progress-color: var(--cyan, #00d4ff);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   1. BASE REVEAL ANIMATIONS
+   Compatible with existing .reveal class
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   2. REVEAL VARIANTS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Fade only - no movement */
+.reveal--fade {
+  transform: none;
+  transition: opacity var(--reveal-duration) var(--ease-out-quart);
+}
+
+.reveal--fade.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Slide up from below */
+.reveal--up {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--up.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slide down from above */
+.reveal--down {
+  opacity: 0;
+  transform: translateY(calc(var(--reveal-distance) * -1));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--down.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slide in from left */
+.reveal--left {
+  opacity: 0;
+  transform: translateX(calc(var(--reveal-distance) * -1));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--left.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide in from right */
+.reveal--right {
+  opacity: 0;
+  transform: translateX(var(--reveal-distance));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--right.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale up */
+.reveal--scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--scale.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Scale up large */
+.reveal--scale-large {
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--scale-large.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Zoom out (scale down to normal) */
+.reveal--zoom {
+  opacity: 0;
+  transform: scale(1.1);
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--zoom.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Blur reveal */
+.reveal--blur {
+  opacity: 0;
+  filter: blur(10px);
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    filter var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--blur.revealed {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Rotate in */
+.reveal--rotate {
+  opacity: 0;
+  transform: rotate(-5deg) translateY(var(--reveal-distance-small));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal--rotate.revealed {
+  opacity: 1;
+  transform: rotate(0deg) translateY(0);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   3. STAGGERED REVEAL DELAYS
+   For child elements that should animate in sequence
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance-small));
+  transition:
+    opacity var(--reveal-duration) var(--ease-out-expo),
+    transform var(--reveal-duration) var(--ease-out-expo);
+}
+
+.reveal-stagger.revealed > *:nth-child(1) {
+  transition-delay: calc(var(--reveal-delay-base) * 1);
+}
+.reveal-stagger.revealed > *:nth-child(2) {
+  transition-delay: calc(var(--reveal-delay-base) * 2);
+}
+.reveal-stagger.revealed > *:nth-child(3) {
+  transition-delay: calc(var(--reveal-delay-base) * 3);
+}
+.reveal-stagger.revealed > *:nth-child(4) {
+  transition-delay: calc(var(--reveal-delay-base) * 4);
+}
+.reveal-stagger.revealed > *:nth-child(5) {
+  transition-delay: calc(var(--reveal-delay-base) * 5);
+}
+.reveal-stagger.revealed > *:nth-child(6) {
+  transition-delay: calc(var(--reveal-delay-base) * 6);
+}
+.reveal-stagger.revealed > *:nth-child(7) {
+  transition-delay: calc(var(--reveal-delay-base) * 7);
+}
+.reveal-stagger.revealed > *:nth-child(8) {
+  transition-delay: calc(var(--reveal-delay-base) * 8);
+}
+.reveal-stagger.revealed > *:nth-child(9) {
+  transition-delay: calc(var(--reveal-delay-base) * 9);
+}
+.reveal-stagger.revealed > *:nth-child(10) {
+  transition-delay: calc(var(--reveal-delay-base) * 10);
+}
+
+.reveal-stagger.revealed > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fast stagger for smaller delays */
+.reveal-stagger--fast {
+  --reveal-delay-base: 0.05s;
+}
+
+/* Slow stagger for larger delays */
+.reveal-stagger--slow {
+  --reveal-delay-base: 0.2s;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   4. PARALLAX LAYERS
+   GPU-accelerated parallax effects
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.parallax-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: relative;
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* Parallax speeds */
+.parallax-layer--slow {
+  transform: translateY(calc(var(--scroll-progress, 0) * -20px));
+}
+
+.parallax-layer--medium {
+  transform: translateY(calc(var(--scroll-progress, 0) * -40px));
+}
+
+.parallax-layer--fast {
+  transform: translateY(calc(var(--scroll-progress, 0) * -60px));
+}
+
+.parallax-layer--reverse {
+  transform: translateY(calc(var(--scroll-progress, 0) * 30px));
+}
+
+/* Horizontal parallax */
+.parallax-layer--horizontal-slow {
+  transform: translateX(calc(var(--scroll-progress, 0) * -20px));
+}
+
+.parallax-layer--horizontal-medium {
+  transform: translateX(calc(var(--scroll-progress, 0) * -40px));
+}
+
+.parallax-layer--horizontal-fast {
+  transform: translateX(calc(var(--scroll-progress, 0) * -60px));
+}
+
+/* Scale parallax */
+.parallax-layer--scale {
+  transform: scale(calc(1 + var(--scroll-progress, 0) * 0.1));
+  transform-origin: center;
+}
+
+/* Opacity parallax */
+.parallax-layer--fade {
+  opacity: calc(1 - var(--scroll-progress, 0) * 0.8);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   5. STICKY ELEMENTS WITH SCROLL TRANSFORMS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition:
+    transform 0.3s var(--ease-out-quart),
+    background-color 0.3s var(--ease-out-quart),
+    box-shadow 0.3s var(--ease-out-quart),
+    padding 0.3s var(--ease-out-quart);
+  will-change: transform, background-color, box-shadow;
+}
+
+.sticky-header--scrolled {
+  transform: translateY(0);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Sticky element that shrinks on scroll */
+.sticky-shrink {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all 0.3s var(--ease-out-quart);
+  will-change: transform, padding;
+}
+
+.sticky-shrink--scrolled {
+  transform: scale(0.9);
+  padding: 0.5rem 1rem;
+}
+
+/* Sticky element with blur background on scroll */
+.sticky-blur {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: backdrop-filter 0.3s var(--ease-out-quart);
+  will-change: backdrop-filter;
+}
+
+.sticky-blur--scrolled {
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Sticky sidebar that follows scroll */
+.sticky-sidebar {
+  position: sticky;
+  top: 100px;
+  align-self: flex-start;
+  transition: top 0.3s var(--ease-out-quart);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   6. SCROLL PROGRESS INDICATORS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Page scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--progress-height);
+  background: transparent;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  height: 100%;
+  background: var(--progress-color);
+  transform-origin: left;
+  transform: scaleX(var(--scroll-percentage, 0));
+  transition: transform 0.1s linear;
+  will-change: transform;
+  box-shadow: 0 0 10px var(--progress-color);
+}
+
+/* Circular progress indicator */
+.scroll-progress-circle {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  z-index: 1000;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.3s var(--ease-out-quart),
+    transform 0.3s var(--ease-out-quart);
+  pointer-events: none;
+}
+
+.scroll-progress-circle--visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+
+.scroll-progress-circle__svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-progress-circle__bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 3;
+}
+
+.scroll-progress-circle__progress {
+  fill: none;
+  stroke: var(--progress-color);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 157; /* 2 * π * r where r = 25 */
+  stroke-dashoffset: calc(157 - (157 * var(--scroll-percentage, 0)));
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.scroll-progress-circle__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  color: var(--progress-color);
+}
+
+/* Section progress indicator */
+.section-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.section-progress__bar {
+  width: 100%;
+  height: 100%;
+  background: var(--progress-color);
+  transform-origin: top;
+  transform: scaleY(var(--section-progress, 0));
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   7. SMOOTH SCROLL ENHANCEMENTS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Override for instant scroll when user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Smooth scroll with JS enhancement class */
+.smooth-scroll-active {
+  scroll-behavior: auto; /* Disable native, use JS for better control */
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   8. SCROLL SNAP POINTS (Optional)
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.scroll-snap-container {
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 80px;
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.scroll-snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Disable scroll snap on mobile */
+@media (max-width: 768px) {
+  .scroll-snap-container {
+    scroll-snap-type: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   9. SCROLL-TRIGGERED UTILITIES
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Element that pins during scroll */
+.scroll-pin {
+  position: relative;
+}
+
+.scroll-pin--pinned {
+  position: fixed;
+  top: 0;
+}
+
+/* Element that fades out on scroll */
+.scroll-fade-out {
+  transition: opacity 0.3s var(--ease-out-quart);
+}
+
+.scroll-fade-out--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Element that slides up and fades on scroll */
+.scroll-hide-up {
+  transition:
+    transform 0.3s var(--ease-out-quart),
+    opacity 0.3s var(--ease-out-quart);
+}
+
+.scroll-hide-up--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* Element that scales down on scroll */
+.scroll-scale-down {
+  transition: transform 0.3s var(--ease-out-quart);
+}
+
+.scroll-scale-down--scaled {
+  transform: scale(0.95);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   10. PERFORMANCE OPTIMIZATIONS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* GPU acceleration for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Contain paint for better performance */
+.scroll-container {
+  contain: paint layout;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   11. RESPONSIVE ADJUSTMENTS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  :root {
+    --reveal-distance: 24px;
+    --reveal-distance-small: 16px;
+    --reveal-distance-large: 40px;
+  }
+
+  /* Reduce parallax on mobile for performance */
+  .parallax-layer--slow {
+    transform: translateY(calc(var(--scroll-progress, 0) * -10px));
+  }
+
+  .parallax-layer--medium {
+    transform: translateY(calc(var(--scroll-progress, 0) * -20px));
+  }
+
+  .parallax-layer--fast {
+    transform: translateY(calc(var(--scroll-progress, 0) * -30px));
+  }
+
+  /* Move scroll progress circle on mobile */
+  .scroll-progress-circle {
+    bottom: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --reveal-distance: 16px;
+    --reveal-distance-small: 12px;
+    --reveal-distance-large: 24px;
+    --reveal-duration: 0.6s;
+  }
+
+  /* Disable parallax on very small screens */
+  .parallax-layer {
+    transform: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   12. ACCESSIBILITY - REDUCED MOTION
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal--fade,
+  .reveal--up,
+  .reveal--down,
+  .reveal--left,
+  .reveal--right,
+  .reveal--scale,
+  .reveal--scale-large,
+  .reveal--zoom,
+  .reveal--blur,
+  .reveal--rotate {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .parallax-layer {
+    transform: none !important;
+  }
+
+  .scroll-progress,
+  .scroll-progress-circle,
+  .section-progress {
+    display: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   13. PRINT STYLES
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  .scroll-progress,
+  .scroll-progress-circle,
+  .section-progress {
+    display: none !important;
+  }
+
+  .reveal,
+  .reveal--fade,
+  .reveal--up,
+  .reveal--down,
+  .reveal--left,
+  .reveal--right,
+  .reveal--scale,
+  .reveal--zoom,
+  .reveal--blur,
+  .reveal--rotate {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEAM SCROLL-FLUIDITY - Animation Demo</title>
+  <link rel="stylesheet" href="./src/styles/scroll-animations.css">
+  <style>
+    /* Demo-specific styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #222222;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --cyan: #00d4ff;
+      --cyan-glow: rgba(0, 212, 255, 0.3);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .demo-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.5rem 2rem;
+      background: rgba(10, 10, 10, 0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid transparent;
+    }
+
+    .demo-nav.sticky-header--scrolled {
+      padding: 1rem 2rem;
+      background: rgba(10, 10, 10, 0.95);
+      border-bottom-color: var(--border);
+    }
+
+    .demo-section {
+      min-height: 100vh;
+      padding: 8rem 2rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .demo-hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-title {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .demo-subtitle {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+
+    .demo-label {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 100px;
+      color: var(--cyan);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      width: 100%;
+      margin-top: 3rem;
+    }
+
+    .demo-card {
+      padding: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      text-align: center;
+    }
+
+    .demo-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--cyan);
+    }
+
+    .demo-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .parallax-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .parallax-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+    }
+
+    .parallax-circle-1 {
+      width: 600px;
+      height: 600px;
+      top: 10%;
+      left: -10%;
+    }
+
+    .parallax-circle-2 {
+      width: 400px;
+      height: 400px;
+      top: 50%;
+      right: -5%;
+    }
+
+    .parallax-circle-3 {
+      width: 300px;
+      height: 300px;
+      bottom: 20%;
+      left: 20%;
+    }
+
+    .demo-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 3rem;
+      max-width: 800px;
+      width: 100%;
+      margin-top: 3rem;
+    }
+
+    .demo-stat {
+      text-align: center;
+    }
+
+    .demo-stat-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .demo-button {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: transparent;
+      border: 1px solid var(--text-muted);
+      border-radius: 100px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .demo-button:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 30px var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .demo-section {
+        padding: 6rem 1rem 3rem;
+      }
+
+      .demo-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .demo-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sticky Navigation -->
+  <nav class="demo-nav sticky-header">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-weight: 700; letter-spacing: 0.15em;">SCROLL-FLUIDITY</div>
+      <div style="display: flex; gap: 2rem;">
+        <a href="#hero" style="color: var(--text-muted); text-decoration: none;">Home</a>
+        <a href="#reveals" style="color: var(--text-muted); text-decoration: none;">Reveals</a>
+        <a href="#parallax" style="color: var(--text-muted); text-decoration: none;">Parallax</a>
+        <a href="#stagger" style="color: var(--text-muted); text-decoration: none;">Stagger</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="demo-hero">
+    <div class="parallax-bg">
+      <div class="parallax-circle parallax-circle-1 parallax-layer parallax-layer--slow"></div>
+      <div class="parallax-circle parallax-circle-2 parallax-layer parallax-layer--medium"></div>
+      <div class="parallax-circle parallax-circle-3 parallax-layer parallax-layer--fast"></div>
+    </div>
+
+    <div class="reveal--fade">
+      <span class="demo-label">Team Scroll-Fluidity</span>
+    </div>
+
+    <h1 class="demo-title reveal--up">
+      Scroll-Based Animations
+    </h1>
+
+    <p class="demo-subtitle reveal--up" style="transition-delay: 0.1s;">
+      CSS-first approach with GPU-accelerated transforms, IntersectionObserver reveals, and smooth parallax effects.
+    </p>
+
+    <a href="#reveals" class="demo-button reveal--scale" style="transition-delay: 0.2s;">
+      Explore Animations
+    </a>
+  </section>
+
+  <!-- Reveal Variants Section -->
+  <section id="reveals" class="demo-section">
+    <span class="demo-label reveal--fade">Reveal Animations</span>
+    <h2 class="demo-title reveal--up">Multiple Reveal Styles</h2>
+    <p class="demo-subtitle reveal--up">Each animation triggers as you scroll into view</p>
+
+    <div class="demo-grid">
+      <div class="demo-card reveal--fade">
+        <h3>Fade</h3>
+        <p>Simple opacity transition</p>
+      </div>
+
+      <div class="demo-card reveal--up">
+        <h3>Slide Up</h3>
+        <p>Slides up from below</p>
+      </div>
+
+      <div class="demo-card reveal--down">
+        <h3>Slide Down</h3>
+        <p>Slides down from above</p>
+      </div>
+
+      <div class="demo-card reveal--left">
+        <h3>Slide Left</h3>
+        <p>Slides in from left</p>
+      </div>
+
+      <div class="demo-card reveal--right">
+        <h3>Slide Right</h3>
+        <p>Slides in from right</p>
+      </div>
+
+      <div class="demo-card reveal--scale">
+        <h3>Scale</h3>
+        <p>Scales up from small</p>
+      </div>
+
+      <div class="demo-card reveal--zoom">
+        <h3>Zoom</h3>
+        <p>Zooms out to normal</p>
+      </div>
+
+      <div class="demo-card reveal--blur">
+        <h3>Blur</h3>
+        <p>Comes into focus</p>
+      </div>
+
+      <div class="demo-card reveal--rotate">
+        <h3>Rotate</h3>
+        <p>Rotates into view</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parallax Section -->
+  <section id="parallax" class="demo-section" style="position: relative; overflow: hidden;">
+    <span class="demo-label reveal--fade">Parallax Effects</span>
+    <h2 class="demo-title reveal--up">Depth Through Motion</h2>
+    <p class="demo-subtitle reveal--up">Different layers move at different speeds</p>
+
+    <div style="position: relative; width: 100%; max-width: 600px; height: 400px; margin-top: 3rem;">
+      <!-- Background Layer -->
+      <div class="parallax-layer parallax-layer--slow" style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), transparent); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 1rem; color: var(--text-muted);">Slow Layer</span>
+      </div>
+
+      <!-- Middle Layer -->
+      <div class="parallax-layer parallax-layer--medium" style="position: absolute; inset: 20px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), transparent); border-radius: 1rem; display: flex; align-items: center; justify-content: center;">
+        <span style="font-size: 1.25rem; color: var(--text);">Medium Layer</span>
+      </div>
+
+      <!-- Foreground Layer -->
+      <div class="parallax-layer parallax-layer--fast" style="position: absolute; inset: 40px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), transparent); border-radius: 1rem; display: flex; align-items: center; justify-content: center; border: 2px solid var(--cyan);">
+        <span style="font-size: 1.5rem; color: var(--cyan); font-weight: 700;">Fast Layer</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Staggered Reveals Section -->
+  <section id="stagger" class="demo-section">
+    <span class="demo-label reveal--fade">Staggered Animations</span>
+    <h2 class="demo-title reveal--up">Sequential Reveals</h2>
+    <p class="demo-subtitle reveal--up">Child elements animate in sequence</p>
+
+    <div class="demo-stats reveal-stagger">
+      <div class="demo-stat">
+        <div class="demo-stat-number">10+</div>
+        <div class="demo-stat-label">Reveal Styles</div>
+      </div>
+
+      <div class="demo-stat">
+        <div class="demo-stat-number">60fps</div>
+        <div class="demo-stat-label">Performance</div>
+      </div>
+
+      <div class="demo-stat">
+        <div class="demo-stat-number">8KB</div>
+        <div class="demo-stat-label">CSS Size</div>
+      </div>
+
+      <div class="demo-stat">
+        <div class="demo-stat-number">100%</div>
+        <div class="demo-stat-label">Accessible</div>
+      </div>
+    </div>
+
+    <div class="demo-grid reveal-stagger reveal-stagger--slow" style="margin-top: 4rem;">
+      <div class="demo-card">
+        <h3>Feature 1</h3>
+        <p>Animates first</p>
+      </div>
+
+      <div class="demo-card">
+        <h3>Feature 2</h3>
+        <p>Follows with delay</p>
+      </div>
+
+      <div class="demo-card">
+        <h3>Feature 3</h3>
+        <p>Then this one</p>
+      </div>
+
+      <div class="demo-card">
+        <h3>Feature 4</h3>
+        <p>Finally this</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="demo-section" style="min-height: 80vh;">
+    <h2 class="demo-title reveal--scale">Ready to Implement?</h2>
+    <p class="demo-subtitle reveal--up">Check the implementation guide for complete documentation</p>
+
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+      <a href="./SCROLL_ANIMATIONS_GUIDE.md" class="demo-button reveal--left">
+        Read Guide
+      </a>
+      <a href="#hero" class="demo-button reveal--right">
+        Scroll to Top
+      </a>
+    </div>
+
+    <div style="margin-top: 4rem; padding: 2rem; background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; max-width: 800px; text-align: left;" class="reveal--fade">
+      <h3 style="margin-bottom: 1rem; color: var(--cyan);">Features Included:</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ 10+ reveal animation variants</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Parallax layers with multiple speeds</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Staggered child animations</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Smooth scroll with easing</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Sticky transforms on scroll</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Progress indicators (bar & circle)</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ GPU-accelerated performance</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Full accessibility support</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Mobile responsive</li>
+        <li style="padding: 0.5rem 0; color: var(--text-muted);">✓ Reduced motion support</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Initialize Scroll Animations -->
+  <script type="module">
+    import { initScrollAnimations } from './src/utils/scrollAnimations.js'
+
+    // Initialize all scroll animations
+    initScrollAnimations({
+      enableParallax: true,
+      enableProgressBar: true,
+      enableProgressCircle: true,
+      enableSmoothScroll: true,
+      enableStickyTransforms: true,
+      revealTriggerOnce: true,
+      progressCircleShowAt: 300
+    })
+
+    console.log('🎬 Scroll animations demo initialized!')
+  </script>
+</body>
+</html>

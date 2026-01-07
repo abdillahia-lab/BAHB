@@ -1,0 +1,737 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   SECTION-FLOW - Visual Rhythm & Spacing Optimization
+   Kong-Style Clean Sections with Generous Breathing Room
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SPACING CUSTOM PROPERTIES - Fluid Responsive Rhythm
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────
+     SECTION VERTICAL RHYTHM - Consistent spacing hierarchy
+     ───────────────────────────────────────────────────────────── */
+
+  /* Micro spacing - Component internal rhythm */
+  --flow-space-3xs: clamp(0.25rem, 0.24rem + 0.05vw, 0.3125rem);      /* 4-5px */
+  --flow-space-2xs: clamp(0.5rem, 0.48rem + 0.09vw, 0.625rem);        /* 8-10px */
+  --flow-space-xs: clamp(0.75rem, 0.7rem + 0.23vw, 1rem);             /* 12-16px */
+  --flow-space-sm: clamp(1rem, 0.91rem + 0.43vw, 1.5rem);             /* 16-24px */
+
+  /* Macro spacing - Section-level rhythm */
+  --flow-space-md: clamp(1.5rem, 1.3rem + 0.95vw, 2.5rem);            /* 24-40px */
+  --flow-space-lg: clamp(2rem, 1.57rem + 2.14vw, 4rem);               /* 32-64px */
+  --flow-space-xl: clamp(3rem, 2.13rem + 4.29vw, 7rem);               /* 48-112px */
+  --flow-space-2xl: clamp(4rem, 2.57rem + 7.14vw, 10rem);             /* 64-160px */
+  --flow-space-3xl: clamp(5rem, 2.86rem + 10.71vw, 14rem);            /* 80-224px */
+  --flow-space-4xl: clamp(6rem, 2.86rem + 15.71vw, 18rem);            /* 96-288px */
+
+  /* ─────────────────────────────────────────────────────────────
+     SECTION PADDING - Vertical & Horizontal rhythm
+     ───────────────────────────────────────────────────────────── */
+
+  /* Vertical section padding */
+  --section-py-xs: clamp(2rem, 1.57rem + 2.14vw, 4rem);               /* 32-64px */
+  --section-py-sm: clamp(3rem, 2.13rem + 4.29vw, 7rem);               /* 48-112px */
+  --section-py-md: clamp(4rem, 2.57rem + 7.14vw, 10rem);              /* 64-160px */
+  --section-py-lg: clamp(5rem, 2.86rem + 10.71vw, 14rem);             /* 80-224px */
+  --section-py-xl: clamp(6rem, 2.86rem + 15.71vw, 18rem);             /* 96-288px */
+  --section-py-2xl: clamp(8rem, 3.43rem + 22.86vw, 24rem);            /* 128-384px */
+
+  /* Horizontal section padding */
+  --section-px-mobile: clamp(1rem, 0.91rem + 0.43vw, 1.5rem);         /* 16-24px */
+  --section-px-tablet: clamp(1.5rem, 1.3rem + 0.95vw, 2.5rem);        /* 24-40px */
+  --section-px-desktop: clamp(2rem, 1.57rem + 2.14vw, 4rem);          /* 32-64px */
+  --section-px-wide: clamp(3rem, 2.13rem + 4.29vw, 7rem);             /* 48-112px */
+
+  /* ─────────────────────────────────────────────────────────────
+     CONTENT MAX-WIDTH - Optimal reading & viewing widths
+     ───────────────────────────────────────────────────────────── */
+
+  /* Prose widths - Text-heavy content */
+  --content-width-prose: 65ch;                  /* ~520-650px - Perfect for reading */
+  --content-width-prose-wide: 75ch;             /* ~600-750px - Wider paragraphs */
+  --content-width-prose-narrow: 55ch;           /* ~440-550px - Narrow reading */
+
+  /* Layout widths - Standard containers */
+  --content-width-xs: 20rem;                    /* 320px - Minimal */
+  --content-width-sm: 30rem;                    /* 480px - Small forms */
+  --content-width-md: 42rem;                    /* 672px - Medium content */
+  --content-width-lg: 56rem;                    /* 896px - Large content */
+  --content-width-xl: 72rem;                    /* 1152px - Extra large */
+  --content-width-2xl: 80rem;                   /* 1280px - Primary container */
+  --content-width-3xl: 90rem;                   /* 1440px - Wide container */
+  --content-width-4xl: 100rem;                  /* 1600px - Ultra-wide */
+  --content-width-full: 100%;                   /* Full viewport */
+
+  /* ─────────────────────────────────────────────────────────────
+     DIVIDER STYLES - Subtle section separators
+     ───────────────────────────────────────────────────────────── */
+
+  /* Divider thickness */
+  --divider-thin: 1px;
+  --divider-medium: 2px;
+  --divider-thick: 4px;
+
+  /* Divider colors (works with dark/light themes) */
+  --divider-subtle: rgba(255, 255, 255, 0.06);
+  --divider-soft: rgba(255, 255, 255, 0.1);
+  --divider-medium: rgba(255, 255, 255, 0.15);
+  --divider-strong: rgba(255, 255, 255, 0.25);
+  --divider-accent: rgba(0, 212, 255, 0.2);
+
+  /* Divider spacing */
+  --divider-space-sm: var(--flow-space-md);
+  --divider-space-md: var(--flow-space-lg);
+  --divider-space-lg: var(--flow-space-xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECTION CONTAINER SYSTEM - Consistent width constraints
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Base section container */
+.section-container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--section-px-mobile);
+}
+
+/* Width variants */
+.section-container--prose {
+  max-width: var(--content-width-prose);
+}
+
+.section-container--prose-wide {
+  max-width: var(--content-width-prose-wide);
+}
+
+.section-container--sm {
+  max-width: var(--content-width-sm);
+}
+
+.section-container--md {
+  max-width: var(--content-width-md);
+}
+
+.section-container--lg {
+  max-width: var(--content-width-lg);
+}
+
+.section-container--xl {
+  max-width: var(--content-width-xl);
+}
+
+.section-container--2xl {
+  max-width: var(--content-width-2xl);
+}
+
+.section-container--3xl {
+  max-width: var(--content-width-3xl);
+}
+
+.section-container--4xl {
+  max-width: var(--content-width-4xl);
+}
+
+.section-container--full {
+  max-width: none;
+}
+
+/* Responsive padding adjustments */
+@media (min-width: 768px) {
+  .section-container {
+    padding-inline: var(--section-px-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-container {
+    padding-inline: var(--section-px-desktop);
+  }
+}
+
+@media (min-width: 1920px) {
+  .section-container {
+    padding-inline: var(--section-px-wide);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECTION SPACING RHYTHM - Vertical padding system
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Default section spacing */
+.section-flow {
+  padding-block: var(--section-py-md);
+}
+
+/* Spacing variants - Choose based on visual weight */
+.section-flow--xs {
+  padding-block: var(--section-py-xs);
+}
+
+.section-flow--sm {
+  padding-block: var(--section-py-sm);
+}
+
+.section-flow--md {
+  padding-block: var(--section-py-md);
+}
+
+.section-flow--lg {
+  padding-block: var(--section-py-lg);
+}
+
+.section-flow--xl {
+  padding-block: var(--section-py-xl);
+}
+
+.section-flow--2xl {
+  padding-block: var(--section-py-2xl);
+}
+
+/* Asymmetric spacing - Different top/bottom */
+.section-flow--top-sm {
+  padding-block-start: var(--section-py-sm);
+}
+
+.section-flow--top-md {
+  padding-block-start: var(--section-py-md);
+}
+
+.section-flow--top-lg {
+  padding-block-start: var(--section-py-lg);
+}
+
+.section-flow--top-xl {
+  padding-block-start: var(--section-py-xl);
+}
+
+.section-flow--bottom-sm {
+  padding-block-end: var(--section-py-sm);
+}
+
+.section-flow--bottom-md {
+  padding-block-end: var(--section-py-md);
+}
+
+.section-flow--bottom-lg {
+  padding-block-end: var(--section-py-lg);
+}
+
+.section-flow--bottom-xl {
+  padding-block-end: var(--section-py-xl);
+}
+
+/* No spacing utilities */
+.section-flow--no-top {
+  padding-block-start: 0;
+}
+
+.section-flow--no-bottom {
+  padding-block-end: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECTION DIVIDERS - Visual separation between sections
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Divider base styles */
+.section-divider {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Top dividers */
+.section-divider--top {
+  border-top: var(--divider-thin) solid var(--divider-subtle);
+}
+
+.section-divider--top-soft {
+  border-top: var(--divider-thin) solid var(--divider-soft);
+}
+
+.section-divider--top-medium {
+  border-top: var(--divider-medium) solid var(--divider-medium);
+}
+
+.section-divider--top-strong {
+  border-top: var(--divider-thick) solid var(--divider-strong);
+}
+
+.section-divider--top-accent {
+  border-top: var(--divider-medium) solid var(--divider-accent);
+}
+
+/* Bottom dividers */
+.section-divider--bottom {
+  border-bottom: var(--divider-thin) solid var(--divider-subtle);
+}
+
+.section-divider--bottom-soft {
+  border-bottom: var(--divider-thin) solid var(--divider-soft);
+}
+
+.section-divider--bottom-medium {
+  border-bottom: var(--divider-medium) solid var(--divider-medium);
+}
+
+.section-divider--bottom-strong {
+  border-bottom: var(--divider-thick) solid var(--divider-strong);
+}
+
+.section-divider--bottom-accent {
+  border-bottom: var(--divider-medium) solid var(--divider-accent);
+}
+
+/* Both dividers */
+.section-divider--both {
+  border-top: var(--divider-thin) solid var(--divider-subtle);
+  border-bottom: var(--divider-thin) solid var(--divider-subtle);
+}
+
+/* Decorative divider element */
+.divider-line {
+  width: 100%;
+  height: var(--divider-thin);
+  background: var(--divider-subtle);
+  margin-block: var(--divider-space-md);
+  border: none;
+}
+
+.divider-line--soft {
+  background: var(--divider-soft);
+}
+
+.divider-line--medium {
+  height: var(--divider-medium);
+  background: var(--divider-medium);
+}
+
+.divider-line--strong {
+  height: var(--divider-thick);
+  background: var(--divider-strong);
+}
+
+.divider-line--accent {
+  height: var(--divider-medium);
+  background: var(--divider-accent);
+  box-shadow: 0 0 20px var(--divider-accent);
+}
+
+/* Gradient dividers - Fade in/out effect */
+.divider-line--gradient {
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--divider-soft) 20%,
+    var(--divider-soft) 80%,
+    transparent
+  );
+}
+
+.divider-line--gradient-accent {
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--divider-accent) 30%,
+    var(--divider-accent) 70%,
+    transparent
+  );
+  box-shadow: 0 0 20px var(--divider-accent);
+}
+
+/* Centered short divider - Decorative */
+.divider-line--centered {
+  width: clamp(4rem, 20vw, 12rem);
+  margin-inline: auto;
+}
+
+.divider-line--centered-wide {
+  width: clamp(8rem, 40vw, 24rem);
+  margin-inline: auto;
+}
+
+/* Spacing around dividers */
+.divider-line--space-sm {
+  margin-block: var(--divider-space-sm);
+}
+
+.divider-line--space-md {
+  margin-block: var(--divider-space-md);
+}
+
+.divider-line--space-lg {
+  margin-block: var(--divider-space-lg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CONTENT FLOW UTILITIES - Internal section rhythm
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Stack - Vertical spacing between child elements */
+.flow > * + * {
+  margin-block-start: var(--flow-space, var(--flow-space-md));
+}
+
+/* Flow space variants */
+.flow--3xs {
+  --flow-space: var(--flow-space-3xs);
+}
+
+.flow--2xs {
+  --flow-space: var(--flow-space-2xs);
+}
+
+.flow--xs {
+  --flow-space: var(--flow-space-xs);
+}
+
+.flow--sm {
+  --flow-space: var(--flow-space-sm);
+}
+
+.flow--md {
+  --flow-space: var(--flow-space-md);
+}
+
+.flow--lg {
+  --flow-space: var(--flow-space-lg);
+}
+
+.flow--xl {
+  --flow-space: var(--flow-space-xl);
+}
+
+.flow--2xl {
+  --flow-space: var(--flow-space-2xl);
+}
+
+.flow--3xl {
+  --flow-space: var(--flow-space-3xl);
+}
+
+.flow--4xl {
+  --flow-space: var(--flow-space-4xl);
+}
+
+/* Exception - No margin on specific child */
+.flow > .flow-exception {
+  margin-block-start: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   VISUAL HIERARCHY - Clear section delineation
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Section headers with generous bottom margin */
+.section-header {
+  margin-block-end: var(--flow-space-xl);
+  text-align: center;
+}
+
+.section-header--left {
+  text-align: left;
+}
+
+.section-header--right {
+  text-align: right;
+}
+
+/* Title spacing within section header */
+.section-header__title {
+  margin-block-end: var(--flow-space-sm);
+}
+
+.section-header__subtitle {
+  margin-block-start: var(--flow-space-sm);
+}
+
+/* Section footers with generous top margin */
+.section-footer {
+  margin-block-start: var(--flow-space-xl);
+  text-align: center;
+}
+
+.section-footer--left {
+  text-align: left;
+}
+
+.section-footer--right {
+  text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BREATHING ROOM - Proper whitespace management
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Margin utilities - Generous spacing */
+.margin-block-xs {
+  margin-block: var(--flow-space-xs);
+}
+
+.margin-block-sm {
+  margin-block: var(--flow-space-sm);
+}
+
+.margin-block-md {
+  margin-block: var(--flow-space-md);
+}
+
+.margin-block-lg {
+  margin-block: var(--flow-space-lg);
+}
+
+.margin-block-xl {
+  margin-block: var(--flow-space-xl);
+}
+
+.margin-block-2xl {
+  margin-block: var(--flow-space-2xl);
+}
+
+/* Individual block margins */
+.margin-block-start-sm {
+  margin-block-start: var(--flow-space-sm);
+}
+
+.margin-block-start-md {
+  margin-block-start: var(--flow-space-md);
+}
+
+.margin-block-start-lg {
+  margin-block-start: var(--flow-space-lg);
+}
+
+.margin-block-start-xl {
+  margin-block-start: var(--flow-space-xl);
+}
+
+.margin-block-end-sm {
+  margin-block-end: var(--flow-space-sm);
+}
+
+.margin-block-end-md {
+  margin-block-end: var(--flow-space-md);
+}
+
+.margin-block-end-lg {
+  margin-block-end: var(--flow-space-lg);
+}
+
+.margin-block-end-xl {
+  margin-block-end: var(--flow-space-xl);
+}
+
+/* Gap utilities for flex/grid */
+.gap-xs {
+  gap: var(--flow-space-xs);
+}
+
+.gap-sm {
+  gap: var(--flow-space-sm);
+}
+
+.gap-md {
+  gap: var(--flow-space-md);
+}
+
+.gap-lg {
+  gap: var(--flow-space-lg);
+}
+
+.gap-xl {
+  gap: var(--flow-space-xl);
+}
+
+.gap-2xl {
+  gap: var(--flow-space-2xl);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   KONG-STYLE CLEAN SECTIONS - Minimal, spacious, intentional
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Hero section - Maximum breathing room */
+.section-kong-hero {
+  padding-block: var(--section-py-2xl);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Primary sections - Generous spacing */
+.section-kong-primary {
+  padding-block: var(--section-py-lg);
+  border-top: var(--divider-thin) solid var(--divider-subtle);
+}
+
+/* Secondary sections - Moderate spacing */
+.section-kong-secondary {
+  padding-block: var(--section-py-md);
+}
+
+/* Compact sections - Minimal but not cramped */
+.section-kong-compact {
+  padding-block: var(--section-py-sm);
+}
+
+/* Sandwiched content - Equal top/bottom whitespace */
+.section-kong-sandwich {
+  padding-block: var(--section-py-lg);
+  border-block: var(--divider-thin) solid var(--divider-subtle);
+}
+
+/* Card-style sections - Contained with internal padding */
+.section-kong-card {
+  padding: var(--section-py-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: var(--divider-thin) solid var(--divider-subtle);
+  border-radius: clamp(0.5rem, 1vw, 1rem);
+  backdrop-filter: blur(10px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE REFINEMENTS - Maintain rhythm across breakpoints
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+  :root {
+    /* Slightly reduce larger spacing values on tablets */
+    --section-py-xl: clamp(5rem, 2.86rem + 10.71vw, 12rem);
+    --section-py-2xl: clamp(6rem, 2.86rem + 15.71vw, 16rem);
+  }
+
+  .section-header {
+    margin-block-end: var(--flow-space-lg);
+  }
+
+  .section-footer {
+    margin-block-start: var(--flow-space-lg);
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  :root {
+    /* Reduce section spacing on mobile while maintaining hierarchy */
+    --section-py-xs: clamp(1.5rem, 1.14rem + 1.79vw, 3rem);
+    --section-py-sm: clamp(2rem, 1.43rem + 2.86vw, 4.5rem);
+    --section-py-md: clamp(2.5rem, 1.57rem + 4.64vw, 6.5rem);
+    --section-py-lg: clamp(3rem, 1.71rem + 6.43vw, 8.5rem);
+    --section-py-xl: clamp(3.5rem, 1.71rem + 8.93vw, 10rem);
+    --section-py-2xl: clamp(4rem, 1.71rem + 11.43vw, 12rem);
+  }
+
+  .section-kong-hero {
+    min-height: auto;
+    padding-block: var(--section-py-xl);
+  }
+
+  .section-header {
+    margin-block-end: var(--flow-space-md);
+  }
+
+  .section-footer {
+    margin-block-start: var(--flow-space-md);
+  }
+}
+
+/* Small mobile - Minimal but readable */
+@media (max-width: 480px) {
+  :root {
+    --section-py-xs: clamp(1rem, 0.71rem + 1.43vw, 2rem);
+    --section-py-sm: clamp(1.5rem, 0.86rem + 3.21vw, 3.5rem);
+    --section-py-md: clamp(2rem, 1rem + 5vw, 5rem);
+    --section-py-lg: clamp(2.5rem, 1rem + 7.5vw, 6.5rem);
+    --section-py-xl: clamp(3rem, 1rem + 10vw, 8rem);
+    --section-py-2xl: clamp(3.5rem, 1rem + 12.5vw, 9rem);
+  }
+
+  .section-container {
+    padding-inline: clamp(1rem, 0.86rem + 0.71vw, 1.5rem);
+  }
+
+  .section-header {
+    margin-block-end: var(--flow-space-sm);
+  }
+
+  .section-footer {
+    margin-block-start: var(--flow-space-sm);
+  }
+
+  /* Simplify dividers on very small screens */
+  .divider-line--gradient,
+  .divider-line--gradient-accent {
+    background: var(--divider-soft);
+    box-shadow: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PRINT OPTIMIZATIONS - Maintain visual hierarchy in print
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  :root {
+    /* Fixed spacing for print */
+    --section-py-xs: 1.5rem;
+    --section-py-sm: 2rem;
+    --section-py-md: 2.5rem;
+    --section-py-lg: 3rem;
+    --section-py-xl: 3.5rem;
+    --section-py-2xl: 4rem;
+  }
+
+  .section-kong-hero {
+    min-height: auto;
+    page-break-after: always;
+  }
+
+  .section-kong-primary,
+  .section-kong-secondary {
+    page-break-inside: avoid;
+  }
+
+  .divider-line {
+    background: #000;
+    box-shadow: none;
+  }
+
+  .section-divider--top,
+  .section-divider--bottom {
+    border-color: #000;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY - Respect user preferences
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* Reduced motion - Maintain spacing without transitions */
+@media (prefers-reduced-motion: reduce) {
+  .section-flow,
+  .section-container,
+  .divider-line {
+    transition: none;
+  }
+}
+
+/* High contrast - Enhance divider visibility */
+@media (prefers-contrast: high) {
+  :root {
+    --divider-subtle: rgba(255, 255, 255, 0.15);
+    --divider-soft: rgba(255, 255, 255, 0.25);
+    --divider-medium: rgba(255, 255, 255, 0.35);
+    --divider-strong: rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   END SECTION-FLOW
+   ════════════════════════════════════════════════════════════════════════════════ */

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import './LandingPage3.css'
+import FlowDiagram from '../components/FlowDiagram'
 
 export default function LandingPage3() {
   const logoRef = useRef(null)
@@ -121,6 +122,16 @@ export default function LandingPage3() {
             <p className="service__text">SOC 2, ISO 27001, and NIST framework alignment with continuous validation.</p>
           </div>
         </div>
+      </section>
+
+      {/* INTELLIGENCE HUB - Flow Diagram */}
+      <section className="section section--flow">
+        <p className="section__label reveal">Intelligence Hub</p>
+        <h2 className="section__title reveal">Unified Data Flow</h2>
+        <p className="section__text reveal">
+          All your data sources connect through our central intelligence hub, delivering actionable insights in real-time.
+        </p>
+        <FlowDiagram />
       </section>
 
       {/* PLATFORM */}

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Section-Flow Visual Reference</title>
+  <link rel="stylesheet" href="./src/styles/section-flow.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      line-height: 1.6;
+      padding: 3rem 1rem;
+    }
+
+    .reference-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .reference-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 600;
+      margin-bottom: 3rem;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    .reference-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .reference-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .reference-card h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #00d4ff;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+    }
+
+    .spacing-example {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .spacing-label {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.875rem;
+      color: #888;
+      min-width: 120px;
+    }
+
+    .spacing-bar {
+      height: 4px;
+      background: linear-gradient(to right, rgba(0, 212, 255, 0.5), rgba(0, 212, 255, 0.1));
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .spacing-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #555;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .demo-section {
+      margin-bottom: 3rem;
+    }
+
+    .demo-label {
+      font-size: 0.875rem;
+      color: #00d4ff;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+
+    .container-demo {
+      background: rgba(0, 212, 255, 0.05);
+      border: 1px dashed rgba(0, 212, 255, 0.3);
+      margin: 0 auto 2rem;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .container-demo::before {
+      content: attr(data-width);
+      position: absolute;
+      top: -1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #00d4ff;
+      background: #0a0a0a;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .divider-demo {
+      margin: 2rem 0;
+    }
+
+    .divider-demo-label {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    .flow-demo > * {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.875rem;
+      color: #00d4ff;
+      background: rgba(0, 212, 255, 0.1);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="reference-container">
+
+    <!-- HEADER -->
+    <h1 class="reference-title">Section-Flow Visual Reference</h1>
+
+    <!-- SPACING SCALES -->
+    <div class="reference-grid">
+
+      <!-- MICRO SPACING -->
+      <div class="reference-card">
+        <h2>Micro Spacing (Flow)</h2>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-3xs</span>
+          <div class="spacing-bar" style="width: 5%;"></div>
+          <span class="spacing-value">4-5px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-2xs</span>
+          <div class="spacing-bar" style="width: 10%;"></div>
+          <span class="spacing-value">8-10px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-xs</span>
+          <div class="spacing-bar" style="width: 16%;"></div>
+          <span class="spacing-value">12-16px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-sm</span>
+          <div class="spacing-bar" style="width: 24%;"></div>
+          <span class="spacing-value">16-24px</span>
+        </div>
+      </div>
+
+      <!-- MACRO SPACING -->
+      <div class="reference-card">
+        <h2>Macro Spacing (Flow)</h2>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-md</span>
+          <div class="spacing-bar" style="width: 40%;"></div>
+          <span class="spacing-value">24-40px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-lg</span>
+          <div class="spacing-bar" style="width: 64%;"></div>
+          <span class="spacing-value">32-64px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-xl</span>
+          <div class="spacing-bar" style="width: 80%;"></div>
+          <span class="spacing-value">48-112px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--flow-space-2xl</span>
+          <div class="spacing-bar" style="width: 100%;"></div>
+          <span class="spacing-value">64-160px</span>
+        </div>
+      </div>
+
+      <!-- SECTION PADDING -->
+      <div class="reference-card">
+        <h2>Section Padding (Vertical)</h2>
+        <div class="spacing-example">
+          <span class="spacing-label">--section-py-xs</span>
+          <div class="spacing-bar" style="width: 20%;"></div>
+          <span class="spacing-value">32-64px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--section-py-sm</span>
+          <div class="spacing-bar" style="width: 35%;"></div>
+          <span class="spacing-value">48-112px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--section-py-md</span>
+          <div class="spacing-bar" style="width: 50%;"></div>
+          <span class="spacing-value">64-160px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--section-py-lg</span>
+          <div class="spacing-bar" style="width: 70%;"></div>
+          <span class="spacing-value">80-224px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--section-py-xl</span>
+          <div class="spacing-bar" style="width: 90%;"></div>
+          <span class="spacing-value">96-288px</span>
+        </div>
+        <div class="spacing-example">
+          <span class="spacing-label">--section-py-2xl</span>
+          <div class="spacing-bar" style="width: 100%;"></div>
+          <span class="spacing-value">128-384px</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTAINER WIDTHS DEMO -->
+    <div class="demo-section">
+      <p class="demo-label">[ CONTENT WIDTHS - Max-width Constraints ]</p>
+
+      <div class="container-demo section-container--prose" data-width="65ch (Prose)">
+        <p>Optimal reading width for long-form content. The 65-character line length ensures comfortable reading without excessive eye movement. Perfect for blog posts, articles, and text-heavy pages.</p>
+      </div>
+
+      <div class="container-demo section-container--md" data-width="672px (Medium)">
+        <p>Medium container for forms, narrow content blocks, and focused sections.</p>
+      </div>
+
+      <div class="container-demo section-container--xl" data-width="1152px (Extra Large)">
+        <p>Extra large container for general page content, feature grids, and standard layouts.</p>
+      </div>
+
+      <div class="container-demo section-container--2xl" data-width="1280px (Primary)">
+        <p>Primary container width - ideal for most sections. Provides generous side margins on large screens while maximizing content area.</p>
+      </div>
+    </div>
+
+    <!-- DIVIDER STYLES DEMO -->
+    <div class="demo-section">
+      <p class="demo-label">[ DIVIDER STYLES - Section Separators ]</p>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Subtle</div>
+        <hr class="divider-line" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Soft</div>
+        <hr class="divider-line divider-line--soft" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Medium</div>
+        <hr class="divider-line divider-line--medium" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Strong</div>
+        <hr class="divider-line divider-line--strong" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Accent Glow</div>
+        <hr class="divider-line divider-line--accent" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Gradient Fade</div>
+        <hr class="divider-line divider-line--gradient" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Gradient Accent</div>
+        <hr class="divider-line divider-line--gradient-accent" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Centered Decorative</div>
+        <hr class="divider-line divider-line--centered divider-line--accent" />
+      </div>
+
+      <div class="divider-demo">
+        <div class="divider-demo-label">Centered Wide</div>
+        <hr class="divider-line divider-line--centered-wide divider-line--gradient-accent" />
+      </div>
+    </div>
+
+    <!-- FLOW UTILITY DEMO -->
+    <div class="demo-section">
+      <p class="demo-label">[ FLOW UTILITY - Automatic Vertical Spacing ]</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+
+        <div>
+          <p style="margin-bottom: 1rem; font-size: 0.875rem; color: #888;">
+            <code>flow--xs</code> (12-16px)
+          </p>
+          <div class="flow flow--xs flow-demo">
+            <div>Element 1</div>
+            <div>Element 2</div>
+            <div>Element 3</div>
+          </div>
+        </div>
+
+        <div>
+          <p style="margin-bottom: 1rem; font-size: 0.875rem; color: #888;">
+            <code>flow--sm</code> (16-24px)
+          </p>
+          <div class="flow flow--sm flow-demo">
+            <div>Element 1</div>
+            <div>Element 2</div>
+            <div>Element 3</div>
+          </div>
+        </div>
+
+        <div>
+          <p style="margin-bottom: 1rem; font-size: 0.875rem; color: #888;">
+            <code>flow--md</code> (24-40px)
+          </p>
+          <div class="flow flow--md flow-demo">
+            <div>Element 1</div>
+            <div>Element 2</div>
+            <div>Element 3</div>
+          </div>
+        </div>
+
+        <div>
+          <p style="margin-bottom: 1rem; font-size: 0.875rem; color: #888;">
+            <code>flow--lg</code> (32-64px)
+          </p>
+          <div class="flow flow--lg flow-demo">
+            <div>Element 1</div>
+            <div>Element 2</div>
+            <div>Element 3</div>
+          </div>
+        </div>
+
+        <div>
+          <p style="margin-bottom: 1rem; font-size: 0.875rem; color: #888;">
+            <code>flow--xl</code> (48-112px)
+          </p>
+          <div class="flow flow--xl flow-demo">
+            <div>Element 1</div>
+            <div>Element 2</div>
+            <div>Element 3</div>
+          </div>
+        </div>
+
+        <div>
+          <p style="margin-bottom: 1rem; font-size: 0.875rem; color: #888;">
+            <code>flow--2xl</code> (64-160px)
+          </p>
+          <div class="flow flow--2xl flow-demo">
+            <div>Element 1</div>
+            <div>Element 2</div>
+            <div>Element 3</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION VARIANTS DEMO -->
+    <div class="demo-section" style="margin-top: 4rem;">
+      <p class="demo-label">[ SECTION VARIANTS - Kong-Style Patterns ]</p>
+    </div>
+
+    <section class="section-kong-hero" style="background: rgba(0, 212, 255, 0.02); border: 1px dashed rgba(0, 212, 255, 0.3); min-height: auto;">
+      <div class="section-header">
+        <h2 class="section-header__title" style="font-size: 2rem;">Hero Section</h2>
+        <p class="section-header__subtitle">Maximum breathing room with centered content</p>
+      </div>
+      <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #555; margin-top: 2rem;">
+        <code>.section-kong-hero</code> - Padding: 128-384px
+      </p>
+    </section>
+
+    <section class="section-kong-primary section-divider--top" style="background: rgba(255, 255, 255, 0.01);">
+      <div class="section-container--2xl">
+        <div class="section-header">
+          <h2 class="section-header__title" style="font-size: 1.75rem;">Primary Section</h2>
+          <p class="section-header__subtitle">Generous spacing for important content</p>
+        </div>
+        <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #555; text-align: center;">
+          <code>.section-kong-primary</code> - Padding: 80-224px
+        </p>
+      </div>
+    </section>
+
+    <section class="section-kong-secondary" style="background: rgba(0, 212, 255, 0.01);">
+      <div class="section-container--xl">
+        <div class="section-header">
+          <h2 class="section-header__title" style="font-size: 1.5rem;">Secondary Section</h2>
+          <p class="section-header__subtitle">Moderate spacing for supporting content</p>
+        </div>
+        <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #555; text-align: center;">
+          <code>.section-kong-secondary</code> - Padding: 64-160px
+        </p>
+      </div>
+    </section>
+
+    <section class="section-kong-compact section-divider--both" style="background: rgba(255, 255, 255, 0.01);">
+      <div class="section-container--lg">
+        <div class="section-header">
+          <h2 class="section-header__title" style="font-size: 1.25rem;">Compact Section</h2>
+          <p class="section-header__subtitle">Minimal but not cramped</p>
+        </div>
+        <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #555; text-align: center;">
+          <code>.section-kong-compact</code> - Padding: 48-112px
+        </p>
+      </div>
+    </section>
+
+    <section class="section-kong-sandwich" style="background: rgba(0, 212, 255, 0.02);">
+      <div class="section-container--2xl">
+        <div class="section-header">
+          <h2 class="section-header__title" style="font-size: 1.5rem;">Sandwich Section</h2>
+          <p class="section-header__subtitle">Equal borders top and bottom</p>
+        </div>
+        <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #555; text-align: center;">
+          <code>.section-kong-sandwich</code> - Padding: 80-224px + borders
+        </p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div style="margin-top: 6rem; padding-top: 3rem; border-top: 1px solid rgba(255, 255, 255, 0.06); text-align: center;">
+      <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #555;">
+        // TEAM SECTION-FLOW - Visual Rhythm & Spacing Optimization
+      </p>
+      <p style="font-family: 'SF Mono', monospace; font-size: 0.75rem; color: #00d4ff; margin-top: 0.5rem;">
+        Kong-Style Clean Sections with Generous Breathing Room
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
