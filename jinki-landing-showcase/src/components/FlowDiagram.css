@@ -1,14 +1,16 @@
-/* Flow Diagram - Clean & Simple */
+/* ════════════════════════════════════════════════════════════════════════════════
+   FLOW DIAGRAM - Fluid & Dynamic
+   ════════════════════════════════════════════════════════════════════════════════ */
 
 .flow-diagram {
   width: 100%;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 32px 16px;
+  padding: 48px 24px;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-  position: relative;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .flow-diagram.flow-visible {
@@ -16,199 +18,397 @@
   transform: translateY(0);
 }
 
-.flow-svg {
-  width: 100%;
-  height: auto;
-  display: block;
+/* ════════════════════════════════════════════════════════════════════════════════
+   CONTAINER LAYOUT
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.flow-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 280px;
 }
 
-/* Tooltip Styles */
-.flow-tooltip {
+/* ════════════════════════════════════════════════════════════════════════════════
+   COLUMNS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.flow-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.flow-column__label {
   position: absolute;
-  background: linear-gradient(135deg, #1c2128 0%, #161b22 100%);
-  border: 1px solid #00d4ff;
-  border-radius: 8px;
-  padding: 12px 16px;
-  min-width: 200px;
-  max-width: 280px;
-  box-shadow:
-    0 0 20px rgba(0, 212, 255, 0.3),
-    0 8px 32px rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  pointer-events: none;
-  animation: tooltipFadeIn 0.2s ease;
-  transform: translateX(-50%);
-}
-
-.flow-tooltip::before {
-  content: '';
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 10px;
-  height: 10px;
-  background: #1c2128;
-  border-left: 1px solid #00d4ff;
-  border-top: 1px solid #00d4ff;
-}
-
-.flow-tooltip__label {
-  font-size: 0.75rem;
+  bottom: 0;
+  font-size: 0.625rem;
   font-weight: 600;
-  color: #00d4ff;
+  color: #6e7681;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 6px;
 }
 
-.flow-tooltip__example {
-  font-size: 0.8125rem;
-  color: #8b949e;
-  line-height: 1.5;
+/* ════════════════════════════════════════════════════════════════════════════════
+   NODES WITH FLUID TOOLTIPS
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.flow-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 90px;
 }
 
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+.flow-node:hover {
+  border-color: #00d4ff;
+  background: #1c2128;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15),
+              0 0 0 1px rgba(0, 212, 255, 0.1);
 }
 
-/* Interactive nodes */
-.node-interactive {
-  transition: transform 0.2s ease;
-}
-
-.node-interactive:hover {
-  transform: scale(1.05);
-}
-
-/* Hub ambient glow animation */
-.hub-ambient {
-  animation: ambientPulse 4s ease-in-out infinite;
-}
-
-@keyframes ambientPulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-/* Hub orbital rings */
-.hub-ring {
-  transform-origin: center;
-}
-
-.ring-outer {
-  animation: ringRotate 20s linear infinite;
-}
-
-.ring-inner {
-  animation: ringRotateReverse 15s linear infinite;
-}
-
-@keyframes ringRotate {
-  0% { transform: rotate(-10deg); }
-  100% { transform: rotate(350deg); }
-}
-
-@keyframes ringRotateReverse {
-  0% { transform: rotate(8deg); }
-  100% { transform: rotate(-352deg); }
-}
-
-/* Hub core glow */
-.hub-core {
-  animation: corePulse 2s ease-in-out infinite;
-}
-
-@keyframes corePulse {
-  0%, 100% { opacity: 0.9; filter: url(#coreGlow) brightness(1); }
-  50% { opacity: 1; filter: url(#coreGlow) brightness(1.2); }
-}
-
-/* Hub hover effect */
-.hub {
+.flow-node__icon {
+  font-size: 1.5rem;
+  line-height: 1;
   transition: transform 0.3s ease;
 }
 
-.hub:hover {
-  transform: scale(1.02);
+.flow-node:hover .flow-node__icon {
+  transform: scale(1.1);
 }
 
-.hub:hover .hub-core {
-  animation: corePulseIntense 1s ease-in-out infinite;
+.flow-node__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #8b949e;
+  letter-spacing: 0.02em;
+  transition: color 0.3s ease;
 }
 
-@keyframes corePulseIntense {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 1; filter: url(#coreGlow) brightness(1.4); }
+.flow-node:hover .flow-node__label {
+  color: #f0f3f6;
 }
 
-/* Flow lines glow on hover */
-.flow-line {
-  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+/* Tooltip - Pure CSS, Fluid Animation */
+.flow-node::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  transform: translateX(-50%) translateY(8px);
+  width: max-content;
+  max-width: 220px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #1c2128 0%, #0d1117 100%);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #8b949e;
+  line-height: 1.5;
+  text-align: center;
+  white-space: normal;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4),
+              0 0 20px rgba(0, 212, 255, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 100;
 }
 
-.flow-svg:hover .flow-line {
+/* Tooltip arrow */
+.flow-node::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: #1c2128;
+  border-right: 1px solid rgba(0, 212, 255, 0.4);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 101;
+}
+
+.flow-node:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.flow-node:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   CONNECTION LINES
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.flow-lines {
+  width: 120px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.flow-lines svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.flow-path {
+  fill: none;
+  stroke: #30363d;
+  stroke-width: 2;
+  transition: stroke 0.3s ease;
+}
+
+.flow-diagram:hover .flow-path {
   stroke: #404850;
 }
 
-/* Particles */
-.particle {
+.flow-dot {
+  fill: #00d4ff;
+  filter: drop-shadow(0 0 6px #00d4ff);
   opacity: 0;
 }
 
-.flow-visible .particle {
+.flow-visible .flow-dot {
   opacity: 1;
 }
 
-/* Nodes */
-.node {
-  opacity: 0;
-  transition: opacity 0.4s ease;
+/* ════════════════════════════════════════════════════════════════════════════════
+   CENTRAL HUB
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+.flow-hub {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.flow-visible .node {
-  opacity: 1;
+.flow-hub__rings {
+  position: absolute;
+  inset: 0;
+  animation: hubFloat 4s ease-in-out infinite;
 }
 
-.flow-visible .n1 { transition-delay: 0.1s; }
-.flow-visible .n2 { transition-delay: 0.15s; }
-.flow-visible .n3 { transition-delay: 0.2s; }
-.flow-visible .n4 { transition-delay: 0.25s; }
-.flow-visible .n5 { transition-delay: 0.3s; }
-.flow-visible .n6 { transition-delay: 0.35s; }
+@keyframes hubFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
 
-/* Responsive */
+.flow-hub__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid;
+  border-color: #c0c0c0 #808080 #a0a0a0 #909090;
+  background: transparent;
+}
+
+.flow-hub__ring--outer {
+  inset: 0;
+  transform: rotateX(70deg) rotateZ(-15deg);
+  animation: ringRotate 20s linear infinite;
+}
+
+.flow-hub__ring--inner {
+  inset: 15px;
+  transform: rotateX(70deg) rotateZ(10deg);
+  animation: ringRotateReverse 15s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes ringRotate {
+  from { transform: rotateX(70deg) rotateZ(-15deg); }
+  to { transform: rotateX(70deg) rotateZ(345deg); }
+}
+
+@keyframes ringRotateReverse {
+  from { transform: rotateX(70deg) rotateZ(10deg); }
+  to { transform: rotateX(70deg) rotateZ(-350deg); }
+}
+
+.flow-hub__core {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #0d1117;
+  border: 2px solid #808080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.flow-hub__glow {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #80ffff 30%, #00d4ff 70%, transparent 100%);
+  filter: blur(2px);
+  animation: coreGlow 2s ease-in-out infinite;
+}
+
+@keyframes coreGlow {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.flow-hub__center {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00d4ff;
+  box-shadow: 0 0 20px #00d4ff, 0 0 40px rgba(0, 212, 255, 0.5);
+}
+
+.flow-hub__label {
+  position: absolute;
+  bottom: -8px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #00d4ff;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
   .flow-diagram {
-    padding: 24px 12px;
+    padding: 32px 16px;
+  }
+
+  .flow-container {
+    gap: 0;
+  }
+
+  .flow-lines {
+    width: 60px;
+  }
+
+  .flow-hub {
+    width: 100px;
+    height: 100px;
+  }
+
+  .flow-hub__core {
+    width: 50px;
+    height: 50px;
+  }
+
+  .flow-hub__glow {
+    width: 28px;
+    height: 28px;
+  }
+
+  .flow-hub__center {
+    width: 14px;
+    height: 14px;
+  }
+
+  .flow-node {
+    padding: 12px 14px;
+    min-width: 70px;
+  }
+
+  .flow-node__icon {
+    font-size: 1.25rem;
+  }
+
+  .flow-node__label {
+    font-size: 0.625rem;
+  }
+
+  .flow-column {
+    gap: 16px;
+  }
+
+  /* Tooltips below on mobile for better visibility */
+  .flow-node::after {
+    bottom: auto;
+    top: calc(100% + 12px);
+    max-width: 180px;
+  }
+
+  .flow-node::before {
+    bottom: auto;
+    top: calc(100% + 6px);
+    transform: translateX(-50%) rotate(-135deg);
   }
 }
 
 @media (max-width: 480px) {
-  .flow-svg {
-    min-width: 600px;
+  .flow-container {
+    flex-direction: column;
+    gap: 24px;
   }
 
-  .flow-diagram {
-    overflow-x: auto;
+  .flow-column {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 24px;
+  }
+
+  .flow-lines {
+    width: 100%;
+    height: 40px;
+    transform: rotate(90deg);
+  }
+
+  .flow-hub {
+    margin: 16px 0;
   }
 }
 
-/* Reduced motion */
+/* ════════════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ════════════════════════════════════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
-  .hub-glow,
-  .hub-core {
+  .flow-hub__rings,
+  .flow-hub__ring,
+  .flow-hub__glow {
     animation: none;
   }
 
-  .particle {
+  .flow-dot {
     display: none;
+  }
+
+  .flow-node,
+  .flow-node::after,
+  .flow-node::before {
+    transition-duration: 0.1s;
   }
 }
