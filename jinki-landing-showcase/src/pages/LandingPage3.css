@@ -620,3 +620,454 @@ body {
     filter: drop-shadow(0 0 40px var(--cyan-glow));
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   🏆 ASCII ENHANCEMENT CHAMPIONSHIP
+   Combined Solutions from All 8 ASCII Teams
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-NAV: Terminal Navigation Style
+   ═══════════════════════════════════════════════════════════════ */
+
+.nav__logo::before {
+  content: '[';
+  color: var(--cyan);
+  margin-right: 2px;
+  opacity: 0.7;
+}
+
+.nav__logo::after {
+  content: ']';
+  color: var(--cyan);
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.nav__links a {
+  position: relative;
+  padding-left: 0;
+  transition: padding-left 0.2s ease, color 0.2s ease;
+}
+
+.nav__links a::before {
+  content: '>';
+  position: absolute;
+  left: -16px;
+  color: var(--cyan);
+  opacity: 0;
+  transition: opacity 0.2s ease, left 0.2s ease;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8em;
+}
+
+.nav__links a:hover {
+  padding-left: 8px;
+}
+
+.nav__links a:hover::before {
+  opacity: 1;
+  left: -8px;
+}
+
+.nav__cta {
+  position: relative;
+}
+
+.nav__cta::before {
+  content: '$ ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-HERO: Corner Brackets & Scanlines
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero {
+  position: relative;
+}
+
+.hero::before {
+  content: '┌────────────────────────────────────────────────────────────────┐';
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.6rem;
+  color: var(--border);
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 0.4;
+}
+
+.hero::after {
+  content: '└────────────────────────────────────────────────────────────────┘';
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.6rem;
+  color: var(--border);
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 0.4;
+}
+
+.hero__headline {
+  position: relative;
+}
+
+.hero__headline::before {
+  content: '// ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.4em;
+  opacity: 0.5;
+  vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-STATS: Bracketed Numbers & Grid Pattern
+   ═══════════════════════════════════════════════════════════════ */
+
+.stats {
+  position: relative;
+}
+
+.stats::before {
+  content: '═══════════════════════════════════════════════════════════════════════════════';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.5rem;
+  color: var(--border);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.stat__number {
+  position: relative;
+}
+
+.stat__number::before {
+  content: '[ ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.stat__number::after {
+  content: ' ]';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.stat__label {
+  position: relative;
+}
+
+.stat__label::before {
+  content: '// ';
+  color: var(--text-dim);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.9em;
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-SECTIONS: Terminal Dividers
+   ═══════════════════════════════════════════════════════════════ */
+
+.section__label {
+  position: relative;
+  display: inline-block;
+}
+
+.section__label::before {
+  content: '[ ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  opacity: 0.7;
+}
+
+.section__label::after {
+  content: ' ]';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  opacity: 0.7;
+}
+
+.section__title::before {
+  content: '> ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.5em;
+  opacity: 0.6;
+  vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-SERVICES: Terminal Grid Style
+   ═══════════════════════════════════════════════════════════════ */
+
+.service {
+  position: relative;
+}
+
+.service::before {
+  content: '┌─';
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: var(--border);
+  opacity: 0.5;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.service::after {
+  content: '─┘';
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: var(--border);
+  opacity: 0.5;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.service:hover::before,
+.service:hover::after {
+  color: var(--cyan);
+  opacity: 0.8;
+}
+
+.service__title {
+  transition: padding-left 0.3s ease;
+}
+
+.service:hover .service__title::before {
+  content: '> ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.7em;
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-FEATURES: Card Frame Decorations
+   ═══════════════════════════════════════════════════════════════ */
+
+.feature {
+  position: relative;
+  overflow: visible;
+}
+
+.feature::before {
+  content: '┌──';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.7rem;
+  color: var(--border);
+  opacity: 0.4;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.feature::after {
+  content: '──┘';
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.7rem;
+  color: var(--border);
+  opacity: 0.4;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.feature:hover::before,
+.feature:hover::after {
+  color: var(--cyan);
+  opacity: 0.7;
+}
+
+.feature__title {
+  position: relative;
+}
+
+.feature:hover .feature__title::before {
+  content: '» ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-FOOTER: Terminal Style with Cursor
+   ═══════════════════════════════════════════════════════════════ */
+
+.footer__logo::before {
+  content: '>';
+  color: var(--cyan);
+  margin-right: 8px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  opacity: 0.7;
+}
+
+.footer__copy {
+  position: relative;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.footer__copy::before {
+  content: '// ';
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.footer__copy::after {
+  content: '█';
+  color: var(--cyan);
+  margin-left: 4px;
+  animation: blink 1s step-end infinite;
+  opacity: 0.7;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0; }
+}
+
+.footer__links a {
+  position: relative;
+  transition: padding-left 0.2s ease;
+}
+
+.footer__links a:hover {
+  padding-left: 12px;
+}
+
+.footer__links a::before {
+  content: './';
+  position: absolute;
+  left: -16px;
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8em;
+  opacity: 0;
+  transition: opacity 0.2s ease, left 0.2s ease;
+}
+
+.footer__links a:hover::before {
+  opacity: 0.6;
+  left: -4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEAM ASCII-CTA: Button Terminal Style
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero__cta {
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+}
+
+.hero__cta::before {
+  content: '[ ';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hero__cta::after {
+  content: ' ]';
+  color: var(--cyan);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hero__cta:hover::before,
+.hero__cta:hover::after {
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ASCII RESPONSIVE ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .hero::before,
+  .hero::after {
+    display: none;
+  }
+
+  .nav__cta::before {
+    display: none;
+  }
+
+  .stats::before {
+    display: none;
+  }
+
+  .service::before,
+  .service::after {
+    font-size: 0.6rem;
+    top: 12px;
+    left: 12px;
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .feature::before,
+  .feature::after {
+    font-size: 0.6rem;
+    top: 8px;
+    left: 8px;
+    bottom: 8px;
+    right: 8px;
+  }
+
+  .footer__inner {
+    text-align: center;
+  }
+
+  .footer__links a::before {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .section__title::before {
+    display: none;
+  }
+
+  .hero__headline::before {
+    display: none;
+  }
+
+  .service::before,
+  .service::after,
+  .feature::before,
+  .feature::after {
+    display: none;
+  }
+}
