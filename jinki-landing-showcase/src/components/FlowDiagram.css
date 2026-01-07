@@ -1,271 +1,76 @@
-/* ════════════════════════════════════════════════════════════════════════════════
-   FLOW DIAGRAM - Kong AI Gateway Style
-   Animated data flow visualization
-   ════════════════════════════════════════════════════════════════════════════════ */
+/* Flow Diagram - Clean & Simple */
 
 .flow-diagram {
-  position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 32px 16px;
   opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 .flow-diagram.flow-visible {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0);
 }
 
 .flow-svg {
   width: 100%;
   height: auto;
-  overflow: visible;
+  display: block;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CONNECTION PATHS
-   ═══════════════════════════════════════════════════════════════ */
-
-.flow-path {
-  stroke-dasharray: 8 4;
-  stroke-dashoffset: 0;
-  opacity: 0;
-  transition: opacity 0.6s ease;
+/* Hub glow animation */
+.hub-glow {
+  animation: pulse 3s ease-in-out infinite;
 }
 
-.flow-visible .flow-path {
-  opacity: 1;
-  animation: pathFlow 2s linear infinite;
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
 }
 
-.flow-path--1 { animation-delay: 0s; }
-.flow-path--2 { animation-delay: 0.2s; }
-.flow-path--3 { animation-delay: 0.4s; }
-.flow-path--4 { animation-delay: 0.6s; }
-.flow-path--5 { animation-delay: 0.1s; }
-.flow-path--6 { animation-delay: 0.3s; }
-.flow-path--7 { animation-delay: 0.5s; }
-.flow-path--8 { animation-delay: 0.7s; }
-
-@keyframes pathFlow {
-  0% {
-    stroke-dashoffset: 24;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
+/* Hub core glow */
+.hub-core {
+  animation: corePulse 2s ease-in-out infinite;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   PARTICLES
-   ═══════════════════════════════════════════════════════════════ */
+@keyframes corePulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
 
+/* Particles */
 .particle {
   opacity: 0;
-  transition: opacity 0.6s ease;
 }
 
 .flow-visible .particle {
   opacity: 1;
 }
 
-.particle--1 { animation-delay: 0s; }
-.particle--2 { animation-delay: 0.4s; }
-.particle--3 { animation-delay: 0.8s; }
-.particle--4 { animation-delay: 1.2s; }
-.particle--5 { animation-delay: 0.2s; }
-.particle--6 { animation-delay: 0.6s; }
-.particle--7 { animation-delay: 1.0s; }
-.particle--8 { animation-delay: 1.4s; }
-
-/* ═══════════════════════════════════════════════════════════════
-   CENTRAL HUB
-   ═══════════════════════════════════════════════════════════════ */
-
-.flow-hub {
+/* Nodes */
+.node {
   opacity: 0;
-  transform-origin: center;
-  transition: opacity 0.8s ease 0.3s;
+  transition: opacity 0.4s ease;
 }
 
-.flow-visible .flow-hub {
+.flow-visible .node {
   opacity: 1;
 }
 
-.hub-glow {
-  opacity: 0;
-  animation: hubPulse 4s ease-in-out infinite;
-}
+.flow-visible .n1 { transition-delay: 0.1s; }
+.flow-visible .n2 { transition-delay: 0.15s; }
+.flow-visible .n3 { transition-delay: 0.2s; }
+.flow-visible .n4 { transition-delay: 0.25s; }
+.flow-visible .n5 { transition-delay: 0.3s; }
+.flow-visible .n6 { transition-delay: 0.35s; }
 
-.flow-visible .hub-glow {
-  opacity: 1;
-}
-
-@keyframes hubPulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.1);
-  }
-}
-
-.hub-ring--outer {
-  animation: ringRotate 20s linear infinite;
-  transform-origin: 600px 250px;
-}
-
-.hub-ring--inner {
-  animation: ringRotate 15s linear infinite reverse;
-  transform-origin: 600px 250px;
-}
-
-@keyframes ringRotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.hub-core {
-  animation: corePulse 3s ease-in-out infinite;
-}
-
-@keyframes corePulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.1);
-  }
-}
-
-.hub-center {
-  animation: centerGlow 2s ease-in-out infinite;
-}
-
-@keyframes centerGlow {
-  0%, 100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   INPUT/OUTPUT NODES
-   ═══════════════════════════════════════════════════════════════ */
-
-.flow-node {
-  opacity: 0;
-  transform: scale(0);
-  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
-              transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer;
-}
-
-.flow-visible .flow-node {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Staggered entry */
-.flow-visible .flow-node--1 { transition-delay: 0.1s; }
-.flow-visible .flow-node--2 { transition-delay: 0.2s; }
-.flow-visible .flow-node--3 { transition-delay: 0.3s; }
-.flow-visible .flow-node--4 { transition-delay: 0.4s; }
-.flow-visible .flow-node--5 { transition-delay: 0.5s; }
-.flow-visible .flow-node--6 { transition-delay: 0.6s; }
-.flow-visible .flow-node--7 { transition-delay: 0.7s; }
-.flow-visible .flow-node--8 { transition-delay: 0.8s; }
-
-.flow-node:hover {
-  filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.8));
-}
-
-.flow-node circle {
-  transition: all 0.3s ease;
-}
-
-.flow-node:hover circle:nth-child(2) {
-  stroke-width: 2;
-  stroke: #00d4ff;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION LABELS
-   ═══════════════════════════════════════════════════════════════ */
-
-.flow-labels {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-  display: flex;
-  justify-content: space-between;
-  padding: 0 20px;
-  pointer-events: none;
-}
-
-.flow-label {
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: rgba(0, 212, 255, 0.5);
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.6s ease 0.5s;
-}
-
-.flow-visible .flow-label {
-  opacity: 1;
-}
-
-.flow-label--input {
-  transform: rotate(-90deg) translateX(-50%);
-  transform-origin: left center;
-}
-
-.flow-label--output {
-  transform: rotate(90deg) translateX(50%);
-  transform-origin: right center;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════════ */
-
-@media (max-width: 1024px) {
-  .flow-diagram {
-    padding: 30px 15px;
-  }
-
-  .flow-labels {
-    display: none;
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
   .flow-diagram {
-    padding: 20px 10px;
-    overflow-x: auto;
-  }
-
-  .flow-svg {
-    min-width: 800px;
+    padding: 24px 12px;
   }
 }
 
@@ -274,40 +79,19 @@
     min-width: 600px;
   }
 
-  .hub-ring--outer,
-  .hub-ring--inner {
-    animation: none;
+  .flow-diagram {
+    overflow-x: auto;
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   REDUCED MOTION
-   ═══════════════════════════════════════════════════════════════ */
-
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .flow-path,
-  .particle,
   .hub-glow,
-  .hub-ring--outer,
-  .hub-ring--inner,
-  .hub-core,
-  .hub-center {
-    animation: none !important;
-  }
-
-  .flow-path {
-    stroke-dasharray: none;
+  .hub-core {
+    animation: none;
   }
 
   .particle {
     display: none;
-  }
-
-  .hub-glow {
-    opacity: 0.4;
-  }
-
-  .hub-core {
-    opacity: 0.4;
   }
 }
