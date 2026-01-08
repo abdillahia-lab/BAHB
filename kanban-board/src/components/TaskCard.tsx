@@ -6,6 +6,8 @@ import {
   MessageSquare,
   AlertCircle,
   GripVertical,
+  Clock,
+  ListTodo,
 } from 'lucide-react';
 import type { Task } from '../types';
 import { useBoardStore, useLabel } from '../store/boardStore';
@@ -33,7 +35,11 @@ const LabelBadge = ({ labelId }: { labelId: string }) => {
 };
 
 export const TaskCard = ({ task, isCompact = false }: TaskCardProps) => {
-  const { setSelectedTask } = useBoardStore();
+  const { setSelectedTask, activeTimer, getTaskTotalTime } = useBoardStore();
+  const isTimerRunning = activeTimer?.taskId === task.id;
+  const totalTime = getTaskTotalTime(task.id);
+  const completedSubtasks = task.subtasks.filter((s) => s.completed).length;
+  const totalSubtasks = task.subtasks.length;
 
   const {
     attributes,
@@ -77,11 +83,20 @@ export const TaskCard = ({ task, isCompact = false }: TaskCardProps) => {
         group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm
         border border-gray-200 dark:border-gray-700
         hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600
-        transition-all duration-200 cursor-pointer animate-fade-in
+        transition-all duration-200 cursor-pointer animate-fade-in card-lift glow-hover
         ${isDragging ? 'opacity-50 shadow-xl ring-2 ring-indigo-500 ring-opacity-50' : 'opacity-100'}
+        ${isTimerRunning ? 'timer-glow ring-2 ring-green-400 ring-opacity-50' : ''}
       `}
       onClick={() => setSelectedTask(task.id)}
     >
+      {/* Timer indicator */}
+      {isTimerRunning && (
+        <div className="absolute -top-1 -right-1 flex items-center gap-1 px-1.5 py-0.5 bg-green-500 text-white text-xs font-medium rounded-full animate-timer-pulse z-10">
+          <Clock className="w-3 h-3" />
+          <span>Recording</span>
+        </div>
+      )}
+
       {/* Cover color */}
       {task.coverColor && (
         <div className={`h-2 rounded-t-lg ${coverColors[task.coverColor]}`} />
@@ -196,6 +211,26 @@ export const TaskCard = ({ task, isCompact = false }: TaskCardProps) => {
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                 <MessageSquare className="w-3 h-3" />
                 <span>{task.comments.length}</span>
+              </div>
+            )}
+
+            {/* Subtasks count */}
+            {totalSubtasks > 0 && (
+              <div className={`flex items-center gap-1 text-xs ${
+                completedSubtasks === totalSubtasks
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}>
+                <ListTodo className="w-3 h-3" />
+                <span>{completedSubtasks}/{totalSubtasks}</span>
+              </div>
+            )}
+
+            {/* Time tracked */}
+            {totalTime > 0 && !isTimerRunning && (
+              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <Clock className="w-3 h-3" />
+                <span>{totalTime >= 60 ? `${Math.floor(totalTime / 60)}h` : `${totalTime}m`}</span>
               </div>
             )}
           </div>
