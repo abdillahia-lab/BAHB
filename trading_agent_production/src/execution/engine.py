@@ -87,6 +87,174 @@ class BrokerAdapter(ABC):
         pass
 
 
+import random
+
+
+class SimulationAdapter(BrokerAdapter):
+    """Local simulation adapter - no external API needed."""
+
+    # Realistic base prices for popular stocks
+    BASE_PRICES = {
+        "NVDA": 920.00, "TSLA": 268.00, "AAPL": 185.00, "MSFT": 420.00,
+        "AMD": 178.00, "GOOGL": 175.00, "AMZN": 225.00, "META": 580.00,
+        "MSTR": 1580.00, "COIN": 285.00, "SPY": 595.00, "QQQ": 515.00,
+    }
+
+    def __init__(self, starting_cash: float = 100000.0):
+        self.starting_cash = Decimal(str(starting_cash))
+        self.cash = self.starting_cash
+        self.positions: Dict[str, Position] = {}
+        self.orders: Dict[str, Order] = {}
+        self.connected = False
+        self.last_equity = self.starting_cash
+        self._price_cache: Dict[str, Decimal] = {}
+        self._initialize_prices()
+
+    def _initialize_prices(self):
+        """Initialize prices with some random variation."""
+        for symbol, base in self.BASE_PRICES.items():
+            variation = random.uniform(-0.02, 0.02)
+            self._price_cache[symbol] = Decimal(str(base * (1 + variation)))
+
+    def _get_price(self, symbol: str) -> Decimal:
+        """Get current price with realistic movement."""
+        if symbol not in self._price_cache:
+            self._price_cache[symbol] = Decimal(str(random.uniform(50, 500)))
+
+        # Add realistic price movement (-1% to +1%)
+        current = self._price_cache[symbol]
+        movement = Decimal(str(random.uniform(-0.01, 0.01)))
+        new_price = current * (1 + movement)
+        self._price_cache[symbol] = new_price
+        return new_price
+
+    def _update_positions(self):
+        """Update all position prices."""
+        for symbol, pos in self.positions.items():
+            new_price = self._get_price(symbol)
+            pos.current_price = new_price
+            pos.market_value = pos.quantity * new_price
+            pos.unrealized_pnl = pos.market_value - pos.cost_basis
+
+    async def connect(self) -> bool:
+        """Connect to simulation."""
+        self.connected = True
+        print("✅ Connected to LOCAL SIMULATION MODE")
+        print(f"   Starting Cash: ${float(self.cash):,.2f}")
+        print(f"   Mode: Aggressive Paper Trading Simulation")
+        return True
+
+    async def disconnect(self):
+        """Disconnect from simulation."""
+        self.connected = False
+
+    async def submit_order(self, order: Order) -> ExecutionResult:
+        """Execute order instantly in simulation."""
+        start_time = datetime.utcnow()
+        price = self._get_price(order.symbol)
+
+        if order.side == OrderSide.BUY:
+            cost = price * order.quantity
+            if cost > self.cash:
+                raise ValueError(f"Insufficient funds: need ${cost}, have ${self.cash}")
+
+            self.cash -= cost
+
+            if order.symbol in self.positions:
+                pos = self.positions[order.symbol]
+                new_qty = pos.quantity + order.quantity
+                new_cost = pos.cost_basis + cost
+                pos.quantity = new_qty
+                pos.cost_basis = new_cost
+                pos.average_entry_price = new_cost / new_qty
+            else:
+                self.positions[order.symbol] = Position(
+                    symbol=order.symbol,
+                    quantity=order.quantity,
+                    average_entry_price=price,
+                    current_price=price,
+                    market_value=cost,
+                    unrealized_pnl=Decimal("0"),
+                    realized_pnl=Decimal("0"),
+                    cost_basis=cost
+                )
+        else:  # SELL
+            if order.symbol not in self.positions:
+                raise ValueError(f"No position in {order.symbol}")
+
+            pos = self.positions[order.symbol]
+            if order.quantity > pos.quantity:
+                raise ValueError(f"Can't sell {order.quantity}, only have {pos.quantity}")
+
+            proceeds = price * order.quantity
+            cost_basis_sold = (pos.cost_basis / pos.quantity) * order.quantity
+            realized = proceeds - cost_basis_sold
+
+            self.cash += proceeds
+            pos.quantity -= order.quantity
+            pos.cost_basis -= cost_basis_sold
+            pos.realized_pnl += realized
+
+            if pos.quantity <= 0:
+                del self.positions[order.symbol]
+
+        execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+
+        return ExecutionResult(
+            order_id=str(uuid4()),
+            status=OrderStatus.FILLED,
+            filled_quantity=order.quantity,
+            average_price=price,
+            commission=Decimal("0"),
+            slippage=Decimal(str(random.uniform(0, 0.01))),
+            execution_time_ms=execution_time
+        )
+
+    async def cancel_order(self, order_id: str) -> bool:
+        return True
+
+    async def get_positions(self) -> List[Position]:
+        self._update_positions()
+        return list(self.positions.values())
+
+    async def get_portfolio(self) -> Portfolio:
+        self._update_positions()
+        positions_value = sum(p.market_value for p in self.positions.values())
+        equity = self.cash + positions_value
+
+        return Portfolio(
+            account_id="SIM-AGGRESSIVE-001",
+            cash=self.cash,
+            positions=list(self.positions.values()),
+            total_value=equity,
+            daily_pnl=equity - self.last_equity,
+            total_pnl=equity - self.starting_cash,
+            buying_power=self.cash * Decimal("4")  # 4x leverage
+        )
+
+    async def get_order_status(self, order_id: str) -> OrderStatus:
+        return OrderStatus.FILLED
+
+    def get_account_info(self) -> dict:
+        self._update_positions()
+        positions_value = sum(float(p.market_value) for p in self.positions.values())
+        equity = float(self.cash) + positions_value
+
+        return {
+            "account_number": "SIM-AGGRESSIVE-001",
+            "status": "ACTIVE",
+            "cash": float(self.cash),
+            "buying_power": float(self.cash) * 4,
+            "equity": equity,
+            "last_equity": float(self.last_equity),
+            "portfolio_value": equity,
+            "pattern_day_trader": False,
+            "trading_blocked": False,
+            "transfers_blocked": False,
+            "account_blocked": False,
+        }
+
+
 class AlpacaAdapter(BrokerAdapter):
     """Alpaca broker adapter implementation - REAL API CONNECTION."""
 

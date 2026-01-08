@@ -24,17 +24,51 @@ from ..core.types import (
     TradingSignal,
     UserPreferences,
 )
-from ..execution.engine import AlpacaAdapter
+from ..execution.engine import SimulationAdapter
+from ..core.types import Order as CoreOrder, OrderSide as CoreOrderSide, OrderType as CoreOrderType
 
 # Load environment variables
 load_dotenv()
 
-# Initialize Alpaca adapter with credentials
-alpaca_adapter = AlpacaAdapter(
-    api_key=os.getenv("ALPACA_API_KEY", ""),
-    api_secret=os.getenv("ALPACA_API_SECRET", ""),
-    paper=os.getenv("ALPACA_PAPER", "true").lower() == "true"
-)
+# Initialize SIMULATION adapter - no external API needed!
+sim_adapter = SimulationAdapter(starting_cash=100000.0)
+
+# Flag to track if we've initialized positions
+_positions_initialized = False
+
+async def init_aggressive_positions():
+    """Initialize with aggressive positions - call from lifespan or first request."""
+    global _positions_initialized
+    if _positions_initialized:
+        return
+
+    await sim_adapter.connect()
+
+    # Buy aggressive positions
+    from decimal import Decimal
+    initial_trades = [
+        ("NVDA", 50),   # ~$46k in NVDA
+        ("TSLA", 100),  # ~$27k in TSLA
+        ("AMD", 150),   # ~$27k in AMD
+    ]
+
+    for symbol, qty in initial_trades:
+        try:
+            order = CoreOrder(
+                order_id=str(uuid4()),
+                symbol=symbol,
+                side=CoreOrderSide.BUY,
+                order_type=CoreOrderType.MARKET,
+                quantity=Decimal(str(qty)),
+                limit_price=None,
+                client_order_id=str(uuid4())
+            )
+            await sim_adapter.submit_order(order)
+            print(f"   Bought {qty} {symbol}")
+        except Exception as e:
+            print(f"   Failed to buy {symbol}: {e}")
+
+    _positions_initialized = True
 
 
 # === Request/Response Models ===
@@ -313,13 +347,13 @@ async def allocate_capital(request: CapitalAllocationRequest):
 
 @trading_router.get("/status", response_model=TradingStatusResponse)
 async def get_trading_status():
-    """Get current autonomous trading status - REAL ALPACA DATA."""
+    """Get current autonomous trading status - SIMULATION MODE."""
     try:
-        if not alpaca_adapter.connected:
-            await alpaca_adapter.connect()
+        # Initialize positions on first request
+        await init_aggressive_positions()
 
-        account_info = alpaca_adapter.get_account_info()
-        positions = await alpaca_adapter.get_positions()
+        account_info = sim_adapter.get_account_info()
+        positions = await sim_adapter.get_positions()
 
         if "error" in account_info:
             raise HTTPException(status_code=500, detail=account_info["error"])
@@ -328,7 +362,7 @@ async def get_trading_status():
 
         return TradingStatusResponse(
             is_enabled=True,
-            is_running=alpaca_adapter.connected,
+            is_running=sim_adapter.connected,
             is_halted=account_info.get("trading_blocked", False),
             halt_reason="Trading blocked" if account_info.get("trading_blocked") else None,
             daily_pnl=daily_pnl,
@@ -431,13 +465,13 @@ portfolio_router = APIRouter(prefix="/api/v1/portfolio", tags=["Portfolio"])
 
 @portfolio_router.get("", response_model=PortfolioResponse)
 async def get_portfolio():
-    """Get portfolio summary - REAL ALPACA DATA."""
+    """Get portfolio summary - SIMULATION MODE."""
     try:
-        if not alpaca_adapter.connected:
-            await alpaca_adapter.connect()
+        # Initialize positions on first request
+        await init_aggressive_positions()
 
-        account_info = alpaca_adapter.get_account_info()
-        positions = await alpaca_adapter.get_positions()
+        account_info = sim_adapter.get_account_info()
+        positions = await sim_adapter.get_positions()
 
         if "error" in account_info:
             raise HTTPException(status_code=500, detail=account_info["error"])
