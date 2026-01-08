@@ -260,7 +260,7 @@ class EvolutionaryTournament:
             generations=10,  # Per round
             mutation_rate=self.config.mutation_rate,
             crossover_rate=self.config.crossover_rate,
-            elitism_count=self.config.elitism_count
+            elite_size=self.config.elitism_count
         )
 
         # Create with strategy gene pool
