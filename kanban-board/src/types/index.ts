@@ -10,6 +10,9 @@ export type LabelColor =
   | 'pink'
   | 'gray';
 
+export type ViewMode = 'board' | 'list' | 'timeline';
+export type GroupBy = 'none' | 'priority' | 'label' | 'dueDate';
+
 export interface Label {
   id: string;
   name: string;
@@ -20,6 +23,20 @@ export interface Checklist {
   id: string;
   text: string;
   completed: boolean;
+}
+
+export interface Subtask {
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: string;
+}
+
+export interface TimeEntry {
+  id: string;
+  startTime: string;
+  endTime?: string;
+  description?: string;
 }
 
 export interface Comment {
@@ -39,6 +56,9 @@ export interface Task {
   labels: string[];
   dueDate?: string;
   checklist: Checklist[];
+  subtasks: Subtask[];
+  timeEntries: TimeEntry[];
+  estimatedMinutes?: number;
   comments: Comment[];
   createdAt: string;
   updatedAt: string;
@@ -52,6 +72,7 @@ export interface Column {
   position: number;
   color: LabelColor;
   wipLimit?: number;
+  collapsed?: boolean;
 }
 
 export interface Board {
@@ -62,10 +83,18 @@ export interface Board {
   labels: Label[];
   createdAt: string;
   updatedAt: string;
+  emoji?: string;
+}
+
+export interface HistoryEntry {
+  boards: Board[];
+  tasks: Task[];
+  activeBoardId: string;
 }
 
 export interface BoardState {
-  board: Board;
+  boards: Board[];
+  activeBoardId: string;
   tasks: Task[];
   selectedTaskId: string | null;
   searchQuery: string;
@@ -73,17 +102,30 @@ export interface BoardState {
   filterPriority: Priority | null;
   isDarkMode: boolean;
   isCompactMode: boolean;
+  viewMode: ViewMode;
+  groupBy: GroupBy;
+  activeTimer: { taskId: string; startTime: string } | null;
+  past: HistoryEntry[];
+  future: HistoryEntry[];
 }
 
 export interface BoardActions {
-  // Board actions
-  updateBoard: (updates: Partial<Board>) => void;
+  // Board management
+  addBoard: (title: string, emoji?: string) => void;
+  updateBoard: (boardId: string, updates: Partial<Board>) => void;
+  deleteBoard: (boardId: string) => void;
+  setActiveBoard: (boardId: string) => void;
+  duplicateBoard: (boardId: string) => void;
+
+  // Active board helpers
+  getActiveBoard: () => Board | undefined;
 
   // Column actions
   addColumn: (title: string, color?: LabelColor) => void;
   updateColumn: (columnId: string, updates: Partial<Column>) => void;
   deleteColumn: (columnId: string) => void;
   moveColumn: (columnId: string, newPosition: number) => void;
+  toggleColumnCollapse: (columnId: string) => void;
 
   // Task actions
   addTask: (columnId: string, title: string) => void;
@@ -92,6 +134,18 @@ export interface BoardActions {
   moveTask: (taskId: string, targetColumnId: string, newPosition: number) => void;
   archiveTask: (taskId: string) => void;
   duplicateTask: (taskId: string) => void;
+
+  // Subtask actions
+  addSubtask: (taskId: string, title: string) => void;
+  toggleSubtask: (taskId: string, subtaskId: string) => void;
+  deleteSubtask: (taskId: string, subtaskId: string) => void;
+
+  // Time tracking
+  startTimer: (taskId: string) => void;
+  stopTimer: () => void;
+  addManualTime: (taskId: string, minutes: number, description?: string) => void;
+  deleteTimeEntry: (taskId: string, entryId: string) => void;
+  getTaskTotalTime: (taskId: string) => number;
 
   // Checklist actions
   addChecklistItem: (taskId: string, text: string) => void;
@@ -115,10 +169,19 @@ export interface BoardActions {
   setFilterPriority: (priority: Priority | null) => void;
   toggleDarkMode: () => void;
   toggleCompactMode: () => void;
+  setViewMode: (mode: ViewMode) => void;
+  setGroupBy: (groupBy: GroupBy) => void;
 
-  // Persistence
-  loadFromStorage: () => void;
+  // History (undo/redo)
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+
+  // Data management
   resetBoard: () => void;
+  exportData: () => string;
+  importData: (jsonData: string) => boolean;
 }
 
 export type BoardStore = BoardState & BoardActions;

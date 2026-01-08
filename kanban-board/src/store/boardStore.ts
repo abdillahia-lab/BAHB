@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import type { BoardStore, Column, Task, Label } from '../types';
+import type { BoardStore, Board, Column, Task, Label, HistoryEntry } from '../types';
+
+const MAX_HISTORY = 50;
 
 const defaultLabels: Label[] = [
   { id: 'label-1', name: 'Bug', color: 'red' },
@@ -20,6 +22,8 @@ const defaultColumns: Column[] = [
   { id: 'col-5', title: 'Done', position: 4, color: 'green' },
 ];
 
+const defaultBoardId = 'board-default';
+
 const sampleTasks: Task[] = [
   {
     id: 'task-1',
@@ -34,6 +38,8 @@ const sampleTasks: Task[] = [
       { id: 'cl-2', text: 'Create comparison matrix', completed: true },
       { id: 'cl-3', text: 'Identify unique opportunities', completed: true },
     ],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
@@ -53,6 +59,14 @@ const sampleTasks: Task[] = [
       { id: 'cl-5', text: 'Design high-fidelity mockups', completed: true },
       { id: 'cl-6', text: 'Get stakeholder approval', completed: false },
     ],
+    subtasks: [
+      { id: 'st-1', title: 'Mobile responsive design', completed: false, createdAt: new Date().toISOString() },
+      { id: 'st-2', title: 'Accessibility review', completed: false, createdAt: new Date().toISOString() },
+    ],
+    timeEntries: [
+      { id: 'te-1', startTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), endTime: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), description: 'Initial wireframes' },
+    ],
+    estimatedMinutes: 480,
     comments: [
       { id: 'com-1', text: 'Looking great so far!', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
     ],
@@ -76,6 +90,8 @@ const sampleTasks: Task[] = [
       { id: 'cl-9', text: 'Add session management', completed: false },
       { id: 'cl-10', text: 'Write tests', completed: false },
     ],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
@@ -90,6 +106,8 @@ const sampleTasks: Task[] = [
     priority: 'high',
     labels: ['label-1'],
     checklist: [],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
@@ -109,6 +127,8 @@ const sampleTasks: Task[] = [
       { id: 'cl-12', text: 'Update components', completed: false },
       { id: 'cl-13', text: 'Add toggle in settings', completed: false },
     ],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
@@ -123,6 +143,8 @@ const sampleTasks: Task[] = [
     priority: 'low',
     labels: ['label-4'],
     checklist: [],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -137,6 +159,8 @@ const sampleTasks: Task[] = [
     priority: 'medium',
     labels: ['label-3'],
     checklist: [],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -151,6 +175,8 @@ const sampleTasks: Task[] = [
     priority: 'low',
     labels: ['label-2', 'label-3'],
     checklist: [],
+    subtasks: [],
+    timeEntries: [],
     comments: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -158,83 +184,252 @@ const sampleTasks: Task[] = [
   },
 ];
 
-const createDefaultBoard = () => ({
-  id: uuidv4(),
+const createDefaultBoard = (id?: string): Board => ({
+  id: id || uuidv4(),
   title: 'Project Board',
   description: 'Manage your project tasks efficiently',
-  columns: defaultColumns,
-  labels: defaultLabels,
+  columns: defaultColumns.map(col => ({ ...col, id: id ? col.id : uuidv4() })),
+  labels: defaultLabels.map(label => ({ ...label, id: id ? label.id : uuidv4() })),
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
+  emoji: '📋',
+});
+
+interface StateSnapshot {
+  boards: Board[];
+  tasks: Task[];
+  activeBoardId: string;
+}
+
+const getDefaultState = () => ({
+  boards: [createDefaultBoard(defaultBoardId)],
+  activeBoardId: defaultBoardId,
+  tasks: sampleTasks,
+  selectedTaskId: null as string | null,
+  searchQuery: '',
+  filterLabels: [] as string[],
+  filterPriority: null as null,
+  isDarkMode: false,
+  isCompactMode: false,
+  viewMode: 'board' as const,
+  groupBy: 'none' as const,
+  activeTimer: null as { taskId: string; startTime: string } | null,
+  past: [] as HistoryEntry[],
+  future: [] as HistoryEntry[],
+});
+
+// Helper to save state to history
+const saveToHistory = (state: StateSnapshot): HistoryEntry => ({
+  boards: JSON.parse(JSON.stringify(state.boards)),
+  tasks: JSON.parse(JSON.stringify(state.tasks)),
+  activeBoardId: state.activeBoardId,
 });
 
 export const useBoardStore = create<BoardStore>()(
   persist(
-    (set, _get) => ({
-      // Initial state
-      board: createDefaultBoard(),
-      tasks: sampleTasks,
-      selectedTaskId: null,
-      searchQuery: '',
-      filterLabels: [],
-      filterPriority: null,
-      isDarkMode: false,
-      isCompactMode: false,
+    (set, get) => ({
+      ...getDefaultState(),
 
-      // Board actions
-      updateBoard: (updates) =>
-        set((state) => ({
-          board: {
-            ...state.board,
-            ...updates,
+      // Helper to get active board
+      getActiveBoard: () => {
+        const state = get();
+        return state.boards.find(b => b.id === state.activeBoardId);
+      },
+
+      // For backwards compatibility, expose board getter
+      get board() {
+        const state = get();
+        return state.boards.find(b => b.id === state.activeBoardId) || state.boards[0];
+      },
+
+      // Board management
+      addBoard: (title, emoji) =>
+        set((state) => {
+          const history = saveToHistory(state);
+          const newBoard = createDefaultBoard();
+          newBoard.title = title;
+          newBoard.emoji = emoji;
+          newBoard.columns = [
+            { id: uuidv4(), title: 'To Do', position: 0, color: 'blue' },
+            { id: uuidv4(), title: 'In Progress', position: 1, color: 'yellow' },
+            { id: uuidv4(), title: 'Done', position: 2, color: 'green' },
+          ];
+          return {
+            boards: [...state.boards, newBoard],
+            activeBoardId: newBoard.id,
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
+
+      updateBoard: (boardId, updates) =>
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            boards: state.boards.map((board) =>
+              board.id === boardId
+                ? { ...board, ...updates, updatedAt: new Date().toISOString() }
+                : board
+            ),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
+
+      deleteBoard: (boardId) =>
+        set((state) => {
+          if (state.boards.length <= 1) return state;
+          const history = saveToHistory(state);
+          const newBoards = state.boards.filter((b) => b.id !== boardId);
+          const newActiveBoardId = state.activeBoardId === boardId
+            ? newBoards[0].id
+            : state.activeBoardId;
+          return {
+            boards: newBoards,
+            activeBoardId: newActiveBoardId,
+            tasks: state.tasks.filter((t) => {
+              const board = state.boards.find(b => b.id === boardId);
+              return !board?.columns.some(col => col.id === t.columnId);
+            }),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
+
+      setActiveBoard: (boardId) =>
+        set((state) => {
+          if (!state.boards.find(b => b.id === boardId)) return state;
+          return { activeBoardId: boardId, selectedTaskId: null };
+        }),
+
+      duplicateBoard: (boardId) =>
+        set((state) => {
+          const history = saveToHistory(state);
+          const board = state.boards.find((b) => b.id === boardId);
+          if (!board) return state;
+
+          const idMap: Record<string, string> = {};
+          const newBoardId = uuidv4();
+
+          const newColumns = board.columns.map(col => {
+            const newId = uuidv4();
+            idMap[col.id] = newId;
+            return { ...col, id: newId };
+          });
+
+          const newLabels = board.labels.map(label => {
+            const newId = uuidv4();
+            idMap[label.id] = newId;
+            return { ...label, id: newId };
+          });
+
+          const boardTasks = state.tasks.filter(t =>
+            board.columns.some(col => col.id === t.columnId)
+          );
+
+          const newTasks = boardTasks.map(task => ({
+            ...task,
+            id: uuidv4(),
+            columnId: idMap[task.columnId] || task.columnId,
+            labels: task.labels.map(l => idMap[l] || l),
+            checklist: task.checklist.map(c => ({ ...c, id: uuidv4() })),
+            subtasks: task.subtasks.map(s => ({ ...s, id: uuidv4() })),
+            timeEntries: task.timeEntries.map(t => ({ ...t, id: uuidv4() })),
+            comments: task.comments.map(c => ({ ...c, id: uuidv4() })),
+          }));
+
+          const newBoard: Board = {
+            ...board,
+            id: newBoardId,
+            title: `${board.title} (copy)`,
+            columns: newColumns,
+            labels: newLabels,
+            createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-          },
-        })),
+          };
+
+          return {
+            boards: [...state.boards, newBoard],
+            tasks: [...state.tasks, ...newTasks],
+            activeBoardId: newBoardId,
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
 
       // Column actions
       addColumn: (title, color = 'gray') =>
         set((state) => {
+          const history = saveToHistory(state);
+          const board = state.boards.find(b => b.id === state.activeBoardId);
+          if (!board) return state;
+
           const newColumn: Column = {
             id: uuidv4(),
             title,
-            position: state.board.columns.length,
+            position: board.columns.length,
             color,
           };
+
           return {
-            board: {
-              ...state.board,
-              columns: [...state.board.columns, newColumn],
-              updatedAt: new Date().toISOString(),
-            },
+            boards: state.boards.map(b =>
+              b.id === state.activeBoardId
+                ? { ...b, columns: [...b.columns, newColumn], updatedAt: new Date().toISOString() }
+                : b
+            ),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
           };
         }),
 
       updateColumn: (columnId, updates) =>
-        set((state) => ({
-          board: {
-            ...state.board,
-            columns: state.board.columns.map((col) =>
-              col.id === columnId ? { ...col, ...updates } : col
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            boards: state.boards.map(b =>
+              b.id === state.activeBoardId
+                ? {
+                    ...b,
+                    columns: b.columns.map((col) =>
+                      col.id === columnId ? { ...col, ...updates } : col
+                    ),
+                    updatedAt: new Date().toISOString(),
+                  }
+                : b
             ),
-            updatedAt: new Date().toISOString(),
-          },
-        })),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
 
       deleteColumn: (columnId) =>
-        set((state) => ({
-          board: {
-            ...state.board,
-            columns: state.board.columns
-              .filter((col) => col.id !== columnId)
-              .map((col, index) => ({ ...col, position: index })),
-            updatedAt: new Date().toISOString(),
-          },
-          tasks: state.tasks.filter((task) => task.columnId !== columnId),
-        })),
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            boards: state.boards.map(b =>
+              b.id === state.activeBoardId
+                ? {
+                    ...b,
+                    columns: b.columns
+                      .filter((col) => col.id !== columnId)
+                      .map((col, index) => ({ ...col, position: index })),
+                    updatedAt: new Date().toISOString(),
+                  }
+                : b
+            ),
+            tasks: state.tasks.filter((task) => task.columnId !== columnId),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
 
       moveColumn: (columnId, newPosition) =>
         set((state) => {
-          const columns = [...state.board.columns];
+          const history = saveToHistory(state);
+          const board = state.boards.find(b => b.id === state.activeBoardId);
+          if (!board) return state;
+
+          const columns = [...board.columns];
           const columnIndex = columns.findIndex((col) => col.id === columnId);
           if (columnIndex === -1) return state;
 
@@ -242,17 +437,38 @@ export const useBoardStore = create<BoardStore>()(
           columns.splice(newPosition, 0, column);
 
           return {
-            board: {
-              ...state.board,
-              columns: columns.map((col, index) => ({ ...col, position: index })),
-              updatedAt: new Date().toISOString(),
-            },
+            boards: state.boards.map(b =>
+              b.id === state.activeBoardId
+                ? {
+                    ...b,
+                    columns: columns.map((col, index) => ({ ...col, position: index })),
+                    updatedAt: new Date().toISOString(),
+                  }
+                : b
+            ),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
           };
         }),
+
+      toggleColumnCollapse: (columnId) =>
+        set((state) => ({
+          boards: state.boards.map(b =>
+            b.id === state.activeBoardId
+              ? {
+                  ...b,
+                  columns: b.columns.map((col) =>
+                    col.id === columnId ? { ...col, collapsed: !col.collapsed } : col
+                  ),
+                }
+              : b
+          ),
+        })),
 
       // Task actions
       addTask: (columnId, title) =>
         set((state) => {
+          const history = saveToHistory(state);
           const tasksInColumn = state.tasks.filter((t) => t.columnId === columnId);
           const newTask: Task = {
             id: uuidv4(),
@@ -263,28 +479,45 @@ export const useBoardStore = create<BoardStore>()(
             priority: 'medium',
             labels: [],
             checklist: [],
+            subtasks: [],
+            timeEntries: [],
             comments: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             archived: false,
           };
-          return { tasks: [...state.tasks, newTask] };
+          return {
+            tasks: [...state.tasks, newTask],
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
         }),
 
       updateTask: (taskId, updates) =>
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === taskId
-              ? { ...task, ...updates, updatedAt: new Date().toISOString() }
-              : task
-          ),
-        })),
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            tasks: state.tasks.map((task) =>
+              task.id === taskId
+                ? { ...task, ...updates, updatedAt: new Date().toISOString() }
+                : task
+            ),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
 
       deleteTask: (taskId) =>
-        set((state) => ({
-          tasks: state.tasks.filter((task) => task.id !== taskId),
-          selectedTaskId: state.selectedTaskId === taskId ? null : state.selectedTaskId,
-        })),
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            tasks: state.tasks.filter((task) => task.id !== taskId),
+            selectedTaskId: state.selectedTaskId === taskId ? null : state.selectedTaskId,
+            activeTimer: state.activeTimer?.taskId === taskId ? null : state.activeTimer,
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
 
       moveTask: (taskId, targetColumnId, newPosition) =>
         set((state) => {
@@ -332,16 +565,22 @@ export const useBoardStore = create<BoardStore>()(
         }),
 
       archiveTask: (taskId) =>
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === taskId
-              ? { ...task, archived: true, updatedAt: new Date().toISOString() }
-              : task
-          ),
-        })),
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            tasks: state.tasks.map((task) =>
+              task.id === taskId
+                ? { ...task, archived: true, updatedAt: new Date().toISOString() }
+                : task
+            ),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
 
       duplicateTask: (taskId) =>
         set((state) => {
+          const history = saveToHistory(state);
           const task = state.tasks.find((t) => t.id === taskId);
           if (!task) return state;
 
@@ -354,11 +593,169 @@ export const useBoardStore = create<BoardStore>()(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             checklist: task.checklist.map((item) => ({ ...item, id: uuidv4() })),
+            subtasks: task.subtasks.map((item) => ({ ...item, id: uuidv4() })),
+            timeEntries: [],
             comments: [],
           };
 
-          return { tasks: [...state.tasks, newTask] };
+          return {
+            tasks: [...state.tasks, newTask],
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
         }),
+
+      // Subtask actions
+      addSubtask: (taskId, title) =>
+        set((state) => {
+          const history = saveToHistory(state);
+          return {
+            tasks: state.tasks.map((task) =>
+              task.id === taskId
+                ? {
+                    ...task,
+                    subtasks: [
+                      ...task.subtasks,
+                      { id: uuidv4(), title, completed: false, createdAt: new Date().toISOString() },
+                    ],
+                    updatedAt: new Date().toISOString(),
+                  }
+                : task
+            ),
+            past: [...state.past.slice(-MAX_HISTORY + 1), history],
+            future: [],
+          };
+        }),
+
+      toggleSubtask: (taskId, subtaskId) =>
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  subtasks: task.subtasks.map((s) =>
+                    s.id === subtaskId ? { ...s, completed: !s.completed } : s
+                  ),
+                  updatedAt: new Date().toISOString(),
+                }
+              : task
+          ),
+        })),
+
+      deleteSubtask: (taskId, subtaskId) =>
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  subtasks: task.subtasks.filter((s) => s.id !== subtaskId),
+                  updatedAt: new Date().toISOString(),
+                }
+              : task
+          ),
+        })),
+
+      // Time tracking
+      startTimer: (taskId) =>
+        set((state) => {
+          if (state.activeTimer) {
+            // Stop existing timer first
+            const existingTask = state.tasks.find(t => t.id === state.activeTimer!.taskId);
+            if (existingTask) {
+              const endTime = new Date().toISOString();
+              return {
+                tasks: state.tasks.map((task) =>
+                  task.id === state.activeTimer!.taskId
+                    ? {
+                        ...task,
+                        timeEntries: [
+                          ...task.timeEntries,
+                          { id: uuidv4(), startTime: state.activeTimer!.startTime, endTime },
+                        ],
+                        updatedAt: new Date().toISOString(),
+                      }
+                    : task
+                ),
+                activeTimer: { taskId, startTime: new Date().toISOString() },
+              };
+            }
+          }
+          return { activeTimer: { taskId, startTime: new Date().toISOString() } };
+        }),
+
+      stopTimer: () =>
+        set((state) => {
+          if (!state.activeTimer) return state;
+          const endTime = new Date().toISOString();
+          return {
+            tasks: state.tasks.map((task) =>
+              task.id === state.activeTimer!.taskId
+                ? {
+                    ...task,
+                    timeEntries: [
+                      ...task.timeEntries,
+                      { id: uuidv4(), startTime: state.activeTimer!.startTime, endTime },
+                    ],
+                    updatedAt: new Date().toISOString(),
+                  }
+                : task
+            ),
+            activeTimer: null,
+          };
+        }),
+
+      addManualTime: (taskId, minutes, description) =>
+        set((state) => {
+          const startTime = new Date(Date.now() - minutes * 60 * 1000).toISOString();
+          const endTime = new Date().toISOString();
+          return {
+            tasks: state.tasks.map((task) =>
+              task.id === taskId
+                ? {
+                    ...task,
+                    timeEntries: [
+                      ...task.timeEntries,
+                      { id: uuidv4(), startTime, endTime, description },
+                    ],
+                    updatedAt: new Date().toISOString(),
+                  }
+                : task
+            ),
+          };
+        }),
+
+      deleteTimeEntry: (taskId, entryId) =>
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  timeEntries: task.timeEntries.filter((e) => e.id !== entryId),
+                  updatedAt: new Date().toISOString(),
+                }
+              : task
+          ),
+        })),
+
+      getTaskTotalTime: (taskId) => {
+        const state = get();
+        const task = state.tasks.find((t) => t.id === taskId);
+        if (!task) return 0;
+
+        let total = task.timeEntries.reduce((acc, entry) => {
+          if (entry.endTime) {
+            return acc + (new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime());
+          }
+          return acc;
+        }, 0);
+
+        // Add active timer if running for this task
+        if (state.activeTimer?.taskId === taskId) {
+          total += Date.now() - new Date(state.activeTimer.startTime).getTime();
+        }
+
+        return Math.round(total / 60000); // Return minutes
+      },
 
       // Checklist actions
       addChecklistItem: (taskId, text) =>
@@ -452,31 +849,43 @@ export const useBoardStore = create<BoardStore>()(
       // Label actions
       addLabel: (name, color) =>
         set((state) => ({
-          board: {
-            ...state.board,
-            labels: [...state.board.labels, { id: uuidv4(), name, color }],
-            updatedAt: new Date().toISOString(),
-          },
+          boards: state.boards.map(b =>
+            b.id === state.activeBoardId
+              ? {
+                  ...b,
+                  labels: [...b.labels, { id: uuidv4(), name, color }],
+                  updatedAt: new Date().toISOString(),
+                }
+              : b
+          ),
         })),
 
       updateLabel: (labelId, updates) =>
         set((state) => ({
-          board: {
-            ...state.board,
-            labels: state.board.labels.map((label) =>
-              label.id === labelId ? { ...label, ...updates } : label
-            ),
-            updatedAt: new Date().toISOString(),
-          },
+          boards: state.boards.map(b =>
+            b.id === state.activeBoardId
+              ? {
+                  ...b,
+                  labels: b.labels.map((label) =>
+                    label.id === labelId ? { ...label, ...updates } : label
+                  ),
+                  updatedAt: new Date().toISOString(),
+                }
+              : b
+          ),
         })),
 
       deleteLabel: (labelId) =>
         set((state) => ({
-          board: {
-            ...state.board,
-            labels: state.board.labels.filter((label) => label.id !== labelId),
-            updatedAt: new Date().toISOString(),
-          },
+          boards: state.boards.map(b =>
+            b.id === state.activeBoardId
+              ? {
+                  ...b,
+                  labels: b.labels.filter((label) => label.id !== labelId),
+                  updatedAt: new Date().toISOString(),
+                }
+              : b
+          ),
           tasks: state.tasks.map((task) => ({
             ...task,
             labels: task.labels.filter((id) => id !== labelId),
@@ -490,29 +899,89 @@ export const useBoardStore = create<BoardStore>()(
       setFilterPriority: (priority) => set({ filterPriority: priority }),
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       toggleCompactMode: () => set((state) => ({ isCompactMode: !state.isCompactMode })),
+      setViewMode: (mode) => set({ viewMode: mode }),
+      setGroupBy: (groupBy) => set({ groupBy }),
 
-      // Persistence
-      loadFromStorage: () => {
-        // This is handled by persist middleware
-      },
+      // Undo/Redo
+      undo: () =>
+        set((state) => {
+          if (state.past.length === 0) return state;
+          const previous = state.past[state.past.length - 1];
+          const current = saveToHistory(state);
+          return {
+            boards: previous.boards,
+            tasks: previous.tasks,
+            activeBoardId: previous.activeBoardId,
+            past: state.past.slice(0, -1),
+            future: [current, ...state.future].slice(0, MAX_HISTORY),
+          };
+        }),
 
+      redo: () =>
+        set((state) => {
+          if (state.future.length === 0) return state;
+          const next = state.future[0];
+          const current = saveToHistory(state);
+          return {
+            boards: next.boards,
+            tasks: next.tasks,
+            activeBoardId: next.activeBoardId,
+            past: [...state.past, current].slice(-MAX_HISTORY),
+            future: state.future.slice(1),
+          };
+        }),
+
+      canUndo: () => get().past.length > 0,
+      canRedo: () => get().future.length > 0,
+
+      // Data management
       resetBoard: () =>
         set({
-          board: createDefaultBoard(),
-          tasks: sampleTasks,
-          selectedTaskId: null,
-          searchQuery: '',
-          filterLabels: [],
-          filterPriority: null,
+          ...getDefaultState(),
         }),
+
+      exportData: () => {
+        const state = get();
+        return JSON.stringify({
+          boards: state.boards,
+          tasks: state.tasks,
+          activeBoardId: state.activeBoardId,
+          exportedAt: new Date().toISOString(),
+          version: '2.0',
+        }, null, 2);
+      },
+
+      importData: (jsonData) => {
+        try {
+          const data = JSON.parse(jsonData);
+          if (!data.boards || !data.tasks) return false;
+
+          set((state) => {
+            const history = saveToHistory(state);
+            return {
+              boards: data.boards,
+              tasks: data.tasks,
+              activeBoardId: data.activeBoardId || data.boards[0]?.id,
+              past: [...state.past.slice(-MAX_HISTORY + 1), history],
+              future: [],
+            };
+          });
+          return true;
+        } catch {
+          return false;
+        }
+      },
     }),
     {
-      name: 'kanban-board-storage',
+      name: 'kanban-board-storage-v2',
       partialize: (state) => ({
-        board: state.board,
+        boards: state.boards,
         tasks: state.tasks,
+        activeBoardId: state.activeBoardId,
         isDarkMode: state.isDarkMode,
         isCompactMode: state.isCompactMode,
+        viewMode: state.viewMode,
+        groupBy: state.groupBy,
       }),
     }
   )
@@ -520,10 +989,13 @@ export const useBoardStore = create<BoardStore>()(
 
 // Selectors
 export const useFilteredTasks = () => {
-  const { tasks, searchQuery, filterLabels, filterPriority } = useBoardStore();
+  const { tasks, searchQuery, filterLabels, filterPriority, activeBoardId, boards } = useBoardStore();
+  const board = boards.find(b => b.id === activeBoardId);
+  const columnIds = board?.columns.map(c => c.id) || [];
 
   return tasks.filter((task) => {
     if (task.archived) return false;
+    if (!columnIds.includes(task.columnId)) return false;
 
     // Search filter
     if (searchQuery) {
@@ -554,6 +1026,12 @@ export const useTasksByColumn = (columnId: string) => {
 };
 
 export const useLabel = (labelId: string) => {
-  const labels = useBoardStore((state) => state.board.labels);
-  return labels.find((label) => label.id === labelId);
+  const { boards, activeBoardId } = useBoardStore();
+  const board = boards.find(b => b.id === activeBoardId);
+  return board?.labels.find((label) => label.id === labelId);
+};
+
+export const useActiveBoard = () => {
+  const { boards, activeBoardId } = useBoardStore();
+  return boards.find(b => b.id === activeBoardId);
 };

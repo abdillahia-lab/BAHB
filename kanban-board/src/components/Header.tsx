@@ -12,15 +12,17 @@ import {
   Keyboard,
   RotateCcw,
   ChevronDown,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
-import { useBoardStore } from '../store/boardStore';
+import { useBoardStore, useActiveBoard } from '../store/boardStore';
 import { labelColors, priorityColors } from '../utils/colors';
 import { shortcutsList } from '../hooks/useKeyboardShortcuts';
-import type { Priority } from '../types';
+import type { Priority, Label } from '../types';
+import { BoardSwitcher } from './BoardSwitcher';
 
 export const Header = () => {
   const {
-    board,
     searchQuery,
     setSearchQuery,
     filterLabels,
@@ -32,7 +34,12 @@ export const Header = () => {
     isCompactMode,
     toggleCompactMode,
     resetBoard,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useBoardStore();
+  const board = useActiveBoard();
 
   const [showFilters, setShowFilters] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -75,14 +82,7 @@ export const Header = () => {
         <div className="flex items-center justify-between gap-4">
           {/* Left section */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <LayoutGrid className="w-4 h-4 text-white" />
-              </div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                {board.title}
-              </h1>
-            </div>
+            <BoardSwitcher />
           </div>
 
           {/* Center section - Search */}
@@ -110,6 +110,26 @@ export const Header = () => {
 
           {/* Right section */}
           <div className="flex items-center gap-2">
+            {/* Undo/Redo */}
+            <div className="flex items-center gap-0.5 mr-1">
+              <button
+                onClick={undo}
+                disabled={!canUndo()}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Undo (Ctrl+Z)"
+              >
+                <Undo2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={redo}
+                disabled={!canRedo()}
+                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Redo (Ctrl+Shift+Z)"
+              >
+                <Redo2 className="w-4 h-4" />
+              </button>
+            </div>
+
             {/* Filter button */}
             <div className="relative" ref={filterRef}>
               <button
@@ -155,7 +175,7 @@ export const Header = () => {
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      {board.labels.map((label) => (
+                      {board?.labels.map((label: Label) => (
                         <button
                           key={label.id}
                           onClick={() => toggleLabelFilter(label.id)}

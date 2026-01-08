@@ -12,9 +12,14 @@ import {
   AlertCircle,
   Flag,
   Palette,
+  ListTodo,
+  Clock,
+  Play,
+  Square,
+  Plus,
 } from 'lucide-react';
-import type { Task, Priority, LabelColor } from '../types';
-import { useBoardStore } from '../store/boardStore';
+import type { Task, Priority, LabelColor, Label, Column } from '../types';
+import { useBoardStore, useActiveBoard } from '../store/boardStore';
 import { labelColors, priorityColors, coverColors } from '../utils/colors';
 import { formatRelativeTime, formatDateForInput } from '../utils/dates';
 
@@ -23,9 +28,15 @@ interface TaskModalProps {
   onClose: () => void;
 }
 
+const formatTime = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins}m`;
+  return `${hours}h ${mins}m`;
+};
+
 export const TaskModal = ({ task, onClose }: TaskModalProps) => {
   const {
-    board,
     updateTask,
     deleteTask,
     duplicateTask,
@@ -35,21 +46,34 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
     deleteChecklistItem,
     addComment,
     deleteComment,
+    addSubtask,
+    toggleSubtask,
+    deleteSubtask,
+    startTimer,
+    stopTimer,
+    addManualTime,
+    getTaskTotalTime,
+    activeTimer,
   } = useBoardStore();
+  const board = useActiveBoard();
 
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [newChecklistItem, setNewChecklistItem] = useState('');
   const [newComment, setNewComment] = useState('');
+  const [newSubtask, setNewSubtask] = useState('');
   const [showLabelPicker, setShowLabelPicker] = useState(false);
   const [showPriorityPicker, setShowPriorityPicker] = useState(false);
   const [showCoverPicker, setShowCoverPicker] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [showTimeEntry, setShowTimeEntry] = useState(false);
+  const [manualMinutes, setManualMinutes] = useState('');
+  const [timerDisplay, setTimerDisplay] = useState(0);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
-  const currentColumn = board.columns.find((col) => col.id === task.columnId);
+  const currentColumn = board?.columns.find((col: Column) => col.id === task.columnId);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -65,6 +89,40 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
       titleRef.current.select();
     }
   }, [isEditingTitle]);
+
+  // Timer display effect
+  useEffect(() => {
+    if (activeTimer?.taskId === task.id) {
+      const interval = setInterval(() => {
+        const elapsed = Math.floor(
+          (Date.now() - new Date(activeTimer.startTime).getTime()) / 60000
+        );
+        setTimerDisplay(elapsed);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTimer, task.id]);
+
+  const handleAddSubtask = () => {
+    if (newSubtask.trim()) {
+      addSubtask(task.id, newSubtask.trim());
+      setNewSubtask('');
+    }
+  };
+
+  const handleAddManualTime = () => {
+    const minutes = parseInt(manualMinutes, 10);
+    if (!isNaN(minutes) && minutes > 0) {
+      addManualTime(task.id, minutes);
+      setManualMinutes('');
+      setShowTimeEntry(false);
+    }
+  };
+
+  const isTimerRunning = activeTimer?.taskId === task.id;
+  const totalTime = getTaskTotalTime(task.id);
+  const completedSubtasks = task.subtasks.filter((s) => s.completed).length;
+  const totalSubtasks = task.subtasks.length;
 
   const handleTitleBlur = () => {
     if (title.trim() && title !== task.title) {
@@ -198,7 +256,7 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {task.labels.map((labelId) => {
-                      const label = board.labels.find((l) => l.id === labelId);
+                      const label = board?.labels.find((l: Label) => l.id === labelId);
                       if (!label) return null;
                       return (
                         <span
@@ -307,6 +365,172 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
                 </div>
               </div>
 
+              {/* Subtasks */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <ListTodo className="w-4 h-4" />
+                    Subtasks
+                    {totalSubtasks > 0 && (
+                      <span className="text-xs text-gray-500">
+                        ({completedSubtasks}/{totalSubtasks})
+                      </span>
+                    )}
+                  </h3>
+                </div>
+
+                {totalSubtasks > 0 && (
+                  <div className="mb-3">
+                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-300 ${
+                          completedSubtasks === totalSubtasks ? 'bg-green-500' : 'bg-purple-500'
+                        }`}
+                        style={{ width: `${(completedSubtasks / totalSubtasks) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2 mb-3">
+                  {task.subtasks.map((subtask) => (
+                    <div
+                      key={subtask.id}
+                      className="flex items-center gap-2 group"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={subtask.completed}
+                        onChange={() => toggleSubtask(task.id, subtask.id)}
+                        className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span
+                        className={`flex-1 text-sm ${
+                          subtask.completed
+                            ? 'text-gray-400 line-through'
+                            : 'text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {subtask.title}
+                      </span>
+                      <button
+                        onClick={() => deleteSubtask(task.id, subtask.id)}
+                        className="p-1 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newSubtask}
+                    onChange={(e) => setNewSubtask(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddSubtask()}
+                    placeholder="Add a subtask..."
+                    className="flex-1 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                  <button
+                    onClick={handleAddSubtask}
+                    disabled={!newSubtask.trim()}
+                    className="px-3 py-1.5 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 rounded-lg transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              {/* Time Tracking */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Time Tracking
+                  {totalTime > 0 && (
+                    <span className="text-xs text-gray-500">
+                      ({formatTime(totalTime)})
+                    </span>
+                  )}
+                </h3>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <button
+                    onClick={() => isTimerRunning ? stopTimer() : startTimer(task.id)}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                      isTimerRunning
+                        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50'
+                        : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'
+                    }`}
+                  >
+                    {isTimerRunning ? (
+                      <>
+                        <Square className="w-4 h-4" />
+                        Stop ({formatTime(timerDisplay)})
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4" />
+                        Start Timer
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setShowTimeEntry(!showTimeEntry)}
+                    className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Manual
+                  </button>
+                </div>
+
+                {showTimeEntry && (
+                  <div className="flex gap-2 mb-3 animate-scale-in">
+                    <input
+                      type="number"
+                      value={manualMinutes}
+                      onChange={(e) => setManualMinutes(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddManualTime()}
+                      placeholder="Minutes..."
+                      min="1"
+                      className="w-24 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <button
+                      onClick={handleAddManualTime}
+                      disabled={!manualMinutes}
+                      className="px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 rounded-lg transition-colors"
+                    >
+                      Add Time
+                    </button>
+                  </div>
+                )}
+
+                {task.timeEntries.length > 0 && (
+                  <div className="space-y-1">
+                    {task.timeEntries.slice(-3).map((entry) => {
+                      const duration = entry.endTime
+                        ? Math.round((new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()) / 60000)
+                        : 0;
+                      return (
+                        <div
+                          key={entry.id}
+                          className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
+                        >
+                          <span>{formatRelativeTime(entry.startTime)}</span>
+                          <span className="font-medium">{formatTime(duration)}</span>
+                        </div>
+                      );
+                    })}
+                    {task.timeEntries.length > 3 && (
+                      <span className="text-xs text-gray-400">
+                        +{task.timeEntries.length - 3} more entries
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* Comments */}
               <div>
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
@@ -384,7 +608,7 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
                     {showLabelPicker && (
                       <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10 animate-scale-in">
                         <div className="space-y-1">
-                          {board.labels.map((label) => (
+                          {board?.labels.map((label: Label) => (
                             <button
                               key={label.id}
                               onClick={() => toggleLabel(label.id)}

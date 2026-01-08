@@ -16,9 +16,30 @@ export const useKeyboardShortcuts = () => {
     toggleCompactMode,
     setSearchQuery,
     setSelectedTask,
+    undo,
+    redo,
   } = useBoardStore();
 
   const shortcuts: ShortcutConfig[] = [
+    {
+      key: 'z',
+      ctrl: true,
+      handler: undo,
+      description: 'Undo',
+    },
+    {
+      key: 'z',
+      ctrl: true,
+      shift: true,
+      handler: redo,
+      description: 'Redo',
+    },
+    {
+      key: 'y',
+      ctrl: true,
+      handler: redo,
+      description: 'Redo (alternative)',
+    },
     {
       key: 'd',
       ctrl: true,
@@ -75,9 +96,9 @@ export const useKeyboardShortcuts = () => {
       }
 
       for (const shortcut of shortcuts) {
-        const ctrlMatch = shortcut.ctrl ? event.ctrlKey || event.metaKey : true;
+        const ctrlMatch = shortcut.ctrl ? event.ctrlKey || event.metaKey : !event.ctrlKey && !event.metaKey;
         const metaMatch = shortcut.meta ? event.metaKey : true;
-        const shiftMatch = shortcut.shift ? event.shiftKey : !event.shiftKey;
+        const shiftMatch = shortcut.shift === undefined ? true : shortcut.shift === event.shiftKey;
         const keyMatch = event.key.toLowerCase() === shortcut.key.toLowerCase();
 
         if (ctrlMatch && metaMatch && shiftMatch && keyMatch) {
@@ -99,6 +120,8 @@ export const useKeyboardShortcuts = () => {
 };
 
 export const shortcutsList = [
+  { keys: ['Ctrl', 'Z'], description: 'Undo' },
+  { keys: ['Ctrl', 'Shift', 'Z'], description: 'Redo' },
   { keys: ['Ctrl', 'D'], description: 'Toggle dark mode' },
   { keys: ['Ctrl', 'B'], description: 'Toggle compact mode' },
   { keys: ['Ctrl', 'K'], description: 'Focus search' },

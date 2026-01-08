@@ -13,16 +13,17 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Plus } from 'lucide-react';
-import type { Task, LabelColor } from '../types';
-import { useBoardStore } from '../store/boardStore';
+import type { Task, LabelColor, Column as ColumnType } from '../types';
+import { useBoardStore, useActiveBoard } from '../store/boardStore';
 import { Column } from './Column';
 import { TaskCard } from './TaskCard';
 import { TaskModal } from './TaskModal';
 import { labelColors } from '../utils/colors';
 
 export const Board = () => {
-  const { board, tasks, selectedTaskId, setSelectedTask, moveTask, addColumn } =
+  const { tasks, selectedTaskId, setSelectedTask, moveTask, addColumn } =
     useBoardStore();
+  const board = useActiveBoard();
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
@@ -63,7 +64,7 @@ export const Board = () => {
     if (!activeTask) return;
 
     // Check if over a column
-    const overColumn = board.columns.find((col) => col.id === overId);
+    const overColumn = board?.columns.find((col: ColumnType) => col.id === overId);
     if (overColumn && activeTask.columnId !== overId) {
       const tasksInColumn = tasks.filter((t) => t.columnId === overId);
       moveTask(activeId, overId, tasksInColumn.length);
@@ -125,9 +126,9 @@ export const Board = () => {
         <div className="flex-1 overflow-x-auto overflow-y-hidden">
           <div className="flex gap-4 p-4 min-h-full items-start">
             {/* Columns */}
-            {board.columns
-              .sort((a, b) => a.position - b.position)
-              .map((column) => (
+            {board?.columns
+              .sort((a: ColumnType, b: ColumnType) => a.position - b.position)
+              .map((column: ColumnType) => (
                 <Column key={column.id} column={column} />
               ))}
 
