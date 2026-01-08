@@ -1,0 +1,181 @@
+/**
+ * Custom Cursor Styles
+ * Premium cursor with state changes and smooth animations
+ */
+
+/* Hide default cursor on desktop */
+@media (hover: hover) {
+  * {
+    cursor: none !important;
+  }
+}
+
+/* Custom Cursor Ring */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(6, 182, 212, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform-origin: center center;
+  transition:
+    width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+  will-change: transform;
+  mix-blend-mode: difference; /* Automatically inverts on light backgrounds */
+}
+
+/* Cursor Center Dot */
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: rgba(6, 182, 212, 1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  transition:
+    width 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+
+/* Adjust transforms to center correctly */
+.custom-cursor {
+  transform: translate(-50%, -50%);
+}
+
+.custom-cursor-dot {
+  transform: translate(-50%, -50%);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CURSOR STATES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Hover State - Grows on interactive elements */
+.custom-cursor--hover {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(6, 182, 212, 0.8);
+  background: rgba(6, 182, 212, 0.1);
+}
+
+.custom-cursor-dot--hover {
+  width: 8px;
+  height: 8px;
+  background: rgba(6, 182, 212, 1);
+}
+
+/* Click State - Shrinks on click */
+.custom-cursor--click {
+  width: 32px;
+  height: 32px;
+  border-color: rgba(6, 182, 212, 1);
+  background: rgba(6, 182, 212, 0.2);
+  transition-duration: 0.1s;
+}
+
+.custom-cursor-dot--click {
+  width: 4px;
+  height: 4px;
+  transition-duration: 0.1s;
+}
+
+/* Text State - Changes to I-beam style */
+.custom-cursor--text {
+  width: 2px;
+  height: 24px;
+  border-radius: 2px;
+  border: none;
+  background: rgba(6, 182, 212, 0.8);
+}
+
+.custom-cursor-dot--text {
+  opacity: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CURSOR INVERSION (for light backgrounds)
+   ═══════════════════════════════════════════════════════════ */
+
+body.cursor-invert .custom-cursor {
+  border-color: rgba(0, 0, 0, 0.6);
+}
+
+body.cursor-invert .custom-cursor-dot {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+body.cursor-invert .custom-cursor--hover {
+  border-color: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING STATE (optional)
+   ═══════════════════════════════════════════════════════════ */
+
+.custom-cursor--loading {
+  border-top-color: rgba(6, 182, 212, 1);
+  animation: cursorSpin 0.8s linear infinite;
+}
+
+@keyframes cursorSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HIDE ON MOBILE
+   ═══════════════════════════════════════════════════════════ */
+
+@media (hover: none) {
+  .custom-cursor,
+  .custom-cursor-dot {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor,
+  .custom-cursor-dot {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAGNETIC CURSOR INTERACTION
+   Add glow when near magnetic elements
+   ═══════════════════════════════════════════════════════════ */
+
+.custom-cursor--magnetic {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+}
+
+.custom-cursor-dot--magnetic {
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+}

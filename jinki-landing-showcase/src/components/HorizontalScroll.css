@@ -1,0 +1,275 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   HORIZONTAL SCROLL SECTION
+   Premium horizontal scrolling with touch/keyboard support
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.horizontal-scroll-wrapper {
+  position: relative;
+  padding: var(--space-10) 0;
+}
+
+.horizontal-scroll-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--container-max);
+  margin: 0 auto var(--space-5);
+  padding: 0 var(--space-5);
+}
+
+.horizontal-scroll-title {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-headline);
+}
+
+.horizontal-scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.horizontal-scroll-hint svg {
+  opacity: 0.6;
+  animation: scrollHintBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollHintBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+/* Container with navigation buttons */
+.horizontal-scroll-container {
+  position: relative;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+
+/* Scrollable content */
+.horizontal-scroll-content {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: var(--space-2) 0;
+  margin: 0 calc(var(--space-10) + var(--space-2));
+}
+
+/* Hide scrollbar for Chrome/Safari/Opera */
+.horizontal-scroll-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual cards snap to position */
+.horizontal-scroll-content > * {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 auto;
+  width: min(400px, 85vw);
+}
+
+/* Navigation Buttons */
+.horizontal-scroll-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    all var(--duration-normal) var(--ease-out-expo),
+    opacity var(--duration-fast) var(--ease-out-quart);
+  z-index: 10;
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.horizontal-scroll-nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow:
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.25),
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 32px rgba(6, 182, 212, 0.15);
+}
+
+.horizontal-scroll-nav:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.horizontal-scroll-nav--disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.horizontal-scroll-nav--left {
+  left: 0;
+}
+
+.horizontal-scroll-nav--right {
+  right: 0;
+}
+
+.horizontal-scroll-nav svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Progress Indicator */
+.horizontal-scroll-progress-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: var(--container-max);
+  margin: var(--space-4) auto 0;
+  padding: 0 var(--space-5);
+}
+
+.horizontal-scroll-progress-track {
+  flex: 1;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.horizontal-scroll-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: var(--metal-accent);
+  background-size: 300% 100%;
+  animation: metalShimmer 2s infinite;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.2s ease-out;
+  box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+.horizontal-scroll-progress-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  min-width: 40px;
+  text-align: right;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOUCH ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (hover: none) and (pointer: coarse) {
+  .horizontal-scroll-hint {
+    display: none;
+  }
+
+  .horizontal-scroll-nav {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Show subtle gradient fade at edges on touch devices */
+  .horizontal-scroll-container::before,
+  .horizontal-scroll-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .horizontal-scroll-container::before {
+    left: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-bg-primary) 0%,
+      transparent 100%
+    );
+  }
+
+  .horizontal-scroll-container::after {
+    right: 0;
+    background: linear-gradient(
+      270deg,
+      var(--color-bg-primary) 0%,
+      transparent 100%
+    );
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .horizontal-scroll-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+  }
+
+  .horizontal-scroll-container {
+    padding: 0 var(--space-3);
+  }
+
+  .horizontal-scroll-content {
+    margin: 0 calc(var(--space-8) + var(--space-2));
+  }
+
+  .horizontal-scroll-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .horizontal-scroll-nav svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .horizontal-scroll-progress-container {
+    padding: 0 var(--space-3);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOCUS STATES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.horizontal-scroll-nav:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.horizontal-scroll-content:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}

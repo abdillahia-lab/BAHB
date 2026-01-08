@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Liquid Metal Effects - Demo Showcase</title>
+  <link rel="stylesheet" href="src/pages/LandingPage3.css">
+  <style>
+    body {
+      padding: 80px 40px;
+      background: #030305;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .demo-section {
+      margin-bottom: 80px;
+    }
+
+    .demo-title {
+      font-size: 28px;
+      color: #fff;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .demo-desc {
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 40px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+
+    .demo-card {
+      padding: 40px 32px;
+      border-radius: 16px;
+      text-align: center;
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #030305;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .demo-text-showcase {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 24px;
+      margin-bottom: 40px;
+    }
+
+    .demo-large-text {
+      font-size: clamp(48px, 8vw, 96px);
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .demo-medium-text {
+      font-size: clamp(32px, 5vw, 64px);
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .demo-small-text {
+      font-size: clamp(24px, 4vw, 48px);
+      line-height: 1.3;
+    }
+
+    .demo-buttons {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .demo-btn {
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .features-list {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 32px;
+      margin-top: 40px;
+    }
+
+    .features-list h3 {
+      color: #06b6d4;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .features-list ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features-list li {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .features-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 24px;
+      overflow-x: auto;
+    }
+
+    .code-block code {
+      color: #22d3ee;
+      font-family: 'SF Mono', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="demo-section">
+    <h1 class="liquid-text demo-large-text" data-text="ULTIMATE LIQUID METAL">
+      ULTIMATE LIQUID METAL
+    </h1>
+    <p class="demo-desc" style="text-align: center; max-width: 800px; margin: 0 auto 60px;">
+      A masterclass in CSS visual effects. Featuring 26-stop chrome gradients, multi-layer animations,
+      3D depth effects, and chromatic aberration. Inspired by Apple's Liquid Glass, chrome car paint,
+      and liquid mercury.
+    </p>
+  </div>
+
+  <!-- Main Liquid Metal Variants -->
+  <div class="demo-section">
+    <h2 class="demo-title">1. Chrome Variants - Hover to Experience</h2>
+    <p class="demo-desc">
+      Each variant features 26+ color stops with black reflection lines, animated gleam sweeps,
+      environment map rotation, and interactive hover states.
+    </p>
+
+    <div class="demo-grid">
+      <div class="demo-card liquid-metal">
+        Cyan Chrome<br>
+        <small style="font-size: 12px; opacity: 0.7; margin-top: 8px;">Default Variant</small>
+      </div>
+
+      <div class="demo-card liquid-metal liquid-metal--gold">
+        Gold Chrome<br>
+        <small style="font-size: 12px; opacity: 0.7; margin-top: 8px;">Luxury Edition</small>
+      </div>
+
+      <div class="demo-card liquid-metal liquid-metal--rose">
+        Rose Gold<br>
+        <small style="font-size: 12px; opacity: 0.7; margin-top: 8px;">Premium Edition</small>
+      </div>
+
+      <div class="demo-card liquid-metal liquid-metal--silver">
+        Pure Silver<br>
+        <small style="font-size: 12px; opacity: 0.7; margin-top: 8px;">Platinum Edition</small>
+      </div>
+    </div>
+
+    <div class="features-list">
+      <h3>Technical Features - .liquid-metal</h3>
+      <ul>
+        <li>26-stop conic + linear gradient blend for ultra-realistic chrome</li>
+        <li>Black reflection lines (#0a0a0a, #1a1a1a, #2a2a2a) for depth</li>
+        <li>Dual animation system: metalShimmerAdvanced (4s) + metalRotate (12s)</li>
+        <li>13-layer box-shadow system: inset bevels + edge depth + outer glow</li>
+        <li>Dynamic filter adjustments: brightness(1.05) contrast(1.1)</li>
+        <li>Two animated pseudo-elements: fast gleam sweep + environment rotation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Interactive States -->
+  <div class="demo-section">
+    <h2 class="demo-title">2. Interactive States - Click & Tab</h2>
+    <p class="demo-desc">
+      Advanced interactive feedback with hover shimmer speed increase, active state compression,
+      and focus chromatic aberration effects.
+    </p>
+
+    <div class="demo-buttons">
+      <button class="demo-btn liquid-metal" tabindex="0">
+        Hover Me
+      </button>
+
+      <button class="demo-btn liquid-metal liquid-metal--gold" tabindex="0">
+        Click Me
+      </button>
+
+      <button class="demo-btn liquid-metal liquid-metal--rose" tabindex="0">
+        Tab Focus
+      </button>
+    </div>
+
+    <div class="features-list">
+      <h3>Interactive States Breakdown</h3>
+      <ul>
+        <li><strong>:hover</strong> - Shimmer speed 40% faster, brightness +10%, lifted 2px</li>
+        <li><strong>:active</strong> - Compressed depth, scale(0.98), brightness -10%</li>
+        <li><strong>:focus-visible</strong> - RGB split glow (chromatic aberration effect)</li>
+        <li><strong>::before animation</strong> - Dual gleam sweep at different speeds</li>
+        <li><strong>::after opacity</strong> - Environment map fades in on hover</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Liquid Text Effects -->
+  <div class="demo-section">
+    <h2 class="demo-title">3. Liquid Text - Chrome Gradient Typography</h2>
+    <p class="demo-desc">
+      22-stop chrome text gradient with 6-layer drop-shadow depth, animated shimmer,
+      and subtle inner glow pseudo-element.
+    </p>
+
+    <div class="demo-text-showcase">
+      <h2 class="liquid-text demo-large-text" data-text="LIQUID CHROME">
+        LIQUID CHROME
+      </h2>
+
+      <h3 class="liquid-text demo-medium-text" data-text="Premium Typography">
+        Premium Typography
+      </h3>
+
+      <p class="liquid-text demo-small-text" data-text="Ultra-Realistic Metal">
+        Ultra-Realistic Metal
+      </p>
+    </div>
+
+    <div class="features-list">
+      <h3>Liquid Text System</h3>
+      <ul>
+        <li>22-stop gradient animation (300% background-size, 4s loop)</li>
+        <li>6-layer filter system: white edge + shadow + cyan glow (12px + 24px)</li>
+        <li>::before pseudo-element with blurred inner glow (data-text attribute)</li>
+        <li>Compatible with any font-weight, automatically inherits text content</li>
+        <li>Optimized -webkit-background-clip for maximum browser support</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Usage Examples -->
+  <div class="demo-section">
+    <h2 class="demo-title">4. Usage Examples</h2>
+
+    <div class="code-block">
+      <code>
+<!-- Basic Chrome Button -->
+&lt;button class="liquid-metal"&gt;
+  Click Me
+&lt;/button&gt;
+
+<!-- Gold Variant -->
+&lt;button class="liquid-metal liquid-metal--gold"&gt;
+  Premium Action
+&lt;/button&gt;
+
+<!-- Rose Gold Card -->
+&lt;div class="liquid-metal liquid-metal--rose" style="padding: 32px; border-radius: 16px;"&gt;
+  Rose Gold Panel
+&lt;/div&gt;
+
+<!-- Silver/Platinum Badge -->
+&lt;span class="liquid-metal liquid-metal--silver" style="padding: 8px 16px; border-radius: 8px;"&gt;
+  Pro
+&lt;/span&gt;
+
+<!-- Chrome Text (requires data-text for ::before glow) -->
+&lt;h1 class="liquid-text" data-text="Your Headline"&gt;
+  Your Headline
+&lt;/h1&gt;
+      </code>
+    </div>
+  </div>
+
+  <!-- Performance Notes -->
+  <div class="demo-section">
+    <div class="features-list">
+      <h3>Performance Optimizations</h3>
+      <ul>
+        <li>Hardware acceleration: transform: translateZ(0) on animated layers</li>
+        <li>will-change: background-position on ::before for smooth gleam</li>
+        <li>Reduced motion support: All animations disabled via @media query</li>
+        <li>Isolation: isolate prevents blend-mode performance issues</li>
+        <li>Mix-blend-mode: overlay/screen for realistic metal reflections</li>
+        <li>Optimized keyframes: Using background-position instead of transforms</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Technical Specifications -->
+  <div class="demo-section">
+    <div class="features-list">
+      <h3>Complete Technical Specifications</h3>
+      <ul>
+        <li><strong>Gradients:</strong> Conic (26 stops) + Linear (17 stops) with blend-mode</li>
+        <li><strong>Animations:</strong> 5 keyframes (shimmer, rotate, gleam x2, environment)</li>
+        <li><strong>Box Shadows:</strong> 13 layers (8 inset, 5 outer)</li>
+        <li><strong>Filters:</strong> brightness, contrast, drop-shadow (6 layers on text)</li>
+        <li><strong>Pseudo-elements:</strong> ::before (gleam), ::after (environment map)</li>
+        <li><strong>Interactive States:</strong> hover, active, focus-visible with unique effects</li>
+        <li><strong>Variants:</strong> Default cyan, gold, rose, silver (all with hover states)</li>
+        <li><strong>Browser Support:</strong> Chrome, Safari, Firefox, Edge (modern versions)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.4); font-size: 14px;">
+    <p>Ultimate Liquid Metal Effect System</p>
+    <p>Inspired by Apple Liquid Glass, Chrome Car Paint & Liquid Mercury</p>
+    <p class="liquid-text" data-text="Crafted with CSS Mastery" style="margin-top: 20px; font-size: 18px;">
+      Crafted with CSS Mastery
+    </p>
+  </div>
+
+</body>
+</html>

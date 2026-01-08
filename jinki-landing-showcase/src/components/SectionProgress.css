@@ -1,0 +1,224 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTION PROGRESS INDICATOR
+   Vertical dots navigation fixed to the side
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.section-progress {
+  position: fixed;
+  right: var(--space-5);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-3);
+}
+
+/* Background track */
+.section-progress-track {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+/* Active section indicator line */
+.section-progress-active-line {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  width: 3px;
+  height: 24px;
+  background: var(--metal-accent);
+  background-size: 300% 100%;
+  animation: metalShimmer 2s infinite;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 12px var(--color-accent-glow);
+  pointer-events: none;
+}
+
+/* Individual dot buttons */
+.section-progress-dot {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1;
+  transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.section-progress-dot:hover {
+  transform: scale(1.2);
+}
+
+.section-progress-dot:active {
+  transform: scale(0.9);
+}
+
+/* Inner dot circle */
+.section-progress-dot-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-border);
+  border: 2px solid var(--color-bg-primary);
+  transition:
+    background var(--duration-normal) var(--ease-out-expo),
+    transform var(--duration-normal) var(--ease-out-expo),
+    box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.section-progress-dot--active .section-progress-dot-inner {
+  background: var(--color-accent);
+  transform: scale(1.4);
+  box-shadow:
+    0 0 12px var(--color-accent-glow),
+    0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+.section-progress-dot:hover .section-progress-dot-inner {
+  background: var(--color-accent-light);
+  transform: scale(1.3);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+/* Tooltip label */
+.section-progress-tooltip {
+  position: absolute;
+  right: calc(100% + var(--space-2));
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: var(--space-1) var(--space-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--duration-normal) var(--ease-out-expo),
+    transform var(--duration-normal) var(--ease-out-expo);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.section-progress-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--glass-bg-elevated);
+  border-right: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.section-progress-tooltip--visible {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOCUS STATES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.section-progress-dot:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .section-progress {
+    right: var(--space-3);
+  }
+}
+
+@media (max-width: 768px) {
+  .section-progress {
+    display: none; /* Hide on mobile to avoid clutter */
+  }
+}
+
+/* Alternative: Bottom navigation for mobile */
+@media (max-width: 768px) {
+  .section-progress--mobile {
+    display: flex;
+    position: fixed;
+    bottom: var(--space-3);
+    left: 50%;
+    right: auto;
+    top: auto;
+    transform: translateX(-50%);
+    flex-direction: row;
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+      0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .section-progress--mobile .section-progress-track {
+    display: none;
+  }
+
+  .section-progress--mobile .section-progress-active-line {
+    top: 50%;
+    left: 12px;
+    width: 24px;
+    height: 3px;
+    transform: translateY(-50%);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .section-progress--mobile .section-progress-tooltip {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.section-progress-dot--active .section-progress-dot-inner {
+  animation: dotPulse 2s ease-in-out infinite;
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typography & Micro-Interactions Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,900;1,9..40,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* Import both stylesheets - adjust paths as needed */
+    @import url('./src/pages/LandingPage3.css');
+    @import url('./src/pages/typography-microinteractions.css');
+
+    body {
+      padding: 80px 40px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .demo-section {
+      margin-bottom: 80px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+    }
+
+    .demo-section h2 {
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-accent);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .demo-item {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+    }
+
+    .demo-item label {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .cursor-blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .spacing-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .spacing-bar {
+      height: 8px;
+      background: var(--color-accent);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Scroll Progress -->
+  <div class="scroll-progress"></div>
+
+  <!-- Header -->
+  <header style="margin-bottom: 60px; text-align: center;">
+    <h1 class="type-7xl text-balance liquid-text">
+      Typography & Micro-Interactions
+    </h1>
+    <p class="type-lg" style="margin-top: 16px; color: var(--color-text-secondary);">
+      Complete demonstration of premium design features
+    </p>
+  </header>
+
+  <!-- ============================================
+       TYPOGRAPHY SCALE
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Fluid Typography Scale</h2>
+
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <div>
+        <label>type-7xl (72px → 128px)</label>
+        <div class="type-7xl">The Future of Healthcare</div>
+      </div>
+
+      <div>
+        <label>type-6xl (60px → 96px)</label>
+        <div class="type-6xl">Transform Your Practice</div>
+      </div>
+
+      <div>
+        <label>type-5xl (48px → 72px)</label>
+        <div class="type-5xl">Intelligent Monitoring</div>
+      </div>
+
+      <div>
+        <label>type-4xl (36px → 52px)</label>
+        <div class="type-4xl">Premium Typography System</div>
+      </div>
+
+      <div>
+        <label>type-3xl (30px → 40px)</label>
+        <div class="type-3xl">Advanced Micro-Interactions</div>
+      </div>
+
+      <div>
+        <label>type-2xl (24px → 30px)</label>
+        <div class="type-2xl">Section Headings and Large Text</div>
+      </div>
+
+      <div>
+        <label>type-xl (20px → 24px)</label>
+        <div class="type-xl">Subsection titles and callouts</div>
+      </div>
+
+      <div>
+        <label>type-lg (18px → 21px)</label>
+        <div class="type-lg">Large body text for emphasis and readability</div>
+      </div>
+
+      <div>
+        <label>type-base (16px → 18px)</label>
+        <div class="type-base">Regular body text for paragraphs and standard content</div>
+      </div>
+
+      <div>
+        <label>type-sm (14px → 15px)</label>
+        <div class="type-sm">Small text for captions, labels, and metadata</div>
+      </div>
+
+      <div>
+        <label>type-xs (12px → 13px)</label>
+        <div class="type-xs">Extra small text for fine print and legal notices</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TEXT FEATURES
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Advanced Text Features</h2>
+
+    <div class="demo-grid">
+      <div class="demo-item">
+        <label>Balanced Headline</label>
+        <h3 class="type-2xl text-balance">
+          This headline demonstrates balanced text wrapping for better aesthetics
+        </h3>
+      </div>
+
+      <div class="demo-item">
+        <label>Pretty Text (No Orphans)</label>
+        <p class="type-base text-pretty">
+          This paragraph uses pretty text wrapping to prevent single words on the last line and improve readability throughout the content.
+        </p>
+      </div>
+
+      <div class="demo-item">
+        <label>Hyphenation</label>
+        <div style="max-width: 200px;">
+          <p class="type-base text-hyphenate">
+            Extraordinarily comprehensive documentation for implementation.
+          </p>
+        </div>
+      </div>
+
+      <div class="demo-item">
+        <label>Tabular Numbers</label>
+        <div class="font-tabular-nums type-base">
+          <div>$1,234.56</div>
+          <div>$2,345.67</div>
+          <div>$3,456.78</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       GRADIENT TEXT
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Gradient Text Animations</h2>
+
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <div>
+        <label>Liquid Metal Text (Chrome + Cyan)</label>
+        <div class="type-5xl liquid-text">
+          Metallic Chrome Effect
+        </div>
+      </div>
+
+      <div>
+        <label>Animated Gradient Shift</label>
+        <div class="type-5xl text-gradient-animate">
+          Gradient Shifting Text
+        </div>
+      </div>
+
+      <div>
+        <label>Shimmer Effect</label>
+        <div class="type-5xl text-shimmer">
+          Shimmering Highlight
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       LINK STYLES
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Animated Underlines</h2>
+
+    <div class="demo-grid">
+      <div class="demo-item">
+        <label>Slide In from Left</label>
+        <a href="#" class="link-underline-slide type-xl">Hover to see underline</a>
+      </div>
+
+      <div class="demo-item">
+        <label>Expand from Center</label>
+        <a href="#" class="link-underline-center type-xl">Hover to see underline</a>
+      </div>
+
+      <div class="demo-item">
+        <label>Draw Effect</label>
+        <a href="#" class="link-underline-draw type-xl">Hover to see underline</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       BUTTONS
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Button Micro-Interactions</h2>
+
+    <div class="demo-grid">
+      <div class="demo-item">
+        <label>Primary + Ripple + Lift</label>
+        <button class="btn btn--primary btn--lg liquid-metal ripple hover-lift-glow">
+          Click for Ripple
+        </button>
+      </div>
+
+      <div class="demo-item">
+        <label>Glass Button</label>
+        <button class="btn btn--glass btn--lg ripple ripple-dark">
+          Glass Effect
+        </button>
+      </div>
+
+      <div class="demo-item">
+        <label>Standard Lift</label>
+        <button class="btn btn--primary hover-lift">
+          Hover to Lift
+        </button>
+      </div>
+
+      <div class="demo-item">
+        <label>Lift with Glow</label>
+        <button class="btn btn--primary liquid-metal hover-lift-glow">
+          Glowing Lift
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CARDS
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Card Effects</h2>
+
+    <div class="demo-grid">
+      <div class="glass-card hover-lift" style="padding: 32px;">
+        <h3 class="type-xl" style="margin-bottom: 12px;">Glass Card</h3>
+        <p class="type-base text-pretty">
+          Hover to see lift effect with layered shadows
+        </p>
+      </div>
+
+      <div class="glass-panel hover-lift" style="padding: 32px;">
+        <h3 class="type-xl" style="margin-bottom: 12px;">Glass Panel</h3>
+        <p class="type-base text-pretty">
+          Enhanced glassmorphism with shimmer
+        </p>
+      </div>
+
+      <div class="card-3d glass-panel" style="padding: 32px;">
+        <div class="card-3d-content">
+          <div class="card-3d-shine"></div>
+          <h3 class="type-xl" style="margin-bottom: 12px;">3D Tilt Card</h3>
+          <p class="type-base text-pretty">
+            Move mouse over to see 3D tilt effect (requires JavaScript)
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ICONS
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Icon Animations</h2>
+
+    <div class="demo-grid">
+      <div class="demo-item" style="text-align: center;">
+        <label>Bounce on Hover</label>
+        <div class="icon-bounce" style="display: inline-block; margin-top: 16px;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 6v6l4 2" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="demo-item" style="text-align: center;">
+        <label>Rotate on Hover</label>
+        <div class="icon-rotate" style="display: inline-block; margin-top: 16px;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="demo-item" style="text-align: center;">
+        <label>Continuous Pulse</label>
+        <div class="icon-pulse" style="display: inline-block; margin-top: 16px;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="demo-item" style="text-align: center;">
+        <label>Wiggle on Hover</label>
+        <div class="icon-wiggle" style="display: inline-block; margin-top: 16px;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FORMS
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Form Inputs</h2>
+
+    <div class="demo-grid">
+      <div class="demo-item">
+        <label>Floating Label Input</label>
+        <div class="input-float-label">
+          <input type="text" id="demo-input-1" placeholder=" " />
+          <label for="demo-input-1">Email Address</label>
+        </div>
+      </div>
+
+      <div class="demo-item">
+        <label>Floating Label Textarea</label>
+        <div class="input-float-label">
+          <textarea id="demo-input-2" rows="4" placeholder=" "></textarea>
+          <label for="demo-input-2">Your Message</label>
+        </div>
+      </div>
+
+      <div class="demo-item">
+        <label>Animated Checkbox</label>
+        <label class="checkbox-animated" style="margin-top: 16px;">
+          <input type="checkbox" />
+          <span class="checkbox-animated__box">
+            <svg class="checkbox-animated__checkmark" viewBox="0 0 24 24">
+              <path d="M5 12l5 5L20 7" />
+            </svg>
+          </span>
+          <span>I agree to the terms</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       NUMBER COUNTERS (Static Demo)
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Number Formats</h2>
+
+    <div class="demo-grid">
+      <div class="demo-item" style="text-align: center;">
+        <label>Large Number</label>
+        <div class="type-5xl counter--highlight font-tabular-nums">
+          1,250+
+        </div>
+      </div>
+
+      <div class="demo-item" style="text-align: center;">
+        <label>Percentage</label>
+        <div class="type-5xl counter--highlight font-tabular-nums">
+          99.9%
+        </div>
+      </div>
+
+      <div class="demo-item" style="text-align: center;">
+        <label>Currency</label>
+        <div class="type-5xl counter--highlight font-tabular-nums">
+          $1,234.56
+        </div>
+      </div>
+
+      <div class="demo-item" style="text-align: center;">
+        <label>Abbreviated</label>
+        <div class="type-5xl counter--highlight font-tabular-nums">
+          2.5M
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SPACING SCALE
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Spacing System</h2>
+
+    <div class="spacing-demo">
+      <div>
+        <label>--space-1 (8px)</label>
+        <div class="spacing-bar" style="width: var(--space-1);"></div>
+      </div>
+      <div>
+        <label>--space-2 (16px)</label>
+        <div class="spacing-bar" style="width: var(--space-2);"></div>
+      </div>
+      <div>
+        <label>--space-3 (24px)</label>
+        <div class="spacing-bar" style="width: var(--space-3);"></div>
+      </div>
+      <div>
+        <label>--space-4 (32px)</label>
+        <div class="spacing-bar" style="width: var(--space-4);"></div>
+      </div>
+      <div>
+        <label>--space-6 (48px)</label>
+        <div class="spacing-bar" style="width: var(--space-6);"></div>
+      </div>
+      <div>
+        <label>--space-8 (64px)</label>
+        <div class="spacing-bar" style="width: var(--space-8);"></div>
+      </div>
+      <div>
+        <label>--space-12 (96px)</label>
+        <div class="spacing-bar" style="width: var(--space-12);"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       COLOR PALETTE
+       ============================================ -->
+  <section class="demo-section">
+    <h2 class="type-3xl">Color System</h2>
+
+    <div class="color-grid">
+      <div class="color-swatch" style="background: var(--color-accent);">
+        Accent
+      </div>
+      <div class="color-swatch" style="background: var(--color-accent-light);">
+        Accent Light
+      </div>
+      <div class="color-swatch" style="background: var(--color-accent-warm);">
+        Accent Warm
+      </div>
+      <div class="color-swatch" style="background: var(--color-success);">
+        Success
+      </div>
+      <div class="color-swatch" style="background: var(--color-warning);">
+        Warning
+      </div>
+      <div class="color-swatch" style="background: var(--color-text-primary);">
+        Text Primary
+      </div>
+      <div class="color-swatch" style="background: var(--color-text-secondary);">
+        Text Secondary
+      </div>
+      <div class="color-swatch" style="background: var(--color-text-tertiary);">
+        Text Tertiary
+      </div>
+    </div>
+  </section>
+
+  <!-- Initialize Micro-Interactions -->
+  <script>
+    // Note: This is a simplified version. In React, use the proper utilities.
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize scroll progress
+      const progressBar = document.querySelector('.scroll-progress');
+      if (progressBar) {
+        window.addEventListener('scroll', () => {
+          const scrollTop = window.pageYOffset;
+          const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = (scrollTop / scrollHeight) * 100;
+          progressBar.style.transform = `scaleX(${progress / 100})`;
+        });
+      }
+
+      // Simple 3D card tilt (basic version)
+      document.querySelectorAll('.card-3d').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          const rotateX = ((y - centerY) / centerY) * 10;
+          const rotateY = ((centerX - x) / centerX) * 10;
+
+          const content = card.querySelector('.card-3d-content');
+          if (content) {
+            content.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+          }
+        });
+
+        card.addEventListener('mouseleave', () => {
+          const content = card.querySelector('.card-3d-content');
+          if (content) {
+            content.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+          }
+        });
+      });
+
+      // Intersection Observer for scroll animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.animate-on-scroll').forEach(el => {
+        observer.observe(el);
+      });
+    });
+  </script>
+</body>
+</html>

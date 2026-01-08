@@ -1,0 +1,763 @@
+/* ╔═══════════════════════════════════════════════════════════════════════════╗
+   ║  PREMIUM TYPOGRAPHY & MICRO-INTERACTIONS                                  ║
+   ║  Opti.ai + Apple level design                                             ║
+   ╚═══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENHANCED TYPOGRAPHY SYSTEM
+   Fluid type scale with optical sizing and advanced features
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Fluid Typography Scale - Uses clamp() for responsive sizing */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.15vw, 0.813rem);        /* 12px → 13px */
+  --text-sm: clamp(0.875rem, 0.825rem + 0.2vw, 0.938rem);     /* 14px → 15px */
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);       /* 16px → 18px */
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.313rem);     /* 18px → 21px */
+  --text-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);         /* 20px → 24px */
+  --text-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);      /* 24px → 30px */
+  --text-3xl: clamp(1.875rem, 1.65rem + 1.1vw, 2.5rem);       /* 30px → 40px */
+  --text-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3.25rem);       /* 36px → 52px */
+  --text-5xl: clamp(3rem, 2.5rem + 2.5vw, 4.5rem);            /* 48px → 72px */
+  --text-6xl: clamp(3.75rem, 3rem + 3.75vw, 6rem);            /* 60px → 96px */
+  --text-7xl: clamp(4.5rem, 3.5rem + 5vw, 8rem);              /* 72px → 128px */
+
+  /* Letter Spacing per Size (optical adjustments) */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+  --tracking-ultra: 0.15em;
+
+  /* Word Spacing for Headlines */
+  --word-spacing-tight: -0.05em;
+  --word-spacing-normal: 0em;
+  --word-spacing-wide: 0.1em;
+
+  /* Variable Font Features */
+  --font-feature-default: 'kern' 1, 'liga' 1, 'calt' 1;
+  --font-feature-numeric: 'tnum' 1, 'lnum' 1;
+  --font-feature-fractions: 'frac' 1;
+  --font-feature-ordinal: 'ordn' 1;
+  --font-feature-stylistic: 'ss01' 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Typography Classes - Fluid Responsive Type
+   ───────────────────────────────────────────────────────────────────────── */
+
+.type-xs {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+.type-sm {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-normal);
+}
+
+.type-base {
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-normal);
+}
+
+.type-lg {
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-normal);
+}
+
+.type-xl {
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+}
+
+.type-2xl {
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+}
+
+.type-3xl {
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tighter);
+  word-spacing: var(--word-spacing-tight);
+}
+
+.type-4xl {
+  font-size: var(--text-4xl);
+  letter-spacing: var(--tracking-tighter);
+  word-spacing: var(--word-spacing-tight);
+}
+
+.type-5xl {
+  font-size: var(--text-5xl);
+  letter-spacing: -0.03em;
+  word-spacing: var(--word-spacing-tight);
+}
+
+.type-6xl {
+  font-size: var(--text-6xl);
+  letter-spacing: -0.04em;
+  word-spacing: var(--word-spacing-tight);
+}
+
+.type-7xl {
+  font-size: var(--text-7xl);
+  letter-spacing: -0.05em;
+  word-spacing: var(--word-spacing-tight);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Advanced Typography Features
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Text Wrap Balance for Headlines */
+.text-balance {
+  text-wrap: balance;
+  -webkit-text-wrap: balance;
+  -moz-text-wrap: balance;
+}
+
+/* Prevent Orphans */
+.text-pretty {
+  text-wrap: pretty;
+  -webkit-text-wrap: pretty;
+  -moz-text-wrap: pretty;
+}
+
+/* Hyphenation Rules */
+.text-hyphenate {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphenate-limit-chars: 6 3 2;
+  hyphenate-limit-lines: 2;
+}
+
+/* Optical Sizing */
+.optical-size-auto {
+  font-optical-sizing: auto;
+}
+
+/* Numeric Features */
+.font-tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: var(--font-feature-numeric);
+}
+
+.font-proportional-nums {
+  font-variant-numeric: proportional-nums;
+}
+
+/* OpenType Features */
+.font-ligatures {
+  font-variant-ligatures: common-ligatures;
+  font-feature-settings: var(--font-feature-default);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Gradient Text Animations
+   ───────────────────────────────────────────────────────────────────────── */
+
+.text-gradient-animate {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-light) 0%,
+    var(--color-accent) 25%,
+    var(--color-accent-warm) 50%,
+    var(--color-accent) 75%,
+    var(--color-accent-light) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 8s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+.text-shimmer {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 1) 20%,
+    rgba(255, 255, 255, 0.7) 40%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 3s linear infinite;
+}
+
+@keyframes textShimmer {
+  to { background-position: 200% center; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATED UNDERLINES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.link-underline-slide {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s var(--ease-out-quart);
+}
+
+.link-underline-slide::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent),
+    var(--color-accent-light)
+  );
+  transition: width 0.4s var(--ease-out-expo);
+}
+
+.link-underline-slide:hover::after {
+  width: 100%;
+}
+
+/* Underline from Center */
+.link-underline-center {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-underline-center::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transform: translateX(-50%);
+  transition: width 0.4s var(--ease-out-expo);
+}
+
+.link-underline-center:hover::after {
+  width: 100%;
+}
+
+/* Draw Underline (SVG path animation style) */
+.link-underline-draw {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-underline-draw::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.link-underline-draw:hover::after {
+  transform: scaleX(1);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RIPPLE EFFECT (Button Click)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 0;
+  transition: width 0.6s ease-out, height 0.6s ease-out, opacity 0.6s ease-out;
+}
+
+/* Ripple variant for dark backgrounds */
+.ripple-dark::after {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Ripple variant for accent */
+.ripple-accent::after {
+  background: rgba(6, 182, 212, 0.4);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3D CARD TILT (Follows Cursor)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+.card-3d-content {
+  transform-style: preserve-3d;
+  transition: transform 0.3s var(--ease-out-quart);
+}
+
+/* Applied via JavaScript based on mouse position */
+.card-3d:hover .card-3d-content {
+  /* Transform will be set dynamically */
+}
+
+/* Shine overlay that follows tilt */
+.card-3d-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card-3d:hover .card-3d-shine {
+  opacity: 1;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOVER LIFT EFFECT (3D Shadow)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.hover-lift {
+  position: relative;
+  transition: transform 0.3s var(--ease-out-expo),
+              box-shadow 0.3s var(--ease-out-expo);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    0 16px 32px rgba(0, 0, 0, 0.2),
+    0 24px 48px rgba(0, 0, 0, 0.25);
+}
+
+/* Lift with glow */
+.hover-lift-glow {
+  position: relative;
+  transition: transform 0.3s var(--ease-out-expo),
+              box-shadow 0.3s var(--ease-out-expo);
+}
+
+.hover-lift-glow:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.15),
+    0 16px 32px rgba(6, 182, 212, 0.3),
+    0 24px 48px rgba(6, 182, 212, 0.4),
+    0 0 64px rgba(6, 182, 212, 0.2);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ICON ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Bounce on Hover */
+.icon-bounce {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-elastic);
+}
+
+.icon-bounce:hover {
+  transform: translateY(-4px);
+  animation: iconBounce 0.6s ease-in-out;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(-4px); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Rotate on Hover */
+.icon-rotate {
+  display: inline-block;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.icon-rotate:hover {
+  transform: rotate(360deg);
+}
+
+/* Pulse */
+.icon-pulse {
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Wiggle */
+.icon-wiggle:hover {
+  animation: iconWiggle 0.5s ease-in-out;
+}
+
+@keyframes iconWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FORM INPUT ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.input-float-label {
+  position: relative;
+  margin-top: 24px;
+}
+
+.input-float-label input,
+.input-float-label textarea {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-primary);
+  transition: border-color 0.3s var(--ease-out-quart);
+  font-family: inherit;
+}
+
+.input-float-label label {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  font-size: 16px;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+  transition: all 0.3s var(--ease-out-expo);
+  transform-origin: left center;
+}
+
+/* Float label on focus or when filled */
+.input-float-label input:focus + label,
+.input-float-label input:not(:placeholder-shown) + label,
+.input-float-label textarea:focus + label,
+.input-float-label textarea:not(:placeholder-shown) + label {
+  top: -12px;
+  left: 12px;
+  font-size: 12px;
+  color: var(--color-accent);
+  background: var(--color-bg-primary);
+  padding: 0 4px;
+}
+
+.input-float-label input:focus,
+.input-float-label textarea:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHECKBOX & CHECKMARK ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.checkbox-animated {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-animated input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-animated__box {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background: transparent;
+  transition: all 0.3s var(--ease-out-expo);
+  margin-right: 12px;
+}
+
+.checkbox-animated input:checked ~ .checkbox-animated__box {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Checkmark SVG */
+.checkbox-animated__checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  stroke: white;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.checkbox-animated__checkmark path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.checkbox-animated input:checked ~ .checkbox-animated__box .checkbox-animated__checkmark path {
+  stroke-dashoffset: 0;
+}
+
+/* Checkbox scale animation */
+.checkbox-animated input:checked ~ .checkbox-animated__box {
+  animation: checkboxPop 0.3s ease-out;
+}
+
+@keyframes checkboxPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHARACTER SPLIT ANIMATION CLASSES
+   Applied to individual characters via JavaScript
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.char-reveal {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: charReveal 0.6s var(--ease-out-expo) forwards;
+}
+
+@keyframes charReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger delay applied via style attribute */
+.char-reveal[style*="animation-delay"] {
+  /* Delays set inline: style="animation-delay: 0.05s" etc */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADING SKELETON
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeletonLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NUMBER COUNTER STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.counter {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: var(--font-feature-numeric);
+}
+
+.counter--highlight {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMOOTH REVEAL (Intersection Observer Target)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s var(--ease-out-expo),
+              transform 0.8s var(--ease-out-expo);
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animate-on-scroll--delay-1 { transition-delay: 0.1s; }
+.animate-on-scroll--delay-2 { transition-delay: 0.2s; }
+.animate-on-scroll--delay-3 { transition-delay: 0.3s; }
+.animate-on-scroll--delay-4 { transition-delay: 0.4s; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAGNETIC BUTTON (Cursor Attraction)
+   Requires JavaScript for cursor tracking
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.btn-magnetic {
+  position: relative;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+
+/* Transform set via JavaScript based on cursor distance */
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASS MORPH CARD VARIANTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(6, 182, 212, 0.1);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CURSOR TRAIL EFFECT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cursor-trail {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+.cursor-trail--active {
+  opacity: 0.6;
+  animation: trailFade 0.5s ease-out forwards;
+}
+
+@keyframes trailFade {
+  to {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hardware acceleration for animated elements */
+.hw-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE TYPOGRAPHY ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  :root {
+    /* Slightly reduce scale on mobile for better fit */
+    --text-5xl: clamp(2.5rem, 2rem + 2.5vw, 3.5rem);
+    --text-6xl: clamp(3rem, 2.5rem + 2.5vw, 4.5rem);
+    --text-7xl: clamp(3.5rem, 3rem + 2.5vw, 5rem);
+  }
+}

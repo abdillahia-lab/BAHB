@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Premium Glass Effects - HTML Examples</title>
+  <link rel="stylesheet" href="src/pages/LandingPage3.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     IMPORTANT: Add SVG Filters First (at bottom of body, before </body>)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- Example 1: Surface Layer - Hero Stats Panel -->
+<section class="hero">
+  <div class="hero__stats glass-panel glass-panel--surface">
+    <!-- Optional: Add bottom shadow for extra depth -->
+    <div class="glass-panel__edge-shadow"></div>
+
+    <div class="hero__stat">
+      <div class="hero__stat-value">10M+</div>
+      <div class="hero__stat-label">Active Users</div>
+    </div>
+    <div class="hero__stat-divider"></div>
+    <div class="hero__stat">
+      <div class="hero__stat-value">99.9%</div>
+      <div class="hero__stat-label">Uptime</div>
+    </div>
+    <div class="hero__stat-divider"></div>
+    <div class="hero__stat">
+      <div class="hero__stat-value">24/7</div>
+      <div class="hero__stat-label">Monitoring</div>
+    </div>
+  </div>
+</section>
+
+<!-- Example 2: Default/Elevated Layer - Solution Cards -->
+<section class="solutions">
+  <div class="solutions__grid">
+
+    <!-- Card 1 -->
+    <div class="solution-card glass-panel">
+      <div class="glass-panel__edge-shadow"></div>
+
+      <div class="solution-card__icon">
+        <svg><!-- icon svg --></svg>
+      </div>
+      <h3 class="solution-card__title">Real-time Monitoring</h3>
+      <p class="solution-card__desc">Track system health across all services with instant alerts.</p>
+      <ul class="solution-card__features">
+        <li><span class="check-icon">✓</span> Live dashboard</li>
+        <li><span class="check-icon">✓</span> Custom alerts</li>
+        <li><span class="check-icon">✓</span> Performance metrics</li>
+      </ul>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="solution-card glass-panel">
+      <div class="glass-panel__edge-shadow"></div>
+      <div class="solution-card__icon">
+        <svg><!-- icon svg --></svg>
+      </div>
+      <h3 class="solution-card__title">Automated Healing</h3>
+      <p class="solution-card__desc">Self-healing infrastructure that resolves issues automatically.</p>
+      <ul class="solution-card__features">
+        <li><span class="check-icon">✓</span> Auto-recovery</li>
+        <li><span class="check-icon">✓</span> Smart routing</li>
+        <li><span class="check-icon">✓</span> Failover protection</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- Example 3: Floating Layer - Dashboard/Modal Overlay -->
+<section class="platform">
+  <div class="platform__visual">
+
+    <div class="dashboard glass-panel glass-panel--floating">
+      <div class="glass-panel__edge-shadow"></div>
+
+      <div class="dashboard__header">
+        <div class="dashboard__dots">
+          <div class="dashboard__dot dashboard__dot--red"></div>
+          <div class="dashboard__dot dashboard__dot--yellow"></div>
+          <div class="dashboard__dot dashboard__dot--green"></div>
+        </div>
+        <div class="dashboard__title">System Dashboard</div>
+      </div>
+
+      <div class="dashboard__body">
+        <div class="dashboard__status-list">
+          <div class="status-item status-item--ok">
+            <div class="status-item__indicator"></div>
+            <span>API Gateway: Online</span>
+          </div>
+          <div class="status-item status-item--ok">
+            <div class="status-item__indicator"></div>
+            <span>Database: Healthy</span>
+          </div>
+          <div class="status-item status-item--warn">
+            <div class="status-item__indicator"></div>
+            <span>Cache: High Load</span>
+          </div>
+        </div>
+
+        <div class="dashboard__heatmap">
+          <div class="heatmap-cell" style="--heat-intensity: 0.9"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.7"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.5"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.3"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.4"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.8"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.6"></div>
+          <div class="heatmap-cell" style="--heat-intensity: 0.2"></div>
+        </div>
+
+        <div class="dashboard__footer">Last updated: 2 minutes ago</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Example 4: Glass Text - Hero Headlines -->
+<section class="hero">
+  <div class="hero__content">
+
+    <!-- Standard glass text -->
+    <h1 class="hero__headline">
+      <div class="hero__headline-line glass-text" data-text="Intelligent Monitoring">
+        Intelligent Monitoring
+      </div>
+      <!-- Glass text with glow variant -->
+      <div class="hero__headline-accent glass-text glass-text--glow" data-text="Built for Scale">
+        Built for Scale
+      </div>
+    </h1>
+
+    <p class="hero__description">
+      Enterprise-grade system monitoring with AI-powered insights.
+    </p>
+
+  </div>
+</section>
+
+<!-- Example 5: Coverage Stats with Surface Layer -->
+<section class="coverage">
+  <div class="coverage__stats">
+
+    <div class="stat-card glass-panel glass-panel--surface">
+      <div class="glass-panel__edge-shadow"></div>
+      <span class="stat-card__value">150+</span>
+      <span class="stat-card__label">Countries</span>
+    </div>
+
+    <div class="stat-card glass-panel glass-panel--surface">
+      <div class="glass-panel__edge-shadow"></div>
+      <span class="stat-card__value">50K+</span>
+      <span class="stat-card__label">Servers</span>
+    </div>
+
+    <div class="stat-card glass-panel glass-panel--surface">
+      <div class="glass-panel__edge-shadow"></div>
+      <span class="stat-card__value">1B+</span>
+      <span class="stat-card__label">Requests/Day</span>
+    </div>
+
+    <div class="stat-card glass-panel glass-panel--surface">
+      <div class="glass-panel__edge-shadow"></div>
+      <span class="stat-card__value">99.99%</span>
+      <span class="stat-card__label">Reliability</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- Example 6: CTA Section with Default Glass -->
+<section class="cta">
+  <div class="cta__container glass-panel">
+    <div class="glass-panel__edge-shadow"></div>
+
+    <h2 class="cta__title">Ready to Get Started?</h2>
+    <p class="cta__desc">
+      Join thousands of companies monitoring their infrastructure with Jinki Intelligence.
+    </p>
+
+    <div class="hero__actions">
+      <a href="#" class="btn btn--primary btn--lg liquid-metal">
+        Start Free Trial
+        <svg class="btn__arrow" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 3l7 7-7 7M3 10h14"/>
+        </svg>
+      </a>
+      <a href="#" class="btn btn--glass btn--lg">
+        View Demo
+      </a>
+    </div>
+
+    <span class="cta__note">No credit card required • 14-day free trial</span>
+  </div>
+</section>
+
+<!-- Example 7: Navigation with Glass Effect (already applied in CSS) -->
+<nav class="nav nav--glass">
+  <div class="nav__container">
+    <a href="#" class="nav__brand">
+      <div class="nav__logo">
+        <svg><!-- logo svg --></svg>
+      </div>
+      <div class="nav__wordmark">JINKI INTELLIGENCE</div>
+    </a>
+
+    <div class="nav__menu">
+      <a href="#solutions" class="nav__link">Solutions</a>
+      <a href="#platform" class="nav__link">Platform</a>
+      <a href="#about" class="nav__link">About</a>
+      <a href="#contact" class="nav__cta liquid-metal">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Example 8: Custom Glass Panel with Warm Tint -->
+<div class="glass-panel glass-panel--surface" style="background:
+  repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 2px),
+  repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0px, transparent 1px, transparent 2px),
+  linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.1) 100%),
+  rgba(200, 137, 61, 0.06);">
+  <!-- Warm gold-tinted glass -->
+  <div class="glass-panel__edge-shadow"></div>
+  <p>Custom warm-tinted glass panel using Opti.ai gold accent color</p>
+</div>
+
+<!-- Example 9: Nested Glass (Use Sparingly!) -->
+<div class="glass-panel glass-panel--floating">
+  <div class="glass-panel__edge-shadow"></div>
+
+  <h2>Outer Floating Panel</h2>
+
+  <!-- Inner panel with less blur for contrast -->
+  <div class="glass-panel glass-panel--surface" style="margin: 20px;">
+    <div class="glass-panel__edge-shadow"></div>
+    <p>Inner surface panel for contrast</p>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     REQUIRED: SVG NOISE FILTERS
+     Place this at the BOTTOM of <body>, just before </body>
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<svg style="position: absolute; width: 0; height: 0;">
+  <defs>
+    <!-- Standard noise filter for regular glass panels -->
+    <filter id="glass-noise">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.9"
+        numOctaves="4"
+        stitchTiles="stitch"
+      />
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 0.05"/>
+      </feComponentTransfer>
+      <feBlend mode="overlay" in="SourceGraphic"/>
+    </filter>
+
+    <!-- Stronger noise filter for floating panels -->
+    <filter id="glass-noise-strong">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="1.2"
+        numOctaves="5"
+        stitchTiles="stitch"
+      />
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 0.08"/>
+      </feComponentTransfer>
+      <feBlend mode="overlay" in="SourceGraphic"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     USAGE QUICK REFERENCE
+     ═══════════════════════════════════════════════════════════════════════════
+
+     GLASS PANEL VARIANTS:
+     ├─ .glass-panel (default/elevated)    → 16px blur, balanced
+     ├─ .glass-panel--surface              → 12px blur, brightest, closest
+     └─ .glass-panel--floating             → 24px blur, softest, furthest
+
+     OPTIONAL CHILD ELEMENT:
+     └─ .glass-panel__edge-shadow          → Adds bottom shadow for extra depth
+
+     GLASS TEXT:
+     ├─ .glass-text                        → Standard frosted text
+     └─ .glass-text--glow                  → Text with cyan glow
+
+     IMPORTANT:
+     • Always add data-text attribute matching content for glass text
+     • Add SVG filters to HTML (shown above)
+     • Use .glass-panel__edge-shadow for extra depth
+     • Don't nest glass panels more than 2 levels deep
+     • Test on mobile devices (backdrop-filter can be expensive)
+
+     VISUAL HIERARCHY:
+     Surface (z=3)  → Primary CTAs, key stats, prominent UI
+     Elevated (z=2) → Content cards, panels, standard UI
+     Floating (z=1) → Backgrounds, overlays, atmospheric elements
+
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+</body>
+</html>

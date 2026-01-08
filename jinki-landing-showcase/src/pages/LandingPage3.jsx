@@ -1,5 +1,17 @@
 import { useEffect, useState, useRef } from 'react'
 import './LandingPage3.css'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+// Premium Components
+import Preloader from '../components/Preloader'
+import { CustomCursor } from '../components/CustomCursor'
+
+// Premium Hooks
+import { useLenis } from '../hooks/useLenis'
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger)
 
 export default function LandingPage3() {
   const [navSolid, setNavSolid] = useState(false)
@@ -7,10 +19,674 @@ export default function LandingPage3() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [scrollProgress, setScrollProgress] = useState(0)
   const [pageLoaded, setPageLoaded] = useState(false)
+  const [showPreloader, setShowPreloader] = useState(true)
+
+  // Initialize Lenis smooth scroll
+  useLenis()
+
+  // Refs for GSAP animations
   const videoRef = useRef(null)
   const heroRef = useRef(null)
   const scrollProgressRef = useRef(null)
+  const problemNumberRef = useRef(null)
+  const solutionCardsRef = useRef([])
+  const platformDashboardRef = useRef(null)
+  const mapMarkersRef = useRef([])
+  const ctaRef = useRef(null)
 
+  // ══════════════════════════════════════════════════════════════
+  // GSAP SCROLLTRIGGER ANIMATIONS
+  // ══════════════════════════════════════════════════════════════
+  useEffect(() => {
+    // Kill all existing ScrollTriggers on cleanup
+    const ctx = gsap.context(() => {
+
+      // ─────────────────────────────────────────────────────────
+      // 1. HERO: DRAMATIC 3D PARALLAX - Multi-Layer Depth System
+      // ─────────────────────────────────────────────────────────
+
+      // Layer 0: Gradient Orbs (slowest - 0.1x scroll)
+      gsap.to('.parallax-layer--0', {
+        yPercent: 10,
+        scale: 1.4,
+        opacity: 0.3,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2.5,
+        }
+      })
+
+      // Layer 1: Large Geometric Shapes (0.2x scroll)
+      gsap.to('.parallax-layer--1', {
+        yPercent: 20,
+        rotateZ: 45,
+        scale: 1.3,
+        opacity: 0.4,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2,
+        }
+      })
+
+      // Layer 2: Video Background (0.4x scroll)
+      gsap.to('.hero__video-container', {
+        yPercent: 40,
+        scale: 1.2,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.5,
+        }
+      })
+
+      // Layer 3: Medium Shapes + Grid (0.6x scroll)
+      gsap.to('.parallax-layer--3', {
+        yPercent: 60,
+        opacity: 0.5,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        }
+      })
+
+      // Layer 4: Hero Content (1x - normal scroll with dramatic fade + scale)
+      gsap.to('.hero__content', {
+        opacity: 0,
+        y: -80,
+        scale: 0.85,
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        }
+      })
+
+      // Stats bar fade
+      gsap.to('.hero__stats', {
+        opacity: 0,
+        y: -60,
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        }
+      })
+
+      // Layer 5: Floating Particles + Drone (1.3x - faster than scroll)
+      gsap.to('.parallax-layer--5', {
+        yPercent: 130,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.5,
+        }
+      })
+
+      // Depth fog intensifies
+      gsap.to('.parallax-depth-fog', {
+        opacity: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        }
+      })
+
+      // Individual parallax elements animations
+      gsap.to('.parallax-orb', {
+        scale: 1.5,
+        opacity: 0,
+        stagger: 0.1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.5,
+        }
+      })
+
+      gsap.to('.parallax-drone', {
+        rotation: 360,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2,
+        }
+      })
+
+      // Scroll indicator fade
+      gsap.to('.hero__scroll', {
+        opacity: 0,
+        y: 30,
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: '.hero',
+          start: 'top top',
+          end: '20% top',
+          scrub: 1,
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 2. HERO: Initial Load Animation
+      // ─────────────────────────────────────────────────────────
+      const heroTl = gsap.timeline({ delay: 0.3 })
+
+      heroTl
+        .from('.hero__badge', {
+          opacity: 0,
+          y: 30,
+          duration: 1,
+          ease: 'power4.out'
+        })
+        .from('.hero__headline-line', {
+          opacity: 0,
+          y: 50,
+          duration: 1.2,
+          ease: 'power4.out',
+          stagger: 0.15
+        }, '-=0.6')
+        .from('.hero__headline-accent', {
+          opacity: 0,
+          y: 50,
+          duration: 1.2,
+          ease: 'power4.out'
+        }, '-=0.9')
+        .from('.hero__description', {
+          opacity: 0,
+          y: 30,
+          duration: 1,
+          ease: 'power4.out'
+        }, '-=0.7')
+        .from('.hero__actions .btn', {
+          opacity: 0,
+          y: 30,
+          duration: 0.8,
+          ease: 'power4.out',
+          stagger: 0.15
+        }, '-=0.5')
+        .from('.hero__stat', {
+          opacity: 0,
+          y: 40,
+          duration: 1,
+          ease: 'elastic.out(1, 0.75)',
+          stagger: 0.1
+        }, '-=0.4')
+        .from('.hero__scroll', {
+          opacity: 0,
+          y: 20,
+          duration: 0.8,
+          ease: 'power2.out'
+        }, '-=0.6')
+
+      // ─────────────────────────────────────────────────────────
+      // 3. PROBLEM: Animated Counter (0% → 13%)
+      // ─────────────────────────────────────────────────────────
+      if (problemNumberRef.current) {
+        const counter = { value: 0 }
+
+        gsap.to(counter, {
+          value: 13,
+          duration: 2.5,
+          ease: 'power4.out',
+          scrollTrigger: {
+            trigger: '.problem',
+            start: 'top 75%',
+            toggleActions: 'play none none none'
+          },
+          onUpdate: function() {
+            if (problemNumberRef.current) {
+              problemNumberRef.current.textContent = Math.round(counter.value) + '%'
+            }
+          }
+        })
+      }
+
+      // Problem content reveal
+      gsap.from('.problem__content', {
+        opacity: 0,
+        x: -60,
+        duration: 1.2,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.problem',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.problem__metric', {
+        opacity: 0,
+        scale: 0.8,
+        duration: 1.5,
+        ease: 'elastic.out(1, 0.6)',
+        scrollTrigger: {
+          trigger: '.problem',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 4. SOLUTIONS: Staggered 3D Card Reveals
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.solutions__header', {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.solutions',
+          start: 'top 75%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.solution-card', {
+        opacity: 0,
+        y: 80,
+        rotationX: -25,
+        rotationY: 15,
+        scale: 0.9,
+        duration: 1.2,
+        ease: 'power4.out',
+        stagger: {
+          amount: 0.6,
+          from: 'start'
+        },
+        scrollTrigger: {
+          trigger: '.solutions__grid',
+          start: 'top 75%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Add subtle hover animations for solution cards
+      document.querySelectorAll('.solution-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, {
+            y: -10,
+            scale: 1.02,
+            duration: 0.4,
+            ease: 'power2.out'
+          })
+        })
+
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, {
+            y: 0,
+            scale: 1,
+            duration: 0.4,
+            ease: 'power2.out'
+          })
+        })
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 5. PLATFORM: Dashboard Tilt Animation
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.platform__content', {
+        opacity: 0,
+        x: -80,
+        duration: 1.2,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.platform',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.platform-feature', {
+        opacity: 0,
+        x: -40,
+        duration: 0.8,
+        ease: 'power3.out',
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: '.platform__features',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Dashboard 3D tilt on scroll
+      gsap.from('.dashboard', {
+        opacity: 0,
+        x: 100,
+        rotationY: -20,
+        rotationX: 10,
+        scale: 0.85,
+        duration: 1.5,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.platform__visual',
+          start: 'top 75%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Dashboard continuous tilt effect on scroll
+      gsap.to('.dashboard', {
+        rotationY: 5,
+        rotationX: -3,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.platform',
+          start: 'top 50%',
+          end: 'bottom top',
+          scrub: 2
+        }
+      })
+
+      // Animate dashboard content
+      gsap.from('.status-item', {
+        opacity: 0,
+        x: -30,
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: '.dashboard',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.heatmap-cell', {
+        opacity: 0,
+        scale: 0,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
+        stagger: {
+          amount: 0.8,
+          from: 'random'
+        },
+        scrollTrigger: {
+          trigger: '.dashboard__heatmap',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 6. COVERAGE: Map Markers Sequential Animation
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.coverage__header', {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.coverage',
+          start: 'top 75%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // SVG map path draw animation
+      gsap.from('.coverage__map-outline', {
+        strokeDashoffset: 1000,
+        strokeDasharray: 1000,
+        duration: 2,
+        ease: 'power2.inOut',
+        scrollTrigger: {
+          trigger: '.coverage__map',
+          start: 'top 75%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Map grid fade in
+      gsap.from('.coverage__map-grid', {
+        opacity: 0,
+        duration: 1.5,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.coverage__map',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Map markers animate in sequence
+      gsap.from('.map-marker', {
+        opacity: 0,
+        scale: 0,
+        y: -50,
+        duration: 1,
+        ease: 'elastic.out(1, 0.6)',
+        stagger: 0.25,
+        scrollTrigger: {
+          trigger: '.coverage__map',
+          start: 'top 65%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Pulse animations for markers
+      gsap.to('.map-marker__pulse', {
+        scale: 2,
+        opacity: 0,
+        duration: 2,
+        ease: 'power2.out',
+        repeat: -1,
+        stagger: 0.3
+      })
+
+      // Stats cards reveal
+      gsap.from('.stat-card', {
+        opacity: 0,
+        y: 60,
+        rotationX: -15,
+        duration: 1,
+        ease: 'power4.out',
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: '.coverage__stats',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 7. ABOUT: Elegant Reveal
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.about__container', {
+        opacity: 0,
+        y: 80,
+        duration: 1.5,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.about',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.about__motto', {
+        opacity: 0,
+        scale: 0.9,
+        duration: 1.2,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.about',
+          start: 'top 65%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.about__text p', {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        ease: 'power3.out',
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: '.about__text',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 8. CTA: Pinned Dramatic Scale + Opacity
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.cta__container', {
+        opacity: 0,
+        scale: 0.85,
+        duration: 1.5,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: '.cta',
+          start: 'top 70%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // Pin CTA section for dramatic effect
+      ScrollTrigger.create({
+        trigger: '.cta',
+        start: 'top 20%',
+        end: 'bottom 80%',
+        pin: false, // Set to true for pinning effect
+        pinSpacing: false
+      })
+
+      gsap.from('.cta__title', {
+        opacity: 0,
+        y: 50,
+        scale: 0.95,
+        duration: 1.2,
+        ease: 'elastic.out(1, 0.6)',
+        scrollTrigger: {
+          trigger: '.cta',
+          start: 'top 65%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.cta__desc', {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.cta',
+          start: 'top 60%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.cta .btn', {
+        opacity: 0,
+        scale: 0.9,
+        y: 40,
+        duration: 1.2,
+        ease: 'elastic.out(1, 0.5)',
+        scrollTrigger: {
+          trigger: '.cta',
+          start: 'top 55%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      gsap.from('.cta__note', {
+        opacity: 0,
+        y: 20,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.cta',
+          start: 'top 50%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 9. TRUST BAR: Infinite Marquee Effect (Optional)
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.trust__container', {
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.trust',
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 10. FOOTER: Slide Up
+      // ─────────────────────────────────────────────────────────
+      gsap.from('.footer__container', {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.footer',
+          start: 'top 90%',
+          toggleActions: 'play none none none'
+        }
+      })
+
+      // ─────────────────────────────────────────────────────────
+      // 11. HORIZONTAL SCROLL SECTION (Optional Enhancement)
+      // ─────────────────────────────────────────────────────────
+      // Uncomment below to add horizontal scroll to solutions grid
+      /*
+      const horizontalSections = gsap.utils.toArray('.solutions__grid')
+      horizontalSections.forEach((section) => {
+        const cards = section.querySelectorAll('.solution-card')
+
+        gsap.to(cards, {
+          xPercent: -100 * (cards.length - 1),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            pin: true,
+            scrub: 1,
+            snap: 1 / (cards.length - 1),
+            end: () => '+=' + section.offsetWidth
+          }
+        })
+      })
+      */
+
+    })
+
+    return () => ctx.revert() // Cleanup all GSAP animations
+  }, [])
+
+  // ══════════════════════════════════════════════════════════════
+  // STANDARD EFFECTS (Non-GSAP)
+  // ══════════════════════════════════════════════════════════════
   useEffect(() => {
     // Page load entrance sequence
     const loadTimer = setTimeout(() => setPageLoaded(true), 100)
@@ -33,29 +709,59 @@ export default function LandingPage3() {
     window.addEventListener('scroll', handleScroll, { passive: true })
 
     // Mouse tracking for 3D effects
+    let targetMouse = { x: 0, y: 0 }
+    let currentMouse = { x: 0, y: 0 }
+    let animationFrameId = null
+
     const handleMouseMove = (e) => {
       if (heroRef.current) {
         const rect = heroRef.current.getBoundingClientRect()
-        const x = (e.clientX - rect.left) / rect.width - 0.5
-        const y = (e.clientY - rect.top) / rect.height - 0.5
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2 // -1 to 1
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2 // -1 to 1
+        targetMouse = { x, y }
         setMousePos({ x, y })
       }
     }
     window.addEventListener('mousemove', handleMouseMove, { passive: true })
 
-    // Reveal animations with IntersectionObserver
-    const reveals = document.querySelectorAll('.reveal')
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed')
-          }
-        })
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    )
-    reveals.forEach((el) => observer.observe(el))
+    // Smooth mouse parallax animation loop
+    const animateMouseParallax = () => {
+      // Smooth easing (lerp)
+      const ease = 0.08
+      currentMouse.x += (targetMouse.x - currentMouse.x) * ease
+      currentMouse.y += (targetMouse.y - currentMouse.y) * ease
+
+      // Apply parallax to each layer
+      const layers = document.querySelectorAll('.parallax-layer')
+      layers.forEach((layer) => {
+        const speed = parseFloat(layer.getAttribute('data-mouse') || 0)
+        const moveX = currentMouse.x * speed
+        const moveY = currentMouse.y * speed
+
+        // Apply subtle 3D rotation to layers
+        const rotateY = currentMouse.x * 2
+        const rotateX = -currentMouse.y * 2
+
+        layer.style.transform = `
+          translate3d(${moveX}px, ${moveY}px, 0)
+          perspective(1200px)
+          rotateY(${rotateY}deg)
+          rotateX(${rotateX}deg)
+        `
+      })
+
+      // Apply parallax to video container
+      const videoContainer = document.querySelector('.hero__video-container')
+      if (videoContainer) {
+        const moveX = currentMouse.x * 30
+        const moveY = currentMouse.y * 30
+        videoContainer.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`
+      }
+
+      // Continue animation loop
+      animationFrameId = requestAnimationFrame(animateMouseParallax)
+    }
+    animateMouseParallax()
 
     // Video autoplay
     if (videoRef.current) {
@@ -66,7 +772,9 @@ export default function LandingPage3() {
       clearTimeout(loadTimer)
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('mousemove', handleMouseMove)
-      observer.disconnect()
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
     }
   }, [])
 
@@ -76,9 +784,20 @@ export default function LandingPage3() {
   }
 
   return (
-    <div className={`page ${pageLoaded ? 'page--loaded' : 'page--loading'}`}>
-      {/* Scroll Progress Indicator */}
-      <div className="scroll-progress" ref={scrollProgressRef} />
+    <>
+      {/* ══════════════════════════════════════════════════════════════
+          CINEMATIC PRELOADER
+          ══════════════════════════════════════════════════════════════ */}
+      {showPreloader && (
+        <Preloader onComplete={() => setShowPreloader(false)} />
+      )}
+
+      {/* Custom Cursor - Premium magnetic effect */}
+      <CustomCursor />
+
+      <div className={`page ${pageLoaded ? 'page--loaded' : 'page--loading'} ${!showPreloader ? 'page--ready' : ''}`}>
+        {/* Scroll Progress Indicator */}
+        <div className="scroll-progress" ref={scrollProgressRef} />
 
       {/* ══════════════════════════════════════════════════════════════
           NAVIGATION - Glassmorphism Header
@@ -137,19 +856,94 @@ export default function LandingPage3() {
           <div className="hero__gradient-overlay" />
         </div>
 
-        {/* Parallax Depth Layers */}
-        <div className="hero__parallax-layer hero__parallax-layer--back">
+        {/* ═══════════════════════════════════════════════════════════
+            DRAMATIC 3D PARALLAX SYSTEM - 6 Depth Layers
+            ═══════════════════════════════════════════════════════ */}
+
+        {/* Layer 0: Back - Gradient Orbs (slowest 0.1x + mouse 10px) */}
+        <div className="parallax-layer parallax-layer--0" data-speed="0.1" data-mouse="10">
           <div className="parallax-orb parallax-orb--cyan" />
           <div className="parallax-orb parallax-orb--gold" />
+          <div className="parallax-orb parallax-orb--purple" />
         </div>
-        <div className="hero__parallax-layer hero__parallax-layer--mid">
-          <div className="parallax-shape parallax-shape--1" />
-          <div className="parallax-shape parallax-shape--2" />
+
+        {/* Layer 1: Large Geometric Shapes (0.2x + mouse 20px) */}
+        <div className="parallax-layer parallax-layer--1" data-speed="0.2" data-mouse="20">
+          <div className="parallax-shape parallax-shape--hexagon-1" />
+          <div className="parallax-shape parallax-shape--circle-1" />
+          <div className="parallax-shape parallax-shape--triangle-1" />
         </div>
-        <div className="hero__parallax-layer hero__parallax-layer--front">
-          <div className="parallax-shape parallax-shape--3" />
-          <div className="parallax-shape parallax-shape--4" />
+
+        {/* Layer 2: Video Background (0.4x + mouse 30px) - Handled separately */}
+
+        {/* Layer 3: Medium Shapes + Grid Lines (0.6x + mouse 40px) */}
+        <div className="parallax-layer parallax-layer--3" data-speed="0.6" data-mouse="40">
+          <div className="parallax-grid" />
+          <div className="parallax-shape parallax-shape--hexagon-2" />
+          <div className="parallax-shape parallax-shape--circle-2" />
+          <div className="parallax-node parallax-node--1">
+            <div className="node-core" />
+            <div className="node-ring" />
+          </div>
+          <div className="parallax-node parallax-node--2">
+            <div className="node-core" />
+            <div className="node-ring" />
+          </div>
         </div>
+
+        {/* Layer 4: Content (1x - normal scroll) - Handled by hero__content */}
+
+        {/* Layer 5: Front - Floating Particles + Drone (1.3x + mouse 60px - faster than scroll) */}
+        <div className="parallax-layer parallax-layer--5" data-speed="1.3" data-mouse="60">
+          {/* Particle System */}
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="parallax-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+
+          {/* Orbiting Drone/Satellite SVG */}
+          <div className="parallax-drone">
+            <svg viewBox="0 0 64 64" fill="none">
+              {/* Drone body */}
+              <circle cx="32" cy="32" r="6" fill="currentColor" opacity="0.8"/>
+              <circle cx="32" cy="32" r="4" stroke="currentColor" strokeWidth="1" fill="none"/>
+
+              {/* Drone arms */}
+              <line x1="32" y1="32" x2="18" y2="18" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+              <line x1="32" y1="32" x2="46" y2="18" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+              <line x1="32" y1="32" x2="18" y2="46" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+              <line x1="32" y1="32" x2="46" y2="46" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+
+              {/* Propellers */}
+              <circle cx="18" cy="18" r="4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5"/>
+              <circle cx="46" cy="18" r="4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5"/>
+              <circle cx="18" cy="46" r="4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5"/>
+              <circle cx="46" cy="46" r="4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5"/>
+
+              {/* Scan lines */}
+              <path d="M32 32 L32 10" stroke="currentColor" strokeWidth="0.5" opacity="0.3" strokeDasharray="2 2"/>
+              <circle cx="32" cy="32" r="20" stroke="currentColor" strokeWidth="0.5" opacity="0.2" strokeDasharray="4 4"/>
+            </svg>
+          </div>
+
+          {/* Data connection lines */}
+          <svg className="parallax-connections" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+            <line x1="20%" y1="20%" x2="80%" y2="80%" stroke="currentColor" strokeWidth="1" opacity="0.15" strokeDasharray="5 5"/>
+            <line x1="80%" y1="20%" x2="20%" y2="80%" stroke="currentColor" strokeWidth="1" opacity="0.15" strokeDasharray="5 5"/>
+            <line x1="50%" y1="10%" x2="50%" y2="90%" stroke="currentColor" strokeWidth="1" opacity="0.1" strokeDasharray="3 3"/>
+          </svg>
+        </div>
+
+        {/* Depth Fog Overlay - Creates atmospheric depth */}
+        <div className="parallax-depth-fog" />
 
         {/* Hero Content */}
         <div className="hero__wrapper">
@@ -239,9 +1033,9 @@ export default function LandingPage3() {
           PROBLEM - The Challenge
           ══════════════════════════════════════════════════════════════ */}
       <section className="problem">
-        <div className="problem__container reveal">
+        <div className="problem__container">
           <div className="problem__metric">
-            <span className="problem__number">13%</span>
+            <span className="problem__number" ref={problemNumberRef}>0%</span>
             <span className="problem__caption">
               of global data center<br/>
               capacity is in<br/>
@@ -264,7 +1058,7 @@ export default function LandingPage3() {
           ══════════════════════════════════════════════════════════════ */}
       <section id="solutions" className="solutions">
         <div className="solutions__container">
-          <header className="solutions__header reveal">
+          <header className="solutions__header">
             <span className="section-label">Capabilities</span>
             <h2 className="section-title">Comprehensive aerial intelligence.</h2>
             <p className="section-subtitle">Four critical detection systems working in continuous harmony.</p>
@@ -320,7 +1114,7 @@ export default function LandingPage3() {
                 features: ['Failure probability scoring', 'Maintenance window optimization', 'Parts lifecycle tracking']
               }
             ].map((item, i) => (
-              <article key={i} className="solution-card glass-panel reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+              <article key={i} className="solution-card glass-panel">
                 <div className="solution-card__icon">{item.icon}</div>
                 <h3 className="solution-card__title">{item.title}</h3>
                 <p className="solution-card__desc">{item.desc}</p>
@@ -343,7 +1137,7 @@ export default function LandingPage3() {
           ══════════════════════════════════════════════════════════════ */}
       <section id="platform" className="platform">
         <div className="platform__container">
-          <div className="platform__content reveal">
+          <div className="platform__content">
             <span className="section-label">Platform</span>
             <h2 className="section-title">Intelligence at a glance.</h2>
             <p className="platform__desc">
@@ -394,8 +1188,8 @@ export default function LandingPage3() {
             </div>
           </div>
 
-          <div className="platform__visual reveal">
-            <div className="dashboard glass-panel">
+          <div className="platform__visual">
+            <div className="dashboard glass-panel" ref={platformDashboardRef}>
               <div className="dashboard__header">
                 <div className="dashboard__dots">
                   <span className="dashboard__dot dashboard__dot--red" />
@@ -442,13 +1236,13 @@ export default function LandingPage3() {
           ══════════════════════════════════════════════════════════════ */}
       <section id="coverage" className="coverage">
         <div className="coverage__container">
-          <header className="coverage__header reveal">
+          <header className="coverage__header">
             <span className="section-label">Coverage</span>
             <h2 className="section-title">Built for Virginia's data center corridor.</h2>
             <p className="section-subtitle">Rapid deployment across the region's highest-density infrastructure zones.</p>
           </header>
 
-          <div className="coverage__map reveal">
+          <div className="coverage__map">
             <svg className="coverage__map-svg" viewBox="0 0 600 280" preserveAspectRatio="xMidYMid meet">
               {/* Virginia outline simplified */}
               <path
@@ -484,7 +1278,7 @@ export default function LandingPage3() {
             </div>
           </div>
 
-          <div className="coverage__stats reveal">
+          <div className="coverage__stats">
             <div className="stat-card glass-panel">
               <span className="stat-card__value">2M+ sq ft</span>
               <span className="stat-card__label">Facility Coverage</span>
@@ -509,7 +1303,7 @@ export default function LandingPage3() {
           ABOUT - Company Story
           ══════════════════════════════════════════════════════════════ */}
       <section id="about" className="about">
-        <div className="about__container reveal">
+        <div className="about__container">
           <span className="section-label">About</span>
           <h2 className="about__motto">Ex Alto Omnia</h2>
           <p className="about__tagline">From on high, all things.</p>
@@ -532,7 +1326,7 @@ export default function LandingPage3() {
           CTA - Final Call to Action
           ══════════════════════════════════════════════════════════════ */}
       <section id="contact" className="cta">
-        <div className="cta__container reveal">
+        <div className="cta__container" ref={ctaRef}>
           <h2 className="cta__title">Protect your infrastructure.</h2>
           <p className="cta__desc">
             Schedule a site assessment to see how aerial intelligence can reduce
@@ -580,6 +1374,7 @@ export default function LandingPage3() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }
