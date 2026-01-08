@@ -1,0 +1,179 @@
+# Trading Agent Production - Production Configuration
+
+system:
+  name: "TradingAgentPro"
+  version: "1.0.0"
+  environment: "production"
+  log_level: "INFO"
+  data_directory: "/data/trading_agent"
+
+# Competitive Agent Framework Configuration
+competitive_framework:
+  total_teams: 50
+  agents_per_team: 10
+  elimination_rounds: 49
+  general_judges: 10
+  trading_judges: 3
+  round_duration_seconds: 3600  # 1 hour per round
+
+  # Team specialist roles
+  specialist_roles:
+    - latency_optimization_expert
+    - security_architect
+    - system_architecture_designer
+    - parallel_processing_optimizer
+    - financial_analyst
+    - orchestration_specialist
+    - strategy_suggester
+    - code_reviewer
+    - risk_assessor
+    - integration_engineer
+
+# Performance Targets
+performance:
+  order_latency_p99_ms: 10
+  data_latency_ms: 1
+  api_latency_p95_ms: 100
+  throughput_rps: 10000
+  uptime_percent: 99.99
+
+# Security Configuration
+security:
+  encryption:
+    at_rest: "AES-256"
+    in_transit: "TLS-1.3"
+  authentication:
+    methods:
+      - mfa
+      - oauth2
+    session_timeout_minutes: 30
+    jwt_expiry_minutes: 60
+  authorization:
+    model: "rbac"
+    default_role: "viewer"
+
+# Trading Configuration
+trading:
+  enabled: true
+  mode: "paper"  # "paper" or "live"
+
+  brokers:
+    primary: "alpaca"
+    backup: "interactive_brokers"
+
+  risk_management:
+    max_position_size: 10000
+    max_portfolio_exposure: 0.8
+    max_single_stock_exposure: 0.15
+    max_daily_loss: 5000
+    max_drawdown: 0.15
+
+  strategies:
+    - momentum
+    - mean_reversion
+    - trend_following
+
+# Market Data Configuration
+market_data:
+  feeds:
+    primary:
+      provider: "alpaca"
+      feed_type: "iex"  # or "sip" for premium
+    backup:
+      provider: "polygon"
+
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - NVDA
+    - META
+    - TSLA
+    - SPY
+    - QQQ
+
+  cache:
+    ttl_seconds: 60
+    max_ticks_per_symbol: 1000
+
+# Database Configuration
+databases:
+  timescaledb:
+    host: "timescaledb"
+    port: 5432
+    database: "trading_data"
+    pool_size: 20
+
+  redis:
+    host: "redis-cluster"
+    port: 6379
+    cluster_mode: true
+
+  mongodb:
+    host: "mongodb"
+    port: 27017
+    database: "trading_documents"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 30
+  cors_origins:
+    - "*"
+  rate_limits:
+    standard: 100  # per minute
+    market_data: 1000  # per minute
+
+# Monitoring Configuration
+monitoring:
+  metrics:
+    provider: "prometheus"
+    port: 9090
+    scrape_interval_seconds: 15
+
+  logging:
+    provider: "elasticsearch"
+    host: "elasticsearch"
+    port: 9200
+    index_prefix: "trading-agent"
+    retention_days: 90
+
+  alerting:
+    provider: "pagerduty"
+    channels:
+      - slack
+      - email
+
+  tracing:
+    provider: "jaeger"
+    host: "jaeger"
+    port: 6831
+
+# Kubernetes Configuration
+kubernetes:
+  namespace: "trading-agent-prod"
+
+  resources:
+    api_gateway:
+      replicas: 3
+      cpu: "2"
+      memory: "4Gi"
+
+    trading_engine:
+      replicas: 3
+      cpu: "8"
+      memory: "16Gi"
+
+    market_data_service:
+      replicas: 10
+      cpu: "4"
+      memory: "8Gi"
+
+  autoscaling:
+    enabled: true
+    min_replicas: 3
+    max_replicas: 50
+    target_cpu_utilization: 70
