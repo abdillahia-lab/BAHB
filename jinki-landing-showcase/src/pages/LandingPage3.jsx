@@ -1,405 +1,697 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import './LandingPage3.css'
 
 export default function LandingPage3() {
-  const [scrolled, setScrolled] = useState(false)
-  const [activeMetric, setActiveMetric] = useState(0)
+  const [scrollY, setScrollY] = useState(0)
+  const [navVisible, setNavVisible] = useState(true)
+  const [navSolid, setNavSolid] = useState(false)
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [activeSection, setActiveSection] = useState('hero')
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
+  const [isHoveringInteractive, setIsHoveringInteractive] = useState(false)
+  const lastScrollY = useRef(0)
+  const videoRef = useRef(null)
+  const heroRef = useRef(null)
+
+  // Smooth scroll handler with parallax
+  const handleScroll = useCallback(() => {
+    const current = window.scrollY
+    setScrollY(current)
+    setNavVisible(current < lastScrollY.current || current < 100)
+    setNavSolid(current > 50)
+    lastScrollY.current = current
+  }, [])
+
+  // Custom cursor tracking
+  const handleMouseMove = useCallback((e) => {
+    setCursorPos({ x: e.clientX, y: e.clientY })
+  }, [])
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
 
-    // Reveal animations
+    // Intersection Observer for section tracking and reveal animations
+    const sections = document.querySelectorAll('section[id]')
     const reveals = document.querySelectorAll('.reveal')
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('revealed')),
-      { threshold: 0.1 }
-    )
-    reveals.forEach((el) => observer.observe(el))
 
-    // Metric rotation
-    const interval = setInterval(() => setActiveMetric((p) => (p + 1) % 4), 3000)
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id)
+          }
+        })
+      },
+      { threshold: 0.3 }
+    )
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed')
+          }
+        })
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    )
+
+    sections.forEach((section) => sectionObserver.observe(section))
+    reveals.forEach((el) => revealObserver.observe(el))
+
+    // Video autoplay handling
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {})
+    }
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
-      observer.disconnect()
-      clearInterval(interval)
+      window.removeEventListener('mousemove', handleMouseMove)
+      sectionObserver.disconnect()
+      revealObserver.disconnect()
     }
-  }, [])
+  }, [handleScroll, handleMouseMove])
 
-  const metrics = [
-    { value: '99.97%', label: 'Threat Detection Accuracy' },
-    { value: '<15min', label: 'Full Facility Scan Time' },
-    { value: '0.1°C', label: 'Thermal Precision' },
-    { value: '24/7', label: 'Autonomous Monitoring' },
-  ]
+  // Parallax calculation
+  const heroParallax = Math.min(scrollY * 0.4, 300)
+  const heroOpacity = Math.max(1 - scrollY / 600, 0)
 
   return (
-    <div className="page">
+    <div className="jinki-page">
+      {/* Custom Cursor */}
+      <div
+        className={`cursor-glow ${isHoveringInteractive ? 'cursor-glow--active' : ''}`}
+        style={{
+          transform: `translate(${cursorPos.x - 16}px, ${cursorPos.y - 16}px)`
+        }}
+      />
+
       {/* Navigation */}
-      <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
-        <div className="nav__inner">
-          <a href="/" className="nav__brand">
-            <span className="nav__logo">◉</span>
-            <span>JINKI</span>
+      <header className={`nav ${navVisible ? '' : 'nav--hidden'} ${navSolid ? 'nav--solid' : ''}`}>
+        <div className="nav__container">
+          <a
+            href="#hero"
+            className="nav__brand"
+            onMouseEnter={() => setIsHoveringInteractive(true)}
+            onMouseLeave={() => setIsHoveringInteractive(false)}
+          >
+            <div className="nav__logo-mark">
+              <svg viewBox="0 0 40 40" className="nav__logo-svg">
+                <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+                <circle cx="20" cy="20" r="12" fill="none" stroke="currentColor" strokeWidth="1"/>
+                <circle cx="20" cy="20" r="6" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+                <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                <line x1="20" y1="2" x2="20" y2="8" stroke="currentColor" strokeWidth="1"/>
+                <line x1="20" y1="32" x2="20" y2="38" stroke="currentColor" strokeWidth="1"/>
+                <line x1="2" y1="20" x2="8" y2="20" stroke="currentColor" strokeWidth="1"/>
+                <line x1="32" y1="20" x2="38" y2="20" stroke="currentColor" strokeWidth="1"/>
+              </svg>
+            </div>
+            <span className="nav__wordmark">JINKI</span>
           </a>
+
           <nav className="nav__links">
-            <a href="#solutions">Solutions</a>
-            <a href="#platform">Platform</a>
-            <a href="#coverage">Coverage</a>
-            <a href="#about">About</a>
+            {['Solutions', 'Platform', 'Coverage', 'About'].map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className={`nav__link ${activeSection === item.toLowerCase() ? 'nav__link--active' : ''}`}
+                onMouseEnter={() => setIsHoveringInteractive(true)}
+                onMouseLeave={() => setIsHoveringInteractive(false)}
+              >
+                <span className="nav__link-text">{item}</span>
+                <span className="nav__link-underline" />
+              </a>
+            ))}
           </nav>
-          <a href="#contact" className="nav__cta">Request Assessment</a>
+
+          <a
+            href="#contact"
+            className="nav__cta"
+            onMouseEnter={() => setIsHoveringInteractive(true)}
+            onMouseLeave={() => setIsHoveringInteractive(false)}
+          >
+            <span>Request Demo</span>
+            <svg className="nav__cta-arrow" viewBox="0 0 16 16" fill="none">
+              <path d="M4 8H12M12 8L8 4M12 8L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="hero">
-        <div className="hero__bg">
-          <div className="hero__grid"></div>
-          <div className="hero__glow"></div>
+      {/* Hero Section with Video Background */}
+      <section id="hero" className="hero" ref={heroRef}>
+        {/* Video Background */}
+        <div className="hero__video-container">
+          <video
+            ref={videoRef}
+            className={`hero__video ${videoLoaded ? 'hero__video--loaded' : ''}`}
+            autoPlay
+            muted
+            loop
+            playsInline
+            onLoadedData={() => setVideoLoaded(true)}
+            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%23000'/%3E%3C/svg%3E"
+          >
+            {/* Free 4K drone footage from Pexels - Aerial city view */}
+            <source
+              src="https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4"
+              type="video/mp4"
+            />
+          </video>
+          <div className="hero__video-overlay" />
+          <div className="hero__gradient-overlay" />
         </div>
-        <div className="hero__content">
-          <div className="hero__eyebrow">Aerial Risk Intelligence for Data Centers</div>
+
+        {/* Parallax Background Elements */}
+        <div
+          className="hero__parallax-layer hero__parallax-layer--grid"
+          style={{ transform: `translateY(${heroParallax * 0.5}px)` }}
+        >
+          <div className="hero__grid-pattern" />
+        </div>
+
+        {/* ASCII Art Accent */}
+        <div
+          className="hero__ascii-accent"
+          style={{
+            transform: `translateY(${heroParallax * 0.3}px)`,
+            opacity: heroOpacity
+          }}
+        >
+          <pre className="ascii-art">
+{`    ╭──────────────────────────────╮
+    │  ◉ AERIAL INTELLIGENCE GRID  │
+    ├──────────────────────────────┤
+    │  ┌─────┐   ┌─────┐   ┌─────┐ │
+    │  │ ░░░ │───│ ▓▓▓ │───│ ███ │ │
+    │  └──┬──┘   └──┬──┘   └──┬──┘ │
+    │     │        │        │     │
+    │     └────────┴────────┘     │
+    │          ▼ DATA ▼           │
+    ╰──────────────────────────────╯`}
+          </pre>
+        </div>
+
+        {/* Hero Content */}
+        <div
+          className="hero__content"
+          style={{
+            transform: `translateY(${heroParallax}px)`,
+            opacity: heroOpacity
+          }}
+        >
+          <div className="hero__eyebrow">
+            <span className="hero__eyebrow-line" />
+            <span className="hero__eyebrow-text">Aerial Risk Intelligence</span>
+            <span className="hero__eyebrow-line" />
+          </div>
+
           <h1 className="hero__title">
-            See threats before<br />they become incidents.
+            <span className="hero__title-line hero__title-line--1">
+              <span className="hero__word">See</span>
+              <span className="hero__word">threats</span>
+            </span>
+            <span className="hero__title-line hero__title-line--2">
+              <span className="hero__word">before</span>
+              <span className="hero__word">they</span>
+            </span>
+            <span className="hero__title-line hero__title-line--3">
+              <span className="hero__word hero__word--accent">become</span>
+              <span className="hero__word hero__word--accent">incidents.</span>
+            </span>
           </h1>
+
           <p className="hero__subtitle">
-            AI-powered drone surveillance protecting Virginia's critical data center infrastructure.
-            Thermal anomalies. Equipment faults. Preventative insights. All from above.
+            AI-powered drone surveillance protecting Virginia's critical
+            data center infrastructure with thermal precision.
           </p>
+
           <div className="hero__actions">
-            <a href="#contact" className="btn btn--primary">
-              <span>Schedule Site Assessment</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+            <a
+              href="#contact"
+              className="btn btn--primary"
+              onMouseEnter={() => setIsHoveringInteractive(true)}
+              onMouseLeave={() => setIsHoveringInteractive(false)}
+            >
+              <span className="btn__text">Schedule Assessment</span>
+              <span className="btn__icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </span>
+              <span className="btn__glow" />
             </a>
-            <a href="#platform" className="btn btn--glass">Watch Demo</a>
-          </div>
-          <div className="hero__metrics">
-            {metrics.map((m, i) => (
-              <div key={i} className={`hero__metric ${i === activeMetric ? 'active' : ''}`}>
-                <span className="hero__metric-value">{m.value}</span>
-                <span className="hero__metric-label">{m.label}</span>
-              </div>
-            ))}
+            <a
+              href="#platform"
+              className="btn btn--glass"
+              onMouseEnter={() => setIsHoveringInteractive(true)}
+              onMouseLeave={() => setIsHoveringInteractive(false)}
+            >
+              <span className="btn__play-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5.14v14l11-7-11-7z"/>
+                </svg>
+              </span>
+              <span className="btn__text">Watch Demo</span>
+            </a>
           </div>
         </div>
-        <div className="hero__visual">
-          <div className="drone-display">
-            <div className="drone-display__ring drone-display__ring--outer"></div>
-            <div className="drone-display__ring drone-display__ring--mid"></div>
-            <div className="drone-display__ring drone-display__ring--inner"></div>
-            <div className="drone-display__core">
-              <div className="drone-display__pulse"></div>
-              <div className="drone-display__eye"></div>
-            </div>
-            <div className="drone-display__scan"></div>
+
+        {/* Hero Stats Bar */}
+        <div className="hero__stats" style={{ opacity: heroOpacity }}>
+          <div className="hero__stat">
+            <span className="hero__stat-value">99.97%</span>
+            <span className="hero__stat-label">Detection Accuracy</span>
           </div>
+          <div className="hero__stat-divider" />
+          <div className="hero__stat">
+            <span className="hero__stat-value">&lt;15min</span>
+            <span className="hero__stat-label">Full Facility Scan</span>
+          </div>
+          <div className="hero__stat-divider" />
+          <div className="hero__stat">
+            <span className="hero__stat-value">0.1°C</span>
+            <span className="hero__stat-label">Thermal Precision</span>
+          </div>
+          <div className="hero__stat-divider" />
+          <div className="hero__stat">
+            <span className="hero__stat-value">24/7</span>
+            <span className="hero__stat-label">Autonomous Ops</span>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="hero__scroll-indicator">
+          <div className="hero__scroll-mouse">
+            <div className="hero__scroll-wheel" />
+          </div>
+          <span className="hero__scroll-text">Scroll to explore</span>
         </div>
       </section>
 
       {/* Trust Bar */}
       <section className="trust-bar">
-        <div className="trust-bar__inner">
-          <span className="trust-bar__label">Protecting Infrastructure Across</span>
-          <div className="trust-bar__locations">
-            <span>Loudoun County</span>
-            <span className="trust-bar__dot">•</span>
-            <span>Prince William</span>
-            <span className="trust-bar__dot">•</span>
-            <span>Fairfax</span>
-            <span className="trust-bar__dot">•</span>
-            <span>Henrico</span>
-            <span className="trust-bar__dot">•</span>
-            <span>I-95 Corridor</span>
+        <div className="trust-bar__container">
+          <span className="trust-bar__label">Protecting Critical Infrastructure</span>
+          <div className="trust-bar__marquee">
+            <div className="trust-bar__track">
+              {['Loudoun County', 'Prince William', 'Fairfax', 'Henrico', 'I-95 Corridor', 'Loudoun County', 'Prince William', 'Fairfax', 'Henrico', 'I-95 Corridor'].map((loc, i) => (
+                <span key={i} className="trust-bar__item">
+                  <span className="trust-bar__dot">◆</span>
+                  {loc}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Statement */}
-      <section className="problem reveal">
-        <div className="problem__inner">
-          <div className="problem__stat">
-            <span className="problem__number">13%</span>
-            <span className="problem__context">of global data center capacity<br/>is in Northern Virginia</span>
-          </div>
-          <div className="problem__content">
-            <h2>The stakes have never been higher.</h2>
-            <p>
-              With power demand doubling in the next decade and thermal loads intensifying,
-              Virginia's data centers face unprecedented operational risks. Traditional
-              monitoring can't keep pace. Ground-level inspections miss critical rooftop
-              and perimeter threats. You need eyes in the sky.
-            </p>
+      {/* Problem Statement with 3D Card */}
+      <section id="problem" className="problem">
+        <div className="problem__container">
+          <div className="problem__3d-card reveal">
+            <div className="problem__card-inner">
+              <div className="problem__stat-side">
+                <span className="problem__big-number">13%</span>
+                <span className="problem__stat-context">of global data center<br/>capacity is in<br/>Northern Virginia</span>
+              </div>
+              <div className="problem__content-side">
+                <h2 className="problem__heading">The stakes have never been higher.</h2>
+                <p className="problem__text">
+                  With power demand doubling and thermal loads intensifying,
+                  traditional monitoring can't keep pace. Ground-level inspections
+                  miss critical rooftop threats. You need eyes in the sky.
+                </p>
+                <div className="problem__accent-line" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Solutions */}
+      {/* Solutions Grid */}
       <section id="solutions" className="solutions">
-        <div className="solutions__header reveal">
-          <span className="label">Capabilities</span>
-          <h2>Comprehensive aerial intelligence.</h2>
-          <p>Four critical detection systems working in continuous harmony.</p>
-        </div>
-        <div className="solutions__grid">
-          <article className="solution-card reveal">
-            <div className="solution-card__icon">
-              <svg viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="24" cy="24" r="12" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="24" cy="24" r="4" fill="currentColor"/>
-                <path d="M24 4V12M24 36V44M4 24H12M36 24H44" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </div>
-            <h3>Thermal Mapping</h3>
-            <p>0.1°C precision thermal imaging detects cooling failures, hotspots, and HVAC inefficiencies before they cascade into outages.</p>
-            <ul className="solution-card__features">
-              <li>Real-time heat signature analysis</li>
-              <li>Cooling system performance scoring</li>
-              <li>Predictive failure alerts</li>
-            </ul>
-          </article>
-          <article className="solution-card reveal">
-            <div className="solution-card__icon">
-              <svg viewBox="0 0 48 48" fill="none">
-                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="currentColor" strokeWidth="2"/>
-                <path d="M4 14L24 24M24 24L44 14M24 24V44" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </div>
-            <h3>Structural Analysis</h3>
-            <p>High-resolution imaging identifies roof damage, water pooling, panel degradation, and physical security vulnerabilities.</p>
-            <ul className="solution-card__features">
-              <li>Roof membrane integrity scans</li>
-              <li>Solar panel efficiency monitoring</li>
-              <li>Perimeter breach detection</li>
-            </ul>
-          </article>
-          <article className="solution-card reveal">
-            <div className="solution-card__icon">
-              <svg viewBox="0 0 48 48" fill="none">
-                <rect x="8" y="8" width="32" height="32" rx="4" stroke="currentColor" strokeWidth="2"/>
-                <path d="M16 24H32M24 16V32" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="16" cy="16" r="2" fill="currentColor"/>
-                <circle cx="32" cy="16" r="2" fill="currentColor"/>
-                <circle cx="16" cy="32" r="2" fill="currentColor"/>
-                <circle cx="32" cy="32" r="2" fill="currentColor"/>
-              </svg>
-            </div>
-            <h3>Equipment Monitoring</h3>
-            <p>Track generator status, transformer conditions, and external equipment health without dispatching ground crews.</p>
-            <ul className="solution-card__features">
-              <li>Diesel generator thermal checks</li>
-              <li>Transformer heat signatures</li>
-              <li>Equipment vibration analysis</li>
-            </ul>
-          </article>
-          <article className="solution-card reveal">
-            <div className="solution-card__icon">
-              <svg viewBox="0 0 48 48" fill="none">
-                <path d="M24 4C13 4 4 13 4 24C4 35 13 44 24 44" stroke="currentColor" strokeWidth="2"/>
-                <path d="M24 4C35 4 44 13 44 24" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4"/>
-                <path d="M24 12V24L32 28" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <h3>Predictive Maintenance</h3>
-            <p>AI models analyze historical patterns to forecast failures 14-30 days before they occur, enabling proactive intervention.</p>
-            <ul className="solution-card__features">
-              <li>Failure probability scoring</li>
-              <li>Maintenance window optimization</li>
-              <li>Parts lifecycle tracking</li>
-            </ul>
-          </article>
+        <div className="solutions__container">
+          <div className="solutions__header reveal">
+            <span className="section-label">Capabilities</span>
+            <h2 className="section-title">Comprehensive aerial intelligence.</h2>
+            <p className="section-subtitle">Four critical detection systems working in continuous harmony.</p>
+          </div>
+
+          <div className="solutions__grid">
+            {[
+              {
+                icon: (
+                  <svg viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="2"/>
+                    <circle cx="32" cy="32" r="18" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="32" cy="32" r="8" stroke="currentColor" strokeWidth="1"/>
+                    <circle cx="32" cy="32" r="3" fill="currentColor"/>
+                    <path d="M32 4V14M32 50V60M4 32H14M50 32H60" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                ),
+                title: 'Thermal Mapping',
+                description: '0.1°C precision thermal imaging detects cooling failures, hotspots, and HVAC inefficiencies before they cascade.',
+                features: ['Real-time heat signature analysis', 'Cooling system performance scoring', 'Predictive failure alerts']
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 64 64" fill="none">
+                    <path d="M32 4L4 18V46L32 60L60 46V18L32 4Z" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M4 18L32 32M32 32L60 18M32 32V60" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="32" cy="32" r="6" fill="currentColor" fillOpacity="0.3" stroke="currentColor"/>
+                  </svg>
+                ),
+                title: 'Structural Analysis',
+                description: 'High-resolution imaging identifies roof damage, water pooling, and physical security vulnerabilities.',
+                features: ['Roof membrane integrity scans', 'Solar panel efficiency monitoring', 'Perimeter breach detection']
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 64 64" fill="none">
+                    <rect x="8" y="8" width="48" height="48" rx="6" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M20 32H44M32 20V44" stroke="currentColor" strokeWidth="1.5"/>
+                    <circle cx="20" cy="20" r="4" fill="currentColor"/>
+                    <circle cx="44" cy="20" r="4" fill="currentColor"/>
+                    <circle cx="20" cy="44" r="4" fill="currentColor"/>
+                    <circle cx="44" cy="44" r="4" fill="currentColor"/>
+                  </svg>
+                ),
+                title: 'Equipment Monitoring',
+                description: 'Track generator status, transformer conditions, and external equipment health from above.',
+                features: ['Diesel generator thermal checks', 'Transformer heat signatures', 'Equipment vibration analysis']
+              },
+              {
+                icon: (
+                  <svg viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="2" strokeDasharray="4 2"/>
+                    <path d="M32 10V32L44 40" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="32" cy="32" r="4" fill="currentColor"/>
+                  </svg>
+                ),
+                title: 'Predictive Maintenance',
+                description: 'AI models analyze patterns to forecast failures 14-30 days before they occur.',
+                features: ['Failure probability scoring', 'Maintenance window optimization', 'Parts lifecycle tracking']
+              }
+            ].map((solution, index) => (
+              <article
+                key={index}
+                className="solution-card reveal"
+                style={{ '--delay': `${index * 0.1}s` }}
+                onMouseEnter={() => setIsHoveringInteractive(true)}
+                onMouseLeave={() => setIsHoveringInteractive(false)}
+              >
+                <div className="solution-card__icon">{solution.icon}</div>
+                <h3 className="solution-card__title">{solution.title}</h3>
+                <p className="solution-card__description">{solution.description}</p>
+                <ul className="solution-card__features">
+                  {solution.features.map((feature, i) => (
+                    <li key={i}>
+                      <span className="solution-card__check">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <div className="solution-card__shine" />
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Platform */}
+      {/* Platform Section with Glass Panel */}
       <section id="platform" className="platform">
-        <div className="platform__inner">
+        <div className="platform__container">
           <div className="platform__content reveal">
-            <span className="label">Platform</span>
-            <h2>Intelligence at a glance.</h2>
-            <p>
+            <span className="section-label">Platform</span>
+            <h2 className="section-title">Intelligence at a glance.</h2>
+            <p className="section-subtitle">
               A unified command interface designed for data center operations teams.
               No training required. Critical information surfaces automatically.
             </p>
+
             <div className="platform__features">
-              <div className="platform__feature">
-                <span className="platform__feature-icon">◉</span>
-                <div>
-                  <h4>Real-Time Dashboard</h4>
-                  <p>Live facility status with automatic alert prioritization</p>
+              {[
+                { icon: '◉', title: 'Real-Time Dashboard', desc: 'Live facility status with automatic alert prioritization' },
+                { icon: '◎', title: 'Historical Analysis', desc: 'Trend tracking and comparative reporting across sites' },
+                { icon: '◈', title: 'API Integration', desc: 'Direct feeds to your DCIM, BMS, and ticketing systems' }
+              ].map((feature, i) => (
+                <div key={i} className="platform__feature">
+                  <span className="platform__feature-icon">{feature.icon}</span>
+                  <div className="platform__feature-content">
+                    <h4>{feature.title}</h4>
+                    <p>{feature.desc}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="platform__feature">
-                <span className="platform__feature-icon">◎</span>
-                <div>
-                  <h4>Historical Analysis</h4>
-                  <p>Trend tracking and comparative reporting across sites</p>
-                </div>
-              </div>
-              <div className="platform__feature">
-                <span className="platform__feature-icon">◈</span>
-                <div>
-                  <h4>API Integration</h4>
-                  <p>Direct feeds to your DCIM, BMS, and ticketing systems</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+
           <div className="platform__visual reveal">
             <div className="glass-panel">
               <div className="glass-panel__header">
-                <div className="glass-panel__dots">
-                  <span></span><span></span><span></span>
+                <div className="glass-panel__controls">
+                  <span className="glass-panel__control glass-panel__control--close" />
+                  <span className="glass-panel__control glass-panel__control--minimize" />
+                  <span className="glass-panel__control glass-panel__control--maximize" />
                 </div>
                 <span className="glass-panel__title">Facility Overview — Loudoun Campus</span>
               </div>
-              <div className="glass-panel__content">
-                <div className="glass-panel__status">
-                  <div className="status-item status-item--ok">
-                    <span className="status-item__indicator"></span>
+              <div className="glass-panel__body">
+                <div className="glass-panel__status-row">
+                  <div className="status-badge status-badge--success">
+                    <span className="status-badge__dot" />
                     <span>Thermal: Normal</span>
                   </div>
-                  <div className="status-item status-item--warning">
-                    <span className="status-item__indicator"></span>
+                  <div className="status-badge status-badge--warning">
+                    <span className="status-badge__dot" />
                     <span>HVAC Unit 7: Monitor</span>
                   </div>
-                  <div className="status-item status-item--ok">
-                    <span className="status-item__indicator"></span>
+                  <div className="status-badge status-badge--success">
+                    <span className="status-badge__dot" />
                     <span>Perimeter: Secure</span>
                   </div>
                 </div>
-                <div className="glass-panel__grid">
-                  <div className="heatmap-cell" style={{'--heat': '0.2'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.3'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.4'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.3'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.5'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.7'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.8'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.6'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.3'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.4'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.5'}}></div>
-                  <div className="heatmap-cell" style={{'--heat': '0.4'}}></div>
+                <div className="glass-panel__heatmap">
+                  {[0.2, 0.3, 0.5, 0.3, 0.4, 0.6, 0.8, 0.6, 0.3, 0.4, 0.5, 0.4, 0.2, 0.3, 0.4, 0.3].map((heat, i) => (
+                    <div key={i} className="heatmap-cell" style={{ '--heat': heat }} />
+                  ))}
                 </div>
                 <div className="glass-panel__footer">
-                  Last scan: 4 minutes ago • Next scheduled: 11 minutes
+                  <span className="glass-panel__timestamp">Last scan: 4 minutes ago</span>
+                  <span className="glass-panel__next">Next: 11 minutes</span>
+                </div>
+              </div>
+            </div>
+            <div className="glass-panel__reflection" />
+          </div>
+        </div>
+      </section>
+
+      {/* Coverage Map */}
+      <section id="coverage" className="coverage">
+        <div className="coverage__container">
+          <div className="coverage__header reveal">
+            <span className="section-label">Coverage</span>
+            <h2 className="section-title">Built for Virginia's data center corridor.</h2>
+            <p className="section-subtitle">Rapid deployment across the region's highest-density infrastructure zones.</p>
+          </div>
+
+          <div className="coverage__map-wrapper reveal">
+            <div className="coverage__map">
+              {/* Stylized Virginia Map */}
+              <svg viewBox="0 0 600 300" className="coverage__svg">
+                <defs>
+                  <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="rgba(6, 182, 212, 0.1)" />
+                    <stop offset="100%" stopColor="rgba(6, 182, 212, 0.02)" />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                {/* Virginia outline */}
+                <path
+                  d="M60,150 L100,90 L180,70 L260,55 L360,45 L460,60 L540,100 L530,160 L460,190 L360,210 L260,220 L160,215 L100,190 Z"
+                  fill="url(#mapGradient)"
+                  stroke="rgba(6, 182, 212, 0.3)"
+                  strokeWidth="2"
+                />
+                {/* Grid lines */}
+                {[0,1,2,3,4].map(i => (
+                  <line key={`h${i}`} x1="60" y1={70 + i*40} x2="540" y2={70 + i*40} stroke="rgba(6, 182, 212, 0.1)" strokeWidth="1"/>
+                ))}
+                {[0,1,2,3,4,5,6].map(i => (
+                  <line key={`v${i}`} x1={100 + i*70} y1="45" x2={100 + i*70} y2="220" stroke="rgba(6, 182, 212, 0.1)" strokeWidth="1"/>
+                ))}
+              </svg>
+
+              {/* Hotspots */}
+              <div className="coverage__hotspot coverage__hotspot--primary" style={{ left: '70%', top: '30%' }}>
+                <div className="hotspot__rings">
+                  <span className="hotspot__ring hotspot__ring--1" />
+                  <span className="hotspot__ring hotspot__ring--2" />
+                  <span className="hotspot__ring hotspot__ring--3" />
+                </div>
+                <div className="hotspot__core" />
+                <div className="hotspot__label">
+                  <strong>Northern Virginia</strong>
+                  <span>Primary Zone</span>
+                </div>
+              </div>
+
+              <div className="coverage__hotspot coverage__hotspot--secondary" style={{ left: '55%', top: '55%' }}>
+                <div className="hotspot__rings">
+                  <span className="hotspot__ring hotspot__ring--1" />
+                  <span className="hotspot__ring hotspot__ring--2" />
+                </div>
+                <div className="hotspot__core" />
+                <div className="hotspot__label">
+                  <strong>I-95 Corridor</strong>
+                </div>
+              </div>
+
+              <div className="coverage__hotspot coverage__hotspot--secondary" style={{ left: '40%', top: '50%' }}>
+                <div className="hotspot__rings">
+                  <span className="hotspot__ring hotspot__ring--1" />
+                  <span className="hotspot__ring hotspot__ring--2" />
+                </div>
+                <div className="hotspot__core" />
+                <div className="hotspot__label">
+                  <strong>Central Virginia</strong>
                 </div>
               </div>
             </div>
           </div>
+
+          <div className="coverage__stats reveal">
+            {[
+              { value: '2M+ sq ft', label: 'Facility Coverage' },
+              { value: '45+', label: 'Facilities Monitored' },
+              { value: '4hr', label: 'Emergency Response' },
+              { value: 'FAA Part 107', label: 'Certified Operations' }
+            ].map((stat, i) => (
+              <div key={i} className="coverage__stat">
+                <span className="coverage__stat-value">{stat.value}</span>
+                <span className="coverage__stat-label">{stat.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Coverage */}
-      <section id="coverage" className="coverage">
-        <div className="coverage__header reveal">
-          <span className="label">Coverage</span>
-          <h2>Built for Virginia's data center corridor.</h2>
-          <p>Rapid deployment across the region's highest-density infrastructure zones.</p>
-        </div>
-        <div className="coverage__map reveal">
-          <div className="map-visual">
-            <div className="map-visual__state">
-              <svg viewBox="0 0 400 200" className="virginia-outline">
-                <path d="M50,100 L80,60 L150,50 L200,40 L280,30 L350,50 L380,80 L370,120 L320,140 L250,150 L180,160 L100,150 L60,130 Z"
-                      fill="none" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              <div className="map-visual__hotspot" style={{left: '65%', top: '35%'}}>
-                <div className="hotspot__pulse"></div>
-                <div className="hotspot__core"></div>
-                <span className="hotspot__label">Northern Virginia<br/>Primary Zone</span>
-              </div>
-              <div className="map-visual__hotspot map-visual__hotspot--secondary" style={{left: '50%', top: '55%'}}>
-                <div className="hotspot__pulse"></div>
-                <div className="hotspot__core"></div>
-                <span className="hotspot__label">I-95 Corridor</span>
-              </div>
-              <div className="map-visual__hotspot map-visual__hotspot--secondary" style={{left: '35%', top: '50%'}}>
-                <div className="hotspot__pulse"></div>
-                <div className="hotspot__core"></div>
-                <span className="hotspot__label">Central Virginia</span>
-              </div>
+      {/* About Section */}
+      <section id="about" className="about">
+        <div className="about__container">
+          <div className="about__content reveal">
+            <span className="section-label">About</span>
+            <h2 className="about__motto">Ex Alto Omnia</h2>
+            <p className="about__motto-translation">From on high, all things.</p>
+            <div className="about__text">
+              <p>
+                Jinki Intelligence was founded to solve a critical gap in data center
+                operations: the inability to continuously monitor external infrastructure
+                at scale. Our team combines aerospace engineering, computer vision expertise,
+                and deep understanding of mission-critical facility operations.
+              </p>
+              <p>
+                We built our platform specifically for Northern Virginia's data center
+                ecosystem—the world's largest concentration of digital infrastructure.
+              </p>
             </div>
           </div>
-        </div>
-        <div className="coverage__stats reveal">
-          <div className="coverage__stat">
-            <span className="coverage__stat-value">2M+ sq ft</span>
-            <span className="coverage__stat-label">Facility Coverage</span>
-          </div>
-          <div className="coverage__stat">
-            <span className="coverage__stat-value">45+</span>
-            <span className="coverage__stat-label">Facilities Monitored</span>
-          </div>
-          <div className="coverage__stat">
-            <span className="coverage__stat-value">4hr</span>
-            <span className="coverage__stat-label">Emergency Response</span>
-          </div>
-          <div className="coverage__stat">
-            <span className="coverage__stat-value">FAA Part 107</span>
-            <span className="coverage__stat-label">Certified Operations</span>
+
+          {/* ASCII Art Signature */}
+          <div className="about__ascii reveal">
+            <pre className="ascii-signature">
+{`╔═══════════════════════════════════════╗
+║                                       ║
+║     ▄▄▄▄ ▄▄▄ ▄   ▄ ▄  ▄ ▄▄▄▄          ║
+║       █    █  █▀▄ █ █▄▀    █          ║
+║     ▄▄█  ▄▄█  █  ██ █  █ ▄▄█          ║
+║                                       ║
+║         I N T E L L I G E N C E       ║
+║                                       ║
+║    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━     ║
+║                                       ║
+║      ◉ Aerial Risk Intelligence       ║
+║      ◉ Data Center Protection         ║
+║      ◉ Predictive Analytics           ║
+║                                       ║
+╚═══════════════════════════════════════╝`}
+            </pre>
           </div>
         </div>
       </section>
 
-      {/* About */}
-      <section id="about" className="about">
-        <div className="about__inner reveal">
-          <span className="label">About</span>
-          <h2>Ex Alto Omnia</h2>
-          <p className="about__tagline">From on high, all things.</p>
-          <p className="about__text">
-            Jinki Intelligence was founded to solve a critical gap in data center operations:
-            the inability to continuously monitor external infrastructure at scale. Our team
-            combines aerospace engineering, computer vision expertise, and deep understanding
-            of mission-critical facility operations.
-          </p>
-          <p className="about__text">
-            We built our platform specifically for the unique demands of Northern Virginia's
-            data center ecosystem—the world's largest concentration of digital infrastructure.
-          </p>
-        </div>
-      </section>
-
-      {/* CTA */}
+      {/* CTA Section */}
       <section id="contact" className="cta">
-        <div className="cta__inner reveal">
-          <h2>Protect your infrastructure.</h2>
-          <p>
-            Schedule a site assessment to see how aerial intelligence can reduce
-            your operational risk and extend equipment lifecycles.
-          </p>
-          <a href="mailto:ops@jinki.ai" className="btn btn--primary btn--lg">
-            <span>Request Site Assessment</span>
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-              <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </a>
-          <p className="cta__note">Typical assessment completed within 48 hours</p>
+        <div className="cta__container">
+          <div className="cta__content reveal">
+            <h2 className="cta__title">Protect your infrastructure.</h2>
+            <p className="cta__subtitle">
+              Schedule a site assessment to see how aerial intelligence
+              can reduce your operational risk and extend equipment lifecycles.
+            </p>
+            <div className="cta__actions">
+              <a
+                href="mailto:ops@jinki.ai"
+                className="btn btn--primary btn--lg"
+                onMouseEnter={() => setIsHoveringInteractive(true)}
+                onMouseLeave={() => setIsHoveringInteractive(false)}
+              >
+                <span className="btn__text">Request Site Assessment</span>
+                <span className="btn__icon">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <span className="btn__glow" />
+              </a>
+            </div>
+            <p className="cta__note">Typical assessment completed within 48 hours</p>
+          </div>
+        </div>
+
+        {/* CTA Background Effects */}
+        <div className="cta__bg">
+          <div className="cta__gradient" />
+          <div className="cta__grid" />
         </div>
       </section>
 
       {/* Footer */}
       <footer className="footer">
-        <div className="footer__inner">
+        <div className="footer__container">
           <div className="footer__brand">
-            <span className="footer__logo">◉</span>
-            <span>JINKI INTELLIGENCE</span>
+            <div className="footer__logo">
+              <svg viewBox="0 0 40 40">
+                <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+                <circle cx="20" cy="20" r="12" fill="none" stroke="currentColor" strokeWidth="1"/>
+                <circle cx="20" cy="20" r="3" fill="currentColor"/>
+              </svg>
+            </div>
+            <span className="footer__wordmark">JINKI INTELLIGENCE</span>
           </div>
-          <nav className="footer__links">
+
+          <nav className="footer__nav">
             <a href="#solutions">Solutions</a>
             <a href="#platform">Platform</a>
             <a href="#coverage">Coverage</a>
             <a href="#about">About</a>
           </nav>
-          <div className="footer__legal">
+
+          <div className="footer__info">
             <span>© 2025 Jinki Intelligence</span>
+            <span className="footer__divider">•</span>
             <span>FAA Part 107 Certified</span>
+            <span className="footer__divider">•</span>
             <span>Virginia, USA</span>
           </div>
         </div>
