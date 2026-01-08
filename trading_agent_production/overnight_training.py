@@ -5,8 +5,9 @@ Overnight Training & Paper Trading
 Runs all night to:
 1. Train strategies on real historical data
 2. Paper trade in real-time simulation
-3. Find the BEST strategy for tomorrow's market open
-4. Output exact BUY/SELL recommendations
+3. Incorporate CONGRESSIONAL trading signals
+4. Find the BEST strategy for tomorrow's market open
+5. Output exact BUY/SELL recommendations
 
 Usage:
     python overnight_training.py
@@ -21,6 +22,7 @@ import sys
 import os
 import asyncio
 import time
+import json
 from datetime import datetime, timedelta
 
 _script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +30,13 @@ sys.path.insert(0, os.path.join(_script_dir, 'src'))
 
 import numpy as np
 import pandas as pd
+
+# Import congressional tracker
+try:
+    from data.congress_tracker import CongressTracker, get_congress_buy_list
+    HAS_CONGRESS_TRACKER = True
+except ImportError:
+    HAS_CONGRESS_TRACKER = False
 
 # Load market data
 DATA_DIR = os.path.join(_script_dir, 'market_data')
@@ -260,8 +269,54 @@ class PaperTradingSimulator:
         return self.get_portfolio_value(prices) - self.initial_capital
 
 
-def generate_recommendations(trainer_results: list) -> dict:
-    """Generate investment recommendations from training results."""
+def get_congressional_signals() -> dict:
+    """Get congressional trading signals."""
+    congress_signals = {'buy': [], 'sell': [], 'by_ticker': {}}
+
+    if not HAS_CONGRESS_TRACKER:
+        print("  ⚠️ Congressional tracker not available")
+        return congress_signals
+
+    try:
+        print("  🏛️ Fetching congressional trading signals...")
+        tracker = CongressTracker(cache_dir='./congress_data')
+        tracker.fetch_all_trades()
+
+        buy_signals = tracker.get_buy_signals(days=45, min_amount=15000)
+        sell_signals = tracker.get_sell_signals(days=45, min_amount=15000)
+
+        for signal in buy_signals[:15]:
+            congress_signals['buy'].append(signal['ticker'])
+            congress_signals['by_ticker'][signal['ticker']] = {
+                'action': 'BUY',
+                'strength': signal['signal_strength'],
+                'politicians': signal['politicians'][:3],
+                'amount': signal['total_amount_min'],
+                'has_key_politician': signal['has_key_politician'],
+            }
+
+        for signal in sell_signals[:15]:
+            congress_signals['sell'].append(signal['ticker'])
+            if signal['ticker'] not in congress_signals['by_ticker']:
+                congress_signals['by_ticker'][signal['ticker']] = {}
+            congress_signals['by_ticker'][signal['ticker']].update({
+                'sell_action': 'SELL',
+                'sell_strength': signal['signal_strength'],
+            })
+
+        print(f"  ✅ Congressional signals: {len(buy_signals)} buys, {len(sell_signals)} sells")
+
+    except Exception as e:
+        print(f"  ❌ Error getting congressional signals: {e}")
+
+    return congress_signals
+
+
+def generate_recommendations(trainer_results: list, congress_signals: dict = None) -> dict:
+    """Generate investment recommendations from training results + congressional signals."""
+
+    if congress_signals is None:
+        congress_signals = {'buy': [], 'sell': [], 'by_ticker': {}}
 
     # Filter for positive Sharpe ratio
     good_results = [r for r in trainer_results if r['sharpe'] > 0.3]
@@ -283,9 +338,25 @@ def generate_recommendations(trainer_results: list) -> dict:
         avg_sharpe = np.mean([r['sharpe'] for r in results])
         best_strategy = max(results, key=lambda x: x['sharpe'])
 
+        # Congressional bonus
+        congress_bonus = 0
+        congress_info = congress_signals.get('by_ticker', {}).get(symbol, {})
+        has_congress_buy = symbol in congress_signals.get('buy', [])
+        has_congress_sell = symbol in congress_signals.get('sell', [])
+
+        if has_congress_buy:
+            buy_votes += 2  # Congress counts as 2 votes
+            congress_bonus = 0.15  # 15% confidence boost
+            if congress_info.get('has_key_politician'):
+                buy_votes += 1  # Key politician adds another vote
+                congress_bonus += 0.10
+
+        if has_congress_sell:
+            sell_votes += 2
+
         if buy_votes > sell_votes:
             action = 'BUY'
-            confidence = buy_votes / len(results)
+            confidence = min(1.0, buy_votes / len(results) + congress_bonus)
         elif sell_votes > buy_votes:
             action = 'SELL'
             confidence = sell_votes / len(results)
@@ -300,7 +371,10 @@ def generate_recommendations(trainer_results: list) -> dict:
             'best_strategy': best_strategy['strategy'],
             'current_price': best_strategy['current_price'],
             'num_strategies_agree': max(buy_votes, sell_votes),
-            'total_strategies': len(results)
+            'total_strategies': len(results),
+            'congress_buying': has_congress_buy,
+            'congress_selling': has_congress_sell,
+            'congress_info': congress_info if congress_info else None,
         }
 
     return recommendations
@@ -321,6 +395,10 @@ async def run_overnight_training(hours: float = 8):
     if not data:
         return
 
+    # Get congressional signals
+    print("\n🏛️ Getting congressional trading signals...")
+    congress_signals = get_congressional_signals()
+
     # Initialize
     trainer = StrategyTrainer(data)
     simulator = PaperTradingSimulator(initial_capital=100000)
@@ -333,6 +411,8 @@ async def run_overnight_training(hours: float = 8):
     end_time = start_time + (hours * 3600)
 
     print(f"\n🏋️ Training on {len(symbols)} symbols...")
+    if congress_signals.get('buy'):
+        print(f"  🏛️ Congress is buying: {', '.join(congress_signals['buy'][:5])}")
     print("-" * 70)
 
     while time.time() < end_time:
@@ -341,8 +421,8 @@ async def run_overnight_training(hours: float = 8):
         # Run all strategies
         results = trainer.run_all_strategies(symbols)
 
-        # Generate recommendations
-        recommendations = generate_recommendations(results)
+        # Generate recommendations with congressional signals
+        recommendations = generate_recommendations(results, congress_signals)
 
         # Sort by confidence and Sharpe
         sorted_recs = sorted(
@@ -394,15 +474,28 @@ async def run_overnight_training(hours: float = 8):
 
     for symbol, rec in best_recommendations[:10]:
         emoji = "🟢" if rec['action'] == 'BUY' else "🔴" if rec['action'] == 'SELL' else "🟡"
+        congress_tag = ""
+        if rec.get('congress_buying'):
+            congress_tag = " 🏛️ CONGRESS BUYING"
+        elif rec.get('congress_selling'):
+            congress_tag = " 🏛️ CONGRESS SELLING"
+
         print(f"""
-{emoji} {symbol}
+{emoji} {symbol}{congress_tag}
    Action: {rec['action']}
    Confidence: {rec['confidence']*100:.0f}%
    Best Strategy: {rec['best_strategy']}
    Current Price: ${rec['current_price']:.2f}
    Sharpe Ratio: {rec['avg_sharpe']:.2f}
-   Strategies Agreeing: {rec['num_strategies_agree']}/{rec['total_strategies']}
-""")
+   Strategies Agreeing: {rec['num_strategies_agree']}/{rec['total_strategies']}""")
+
+        if rec.get('congress_info'):
+            info = rec['congress_info']
+            if info.get('politicians'):
+                print(f"   🏛️ Politicians: {', '.join(info['politicians'][:3])}")
+            if info.get('amount'):
+                print(f"   💰 Amount: ${info['amount']:,}+")
+        print()
 
     print("\n💼 PAPER TRADING RESULTS:")
     print("-" * 70)
