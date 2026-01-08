@@ -5,13 +5,30 @@ export default function LandingPage3() {
   const [navSolid, setNavSolid] = useState(false)
   const [videoLoaded, setVideoLoaded] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [pageLoaded, setPageLoaded] = useState(false)
   const videoRef = useRef(null)
   const heroRef = useRef(null)
+  const scrollProgressRef = useRef(null)
 
   useEffect(() => {
-    // Scroll handler for nav
+    // Page load entrance sequence
+    const loadTimer = setTimeout(() => setPageLoaded(true), 100)
+
+    // Scroll handler for nav and progress
     const handleScroll = () => {
       setNavSolid(window.scrollY > 60)
+
+      // Calculate scroll progress
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = Math.min(scrollTop / docHeight, 1)
+      setScrollProgress(progress)
+
+      // Update scroll progress bar
+      if (scrollProgressRef.current) {
+        scrollProgressRef.current.style.transform = `scaleX(${progress})`
+      }
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
 
@@ -46,6 +63,7 @@ export default function LandingPage3() {
     }
 
     return () => {
+      clearTimeout(loadTimer)
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('mousemove', handleMouseMove)
       observer.disconnect()
@@ -58,7 +76,10 @@ export default function LandingPage3() {
   }
 
   return (
-    <div className="page">
+    <div className={`page ${pageLoaded ? 'page--loaded' : 'page--loading'}`}>
+      {/* Scroll Progress Indicator */}
+      <div className="scroll-progress" ref={scrollProgressRef} />
+
       {/* ══════════════════════════════════════════════════════════════
           NAVIGATION - Glassmorphism Header
           ══════════════════════════════════════════════════════════════ */}
@@ -114,6 +135,20 @@ export default function LandingPage3() {
             />
           </video>
           <div className="hero__gradient-overlay" />
+        </div>
+
+        {/* Parallax Depth Layers */}
+        <div className="hero__parallax-layer hero__parallax-layer--back">
+          <div className="parallax-orb parallax-orb--cyan" />
+          <div className="parallax-orb parallax-orb--gold" />
+        </div>
+        <div className="hero__parallax-layer hero__parallax-layer--mid">
+          <div className="parallax-shape parallax-shape--1" />
+          <div className="parallax-shape parallax-shape--2" />
+        </div>
+        <div className="hero__parallax-layer hero__parallax-layer--front">
+          <div className="parallax-shape parallax-shape--3" />
+          <div className="parallax-shape parallax-shape--4" />
         </div>
 
         {/* Hero Content */}
