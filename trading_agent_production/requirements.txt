@@ -1,0 +1,82 @@
+# Trading Agent Production - Python Dependencies
+
+# Core Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Async Support
+asyncio>=3.4.3
+aiohttp>=3.9.0
+aiofiles>=23.2.0
+aiocache>=0.12.0
+
+# Database
+asyncpg>=0.29.0
+aiosqlite>=0.19.0
+redis>=5.0.0
+motor>=3.3.0
+sqlalchemy>=2.0.0
+
+# Message Queue
+aiokafka>=0.10.0
+
+# LLM Integration
+langchain>=0.1.0
+langgraph>=0.0.20
+openai>=1.10.0
+anthropic>=0.18.0
+
+# Market Data
+yfinance>=0.2.35
+alpaca-trade-api>=3.0.0
+websockets>=12.0
+
+# Data Processing
+numpy>=1.26.0
+pandas>=2.2.0
+scipy>=1.12.0
+
+# Technical Analysis
+ta-lib>=0.4.28
+pandas-ta>=0.3.14
+
+# Machine Learning
+scikit-learn>=1.4.0
+torch>=2.2.0
+
+# Monitoring
+prometheus-client>=0.19.0
+opentelemetry-api>=1.22.0
+opentelemetry-sdk>=1.22.0
+opentelemetry-instrumentation-fastapi>=0.43b0
+
+# Logging
+loguru>=0.7.2
+structlog>=24.1.0
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+pytest-benchmark>=4.0.0
+hypothesis>=6.98.0
+
+# Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.9
+
+# Utilities
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+click>=8.1.7
+rich>=13.7.0
+httpx>=0.26.0
+
+# Development
+black>=24.1.0
+ruff>=0.2.0
+mypy>=1.8.0
+pre-commit>=3.6.0
