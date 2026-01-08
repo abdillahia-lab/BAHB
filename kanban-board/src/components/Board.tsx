@@ -12,7 +12,6 @@ import {
   DragOverEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import type { Task, LabelColor } from '../types';
 import { useBoardStore } from '../store/boardStore';
@@ -90,7 +89,7 @@ export const Board = () => {
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = (_event: DragEndEvent) => {
     setActiveTask(null);
   };
 
@@ -126,90 +125,79 @@ export const Board = () => {
         <div className="flex-1 overflow-x-auto overflow-y-hidden">
           <div className="flex gap-4 p-4 min-h-full items-start">
             {/* Columns */}
-            <AnimatePresence mode="popLayout">
-              {board.columns
-                .sort((a, b) => a.position - b.position)
-                .map((column) => (
-                  <Column key={column.id} column={column} />
-                ))}
-            </AnimatePresence>
+            {board.columns
+              .sort((a, b) => a.position - b.position)
+              .map((column) => (
+                <Column key={column.id} column={column} />
+              ))}
 
             {/* Add column button/form */}
             <div className="flex-shrink-0 w-72">
-              <AnimatePresence mode="wait">
-                {isAddingColumn ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 p-3"
-                  >
-                    <input
-                      type="text"
-                      value={newColumnTitle}
-                      onChange={(e) => setNewColumnTitle(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddColumn();
-                        if (e.key === 'Escape') {
-                          setNewColumnTitle('');
-                          setIsAddingColumn(false);
-                        }
+              {isAddingColumn ? (
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 p-3 animate-scale-in">
+                  <input
+                    type="text"
+                    value={newColumnTitle}
+                    onChange={(e) => setNewColumnTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleAddColumn();
+                      if (e.key === 'Escape') {
+                        setNewColumnTitle('');
+                        setIsAddingColumn(false);
+                      }
+                    }}
+                    placeholder="Enter column title..."
+                    className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3"
+                    autoFocus
+                  />
+
+                  <div className="mb-3">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">
+                      Column color
+                    </label>
+                    <div className="flex gap-1.5">
+                      {colors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setNewColumnColor(color)}
+                          className={`w-6 h-6 rounded-full ${labelColors[color].bg} ${
+                            newColumnColor === color
+                              ? 'ring-2 ring-offset-2 ring-gray-400 dark:ring-gray-500'
+                              : ''
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleAddColumn}
+                      disabled={!newColumnTitle.trim()}
+                      className="flex-1 px-3 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-colors"
+                    >
+                      Add column
+                    </button>
+                    <button
+                      onClick={() => {
+                        setNewColumnTitle('');
+                        setIsAddingColumn(false);
                       }}
-                      placeholder="Enter column title..."
-                      className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3"
-                      autoFocus
-                    />
-
-                    <div className="mb-3">
-                      <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">
-                        Column color
-                      </label>
-                      <div className="flex gap-1.5">
-                        {colors.map((color) => (
-                          <button
-                            key={color}
-                            onClick={() => setNewColumnColor(color)}
-                            className={`w-6 h-6 rounded-full ${labelColors[color].bg} ${
-                              newColumnColor === color
-                                ? 'ring-2 ring-offset-2 ring-gray-400 dark:ring-gray-500'
-                                : ''
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleAddColumn}
-                        disabled={!newColumnTitle.trim()}
-                        className="flex-1 px-3 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-colors"
-                      >
-                        Add column
-                      </button>
-                      <button
-                        onClick={() => {
-                          setNewColumnTitle('');
-                          setIsAddingColumn(false);
-                        }}
-                        className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    onClick={() => setIsAddingColumn(true)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 rounded-xl transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add column
-                  </motion.button>
-                )}
-              </AnimatePresence>
+                      className="px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsAddingColumn(true)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 rounded-xl transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add column
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -225,11 +213,9 @@ export const Board = () => {
       </DndContext>
 
       {/* Task modal */}
-      <AnimatePresence>
-        {selectedTask && (
-          <TaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
-        )}
-      </AnimatePresence>
+      {selectedTask && (
+        <TaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
+      )}
     </>
   );
 };

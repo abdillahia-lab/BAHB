@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import type { BoardStore, Column, Task, Label, LabelColor, Priority, Checklist } from '../types';
+import type { BoardStore, Column, Task, Label } from '../types';
 
 const defaultLabels: Label[] = [
   { id: 'label-1', name: 'Bug', color: 'red' },
@@ -170,7 +170,7 @@ const createDefaultBoard = () => ({
 
 export const useBoardStore = create<BoardStore>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       // Initial state
       board: createDefaultBoard(),
       tasks: sampleTasks,

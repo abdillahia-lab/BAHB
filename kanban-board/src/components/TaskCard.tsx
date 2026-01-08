@@ -1,12 +1,10 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { motion } from 'framer-motion';
 import {
   Calendar,
   CheckSquare,
   MessageSquare,
   AlertCircle,
-  Clock,
   GripVertical,
 } from 'lucide-react';
 import type { Task } from '../types';
@@ -72,18 +70,15 @@ export const TaskCard = ({ task, isCompact = false }: TaskCardProps) => {
   const priorityStyle = priorityColors[task.priority];
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       style={style}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: isDragging ? 0.5 : 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
       className={`
         group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm
         border border-gray-200 dark:border-gray-700
         hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600
-        transition-all duration-200 cursor-pointer
-        ${isDragging ? 'shadow-xl ring-2 ring-indigo-500 ring-opacity-50' : ''}
+        transition-all duration-200 cursor-pointer animate-fade-in
+        ${isDragging ? 'opacity-50 shadow-xl ring-2 ring-indigo-500 ring-opacity-50' : 'opacity-100'}
       `}
       onClick={() => setSelectedTask(task.id)}
     >
@@ -215,6 +210,6 @@ export const TaskCard = ({ task, isCompact = false }: TaskCardProps) => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

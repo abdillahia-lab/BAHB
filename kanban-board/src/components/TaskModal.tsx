@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Calendar,
@@ -9,7 +8,6 @@ import {
   Trash2,
   Copy,
   Archive,
-  Plus,
   Check,
   AlertCircle,
   Flag,
@@ -18,7 +16,7 @@ import {
 import type { Task, Priority, LabelColor } from '../types';
 import { useBoardStore } from '../store/boardStore';
 import { labelColors, priorityColors, coverColors } from '../utils/colors';
-import { formatFullDate, formatRelativeTime, formatDateForInput } from '../utils/dates';
+import { formatRelativeTime, formatDateForInput } from '../utils/dates';
 
 interface TaskModalProps {
   task: Task;
@@ -128,21 +126,15 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
   const totalChecklist = task.checklist.length;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-start justify-center pt-12 pb-12 px-4 bg-black/50 backdrop-blur-sm overflow-y-auto"
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center pt-12 pb-12 px-4 bg-black/50 backdrop-blur-sm overflow-y-auto animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <motion.div
+      <div
         ref={modalRef}
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-        className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden animate-scale-in"
       >
         {/* Cover */}
         {task.coverColor && (
@@ -389,31 +381,24 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
                       <Tag className="w-4 h-4" />
                       Labels
                     </button>
-                    <AnimatePresence>
-                      {showLabelPicker && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10"
-                        >
-                          <div className="space-y-1">
-                            {board.labels.map((label) => (
-                              <button
-                                key={label.id}
-                                onClick={() => toggleLabel(label.id)}
-                                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-white ${labelColors[label.color].bg} hover:opacity-90`}
-                              >
-                                <span className="flex-1 text-left">{label.name}</span>
-                                {task.labels.includes(label.id) && (
-                                  <Check className="w-4 h-4" />
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {showLabelPicker && (
+                      <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10 animate-scale-in">
+                        <div className="space-y-1">
+                          {board.labels.map((label) => (
+                            <button
+                              key={label.id}
+                              onClick={() => toggleLabel(label.id)}
+                              className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-white ${labelColors[label.color].bg} hover:opacity-90`}
+                            >
+                              <span className="flex-1 text-left">{label.name}</span>
+                              {task.labels.includes(label.id) && (
+                                <Check className="w-4 h-4" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Due date */}
@@ -440,31 +425,24 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
                       <Flag className="w-4 h-4" />
                       Priority: {task.priority}
                     </button>
-                    <AnimatePresence>
-                      {showPriorityPicker && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10"
-                        >
-                          {priorities.map((priority) => (
-                            <button
-                              key={priority}
-                              onClick={() => {
-                                updateTask(task.id, { priority });
-                                setShowPriorityPicker(false);
-                              }}
-                              className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm ${priorityColors[priority].bg} ${priorityColors[priority].text} hover:opacity-80`}
-                            >
-                              {priority === 'urgent' && <AlertCircle className="w-4 h-4" />}
-                              <span className="flex-1 text-left capitalize">{priority}</span>
-                              {task.priority === priority && <Check className="w-4 h-4" />}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {showPriorityPicker && (
+                      <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10 animate-scale-in">
+                        {priorities.map((priority) => (
+                          <button
+                            key={priority}
+                            onClick={() => {
+                              updateTask(task.id, { priority });
+                              setShowPriorityPicker(false);
+                            }}
+                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm ${priorityColors[priority].bg} ${priorityColors[priority].text} hover:opacity-80`}
+                          >
+                            {priority === 'urgent' && <AlertCircle className="w-4 h-4" />}
+                            <span className="flex-1 text-left capitalize">{priority}</span>
+                            {task.priority === priority && <Check className="w-4 h-4" />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Cover color */}
@@ -476,42 +454,35 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
                       <Palette className="w-4 h-4" />
                       Cover
                     </button>
-                    <AnimatePresence>
-                      {showCoverPicker && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10"
-                        >
-                          <div className="grid grid-cols-4 gap-1">
+                    {showCoverPicker && (
+                      <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10 animate-scale-in">
+                        <div className="grid grid-cols-4 gap-1">
+                          <button
+                            onClick={() => {
+                              updateTask(task.id, { coverColor: undefined });
+                              setShowCoverPicker(false);
+                            }}
+                            className="w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center hover:border-gray-400"
+                          >
+                            <X className="w-4 h-4 text-gray-400" />
+                          </button>
+                          {colors.map((color) => (
                             <button
+                              key={color}
                               onClick={() => {
-                                updateTask(task.id, { coverColor: undefined });
+                                updateTask(task.id, { coverColor: color });
                                 setShowCoverPicker(false);
                               }}
-                              className="w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center hover:border-gray-400"
+                              className={`w-8 h-8 rounded ${labelColors[color].bg} hover:ring-2 ring-offset-2 ring-gray-400`}
                             >
-                              <X className="w-4 h-4 text-gray-400" />
+                              {task.coverColor === color && (
+                                <Check className="w-4 h-4 text-white mx-auto" />
+                              )}
                             </button>
-                            {colors.map((color) => (
-                              <button
-                                key={color}
-                                onClick={() => {
-                                  updateTask(task.id, { coverColor: color });
-                                  setShowCoverPicker(false);
-                                }}
-                                className={`w-8 h-8 rounded ${labelColors[color].bg} hover:ring-2 ring-offset-2 ring-gray-400`}
-                              >
-                                {task.coverColor === color && (
-                                  <Check className="w-4 h-4 text-white mx-auto" />
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -548,7 +519,7 @@ export const TaskModal = ({ task, onClose }: TaskModalProps) => {
             </div>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };

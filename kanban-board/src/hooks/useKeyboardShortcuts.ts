@@ -16,8 +16,6 @@ export const useKeyboardShortcuts = () => {
     toggleCompactMode,
     setSearchQuery,
     setSelectedTask,
-    selectedTaskId,
-    board,
   } = useBoardStore();
 
   const shortcuts: ShortcutConfig[] = [

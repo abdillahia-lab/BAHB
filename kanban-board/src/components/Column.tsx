@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus,
   MoreHorizontal,
@@ -116,15 +115,12 @@ export const Column = ({ column }: ColumnProps) => {
   const dotColor = labelColors[column.color].bg;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+    <div
       className={`
         flex-shrink-0 w-72 flex flex-col max-h-full
         bg-gray-50 dark:bg-gray-900/50 rounded-xl
         border border-gray-200 dark:border-gray-800
+        transition-all duration-200 animate-slide-in
         ${isOver ? 'ring-2 ring-indigo-500 ring-opacity-50' : ''}
       `}
     >
@@ -176,37 +172,30 @@ export const Column = ({ column }: ColumnProps) => {
               <MoreHorizontal className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             </button>
 
-            <AnimatePresence>
-              {showMenu && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute right-0 top-8 z-20 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1"
+            {showMenu && (
+              <div className="absolute right-0 top-8 z-20 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 animate-scale-in">
+                <button
+                  onClick={() => {
+                    setIsEditingTitle(true);
+                    setShowMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  <button
-                    onClick={() => {
-                      setIsEditingTitle(true);
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    Rename column
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleDelete();
-                      setShowMenu(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete column
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <Edit2 className="w-4 h-4" />
+                  Rename column
+                </button>
+                <button
+                  onClick={() => {
+                    handleDelete();
+                    setShowMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete column
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -228,11 +217,9 @@ export const Column = ({ column }: ColumnProps) => {
           items={tasks.map((t) => t.id)}
           strategy={verticalListSortingStrategy}
         >
-          <AnimatePresence mode="popLayout">
-            {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} isCompact={isCompactMode} />
-            ))}
-          </AnimatePresence>
+          {tasks.map((task) => (
+            <TaskCard key={task.id} task={task} isCompact={isCompactMode} />
+          ))}
         </SortableContext>
 
         {/* Drop zone indicator */}
@@ -247,57 +234,48 @@ export const Column = ({ column }: ColumnProps) => {
 
       {/* Add Task */}
       <div className="p-2 border-t border-gray-200 dark:border-gray-800">
-        <AnimatePresence mode="wait">
-          {isAddingTask ? (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-2"
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                value={newTaskTitle}
-                onChange={(e) => setNewTaskTitle(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter task title..."
-                className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleAddTask}
-                  disabled={!newTaskTitle.trim()}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-colors"
-                >
-                  <Check className="w-4 h-4" />
-                  Add
-                </button>
-                <button
-                  onClick={() => {
-                    setNewTaskTitle('');
-                    setIsAddingTask(false);
-                  }}
-                  className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              onClick={() => setIsAddingTask(true)}
-              data-add-task-button
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Add task
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {isAddingTask ? (
+          <div className="space-y-2 animate-slide-in">
+            <input
+              ref={inputRef}
+              type="text"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Enter task title..."
+              className="w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAddTask}
+                disabled={!newTaskTitle.trim()}
+                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                <Check className="w-4 h-4" />
+                Add
+              </button>
+              <button
+                onClick={() => {
+                  setNewTaskTitle('');
+                  setIsAddingTask(false);
+                }}
+                className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAddingTask(true)}
+            data-add-task-button
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add task
+          </button>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 };

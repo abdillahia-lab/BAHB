@@ -6,5 +6,18 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-dnd': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
+          'vendor-utils': ['date-fns', 'zustand', 'uuid', 'lucide-react'],
+        }
+      }
+    },
+    target: 'esnext',
+    minify: 'esbuild',
   }
 })
