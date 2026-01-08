@@ -238,15 +238,22 @@ class EvolutionaryTournament:
 
     async def _init_backtesting(self) -> None:
         """Initialize backtesting system."""
-        from ..distributed import DistributedBacktester
+        try:
+            from distributed import DistributedBacktester
+        except ImportError:
+            from src.distributed import DistributedBacktester
         self.backtester = DistributedBacktester(num_local_workers=4)
         self.backtester.start()
         print("✓ Distributed backtesting initialized")
 
     async def _init_evolution(self) -> None:
         """Initialize genetic evolution."""
-        from ..genetics import GeneticEvolution, EvolutionConfig
-        from ..strategies.gene_pool import STRATEGY_GENE_POOL
+        try:
+            from genetics import GeneticEvolution, EvolutionConfig
+            from strategies.gene_pool import STRATEGY_GENE_POOL
+        except ImportError:
+            from src.genetics import GeneticEvolution, EvolutionConfig
+            from src.strategies.gene_pool import STRATEGY_GENE_POOL
 
         config = EvolutionConfig(
             population_size=self.config.num_teams,
@@ -262,7 +269,10 @@ class EvolutionaryTournament:
 
     async def _init_paper_trading(self) -> None:
         """Initialize paper trading."""
-        from ..paper_trading import PaperTradingEngine, SimulatedMarketData
+        try:
+            from paper_trading import PaperTradingEngine, SimulatedMarketData
+        except ImportError:
+            from src.paper_trading import PaperTradingEngine, SimulatedMarketData
 
         market_data = SimulatedMarketData()
         self.paper_trading = PaperTradingEngine(market_data)
@@ -279,7 +289,10 @@ class EvolutionaryTournament:
 
     async def _init_monitoring(self) -> None:
         """Initialize monitoring."""
-        from ..monitoring import RealTimeMonitor
+        try:
+            from monitoring import RealTimeMonitor
+        except ImportError:
+            from src.monitoring import RealTimeMonitor
         self.monitor = RealTimeMonitor()
         self.monitor.start()
         print("✓ Real-time monitoring initialized")
@@ -337,7 +350,10 @@ class EvolutionaryTournament:
                 await callback(result)
 
             # Update monitor
-            from ..monitoring import TournamentStatus
+            try:
+                from monitoring import TournamentStatus
+            except ImportError:
+                from src.monitoring import TournamentStatus
             self.monitor.update_tournament(TournamentStatus(
                 current_round=round_num,
                 total_rounds=self.config.total_rounds,

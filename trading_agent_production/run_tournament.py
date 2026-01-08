@@ -26,8 +26,11 @@ import asyncio
 import sys
 import os
 
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Add src to path for imports
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_src_dir = os.path.join(_script_dir, 'src')
+sys.path.insert(0, _src_dir)
+sys.path.insert(0, _script_dir)
 
 
 def parse_args():
