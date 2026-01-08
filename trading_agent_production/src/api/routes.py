@@ -2,11 +2,13 @@
 FastAPI routes for the Trading Agent Production API.
 """
 
+import os
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
@@ -21,6 +23,17 @@ from ..core.types import (
     Position,
     TradingSignal,
     UserPreferences,
+)
+from ..execution.engine import AlpacaAdapter
+
+# Load environment variables
+load_dotenv()
+
+# Initialize Alpaca adapter with credentials
+alpaca_adapter = AlpacaAdapter(
+    api_key=os.getenv("ALPACA_API_KEY", ""),
+    api_secret=os.getenv("ALPACA_API_SECRET", ""),
+    paper=os.getenv("ALPACA_PAPER", "true").lower() == "true"
 )
 
 
@@ -300,17 +313,31 @@ async def allocate_capital(request: CapitalAllocationRequest):
 
 @trading_router.get("/status", response_model=TradingStatusResponse)
 async def get_trading_status():
-    """Get current autonomous trading status."""
-    return TradingStatusResponse(
-        is_enabled=True,
-        is_running=True,
-        is_halted=False,
-        halt_reason=None,
-        daily_pnl=4250.75,  # AGGRESSIVE MODE - bigger swings
-        active_strategies=["momentum", "mean_reversion", "breakout", "scalping", "gap_trading", "volatility_arbitrage"],
-        position_count=15,
-        portfolio_value=425000.00  # 4x leverage deployed
-    )
+    """Get current autonomous trading status - REAL ALPACA DATA."""
+    try:
+        if not alpaca_adapter.connected:
+            await alpaca_adapter.connect()
+
+        account_info = alpaca_adapter.get_account_info()
+        positions = await alpaca_adapter.get_positions()
+
+        if "error" in account_info:
+            raise HTTPException(status_code=500, detail=account_info["error"])
+
+        daily_pnl = account_info["equity"] - account_info["last_equity"]
+
+        return TradingStatusResponse(
+            is_enabled=True,
+            is_running=alpaca_adapter.connected,
+            is_halted=account_info.get("trading_blocked", False),
+            halt_reason="Trading blocked" if account_info.get("trading_blocked") else None,
+            daily_pnl=daily_pnl,
+            active_strategies=["momentum", "mean_reversion", "breakout", "scalping", "gap_trading", "volatility_arbitrage"],
+            position_count=len(positions),
+            portfolio_value=account_info["equity"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @trading_router.post("/stop")
@@ -404,62 +431,46 @@ portfolio_router = APIRouter(prefix="/api/v1/portfolio", tags=["Portfolio"])
 
 @portfolio_router.get("", response_model=PortfolioResponse)
 async def get_portfolio():
-    """Get portfolio summary - AGGRESSIVE MODE with 4x leverage."""
-    return PortfolioResponse(
-        account_id="trader-alpha-001",
-        cash=25000.00,  # Low cash - fully deployed
-        total_value=425000.00,  # 4x leveraged
-        daily_pnl=4250.75,
-        total_pnl=32500.00,
-        buying_power=50000.00,
-        positions=[
-            PositionResponse(
-                symbol="NVDA",
-                quantity=500,
-                average_entry_price=875.00,
-                current_price=920.00,
-                market_value=460000.00,
-                unrealized_pnl=22500.00,
-                unrealized_pnl_percent=5.14
-            ),
-            PositionResponse(
-                symbol="TSLA",
-                quantity=300,
-                average_entry_price=245.00,
-                current_price=268.00,
-                market_value=80400.00,
-                unrealized_pnl=6900.00,
-                unrealized_pnl_percent=9.39
-            ),
-            PositionResponse(
-                symbol="AMD",
-                quantity=800,
-                average_entry_price=165.00,
-                current_price=178.50,
-                market_value=142800.00,
-                unrealized_pnl=10800.00,
-                unrealized_pnl_percent=8.18
-            ),
-            PositionResponse(
-                symbol="MSTR",
-                quantity=150,
-                average_entry_price=1450.00,
-                current_price=1580.00,
-                market_value=237000.00,
-                unrealized_pnl=19500.00,
-                unrealized_pnl_percent=8.97
-            ),
-            PositionResponse(
-                symbol="COIN",
-                quantity=400,
-                average_entry_price=225.00,
-                current_price=285.00,
-                market_value=114000.00,
-                unrealized_pnl=24000.00,
-                unrealized_pnl_percent=26.67
-            )
-        ]
-    )
+    """Get portfolio summary - REAL ALPACA DATA."""
+    try:
+        if not alpaca_adapter.connected:
+            await alpaca_adapter.connect()
+
+        account_info = alpaca_adapter.get_account_info()
+        positions = await alpaca_adapter.get_positions()
+
+        if "error" in account_info:
+            raise HTTPException(status_code=500, detail=account_info["error"])
+
+        position_responses = []
+        for p in positions:
+            pnl_percent = 0.0
+            if float(p.cost_basis) > 0:
+                pnl_percent = (float(p.unrealized_pnl) / float(p.cost_basis)) * 100
+
+            position_responses.append(PositionResponse(
+                symbol=p.symbol,
+                quantity=float(p.quantity),
+                average_entry_price=float(p.average_entry_price),
+                current_price=float(p.current_price),
+                market_value=float(p.market_value),
+                unrealized_pnl=float(p.unrealized_pnl),
+                unrealized_pnl_percent=round(pnl_percent, 2)
+            ))
+
+        daily_pnl = account_info["equity"] - account_info["last_equity"]
+
+        return PortfolioResponse(
+            account_id=account_info["account_number"],
+            cash=account_info["cash"],
+            total_value=account_info["equity"],
+            daily_pnl=daily_pnl,
+            total_pnl=account_info["equity"] - 100000.0,  # Assuming 100k paper start
+            buying_power=account_info["buying_power"],
+            positions=position_responses
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @portfolio_router.get("/positions", response_model=List[PositionResponse])

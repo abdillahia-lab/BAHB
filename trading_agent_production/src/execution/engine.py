@@ -88,7 +88,7 @@ class BrokerAdapter(ABC):
 
 
 class AlpacaAdapter(BrokerAdapter):
-    """Alpaca broker adapter implementation."""
+    """Alpaca broker adapter implementation - REAL API CONNECTION."""
 
     def __init__(
         self,
@@ -100,61 +100,177 @@ class AlpacaAdapter(BrokerAdapter):
         self.api_secret = api_secret
         self.paper = paper
         self.connected = False
-        self._client = None
+        self._trading_client = None
+        self._data_client = None
 
     async def connect(self) -> bool:
         """Connect to Alpaca API."""
-        # Placeholder - would use actual Alpaca SDK
-        self.connected = True
-        return True
+        try:
+            from alpaca.trading.client import TradingClient
+            from alpaca.data.historical import StockHistoricalDataClient
+
+            self._trading_client = TradingClient(
+                api_key=self.api_key,
+                secret_key=self.api_secret,
+                paper=self.paper
+            )
+            self._data_client = StockHistoricalDataClient(
+                api_key=self.api_key,
+                secret_key=self.api_secret
+            )
+            # Test connection by getting account
+            account = self._trading_client.get_account()
+            print(f"✅ Connected to Alpaca {'Paper' if self.paper else 'Live'} Trading")
+            print(f"   Account: {account.account_number}")
+            print(f"   Cash: ${float(account.cash):,.2f}")
+            print(f"   Buying Power: ${float(account.buying_power):,.2f}")
+            self.connected = True
+            return True
+        except Exception as e:
+            print(f"❌ Alpaca connection failed: {e}")
+            self.connected = False
+            return False
 
     async def disconnect(self):
         """Disconnect from Alpaca."""
         self.connected = False
-        self._client = None
+        self._trading_client = None
+        self._data_client = None
 
     async def submit_order(self, order: Order) -> ExecutionResult:
         """Submit order to Alpaca."""
+        from alpaca.trading.requests import MarketOrderRequest, LimitOrderRequest
+        from alpaca.trading.enums import OrderSide as AlpacaOrderSide, TimeInForce
+
         start_time = datetime.utcnow()
 
-        # Placeholder execution logic
-        await asyncio.sleep(0.01)  # Simulate network latency
+        try:
+            side = AlpacaOrderSide.BUY if order.side == OrderSide.BUY else AlpacaOrderSide.SELL
 
-        execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+            if order.order_type == OrderType.MARKET:
+                order_request = MarketOrderRequest(
+                    symbol=order.symbol,
+                    qty=float(order.quantity),
+                    side=side,
+                    time_in_force=TimeInForce.DAY
+                )
+            else:
+                order_request = LimitOrderRequest(
+                    symbol=order.symbol,
+                    qty=float(order.quantity),
+                    side=side,
+                    time_in_force=TimeInForce.DAY,
+                    limit_price=float(order.limit_price) if order.limit_price else None
+                )
 
-        return ExecutionResult(
-            order_id=order.order_id,
-            status=OrderStatus.FILLED,
-            filled_quantity=order.quantity,
-            average_price=order.limit_price or Decimal("100.00"),
-            commission=Decimal("0.00"),
-            slippage=Decimal("0.01"),
-            execution_time_ms=execution_time
-        )
+            alpaca_order = self._trading_client.submit_order(order_request)
+            execution_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+
+            return ExecutionResult(
+                order_id=str(alpaca_order.id),
+                status=OrderStatus.PENDING if alpaca_order.status.value == "pending_new" else OrderStatus.FILLED,
+                filled_quantity=Decimal(str(alpaca_order.filled_qty or 0)),
+                average_price=Decimal(str(alpaca_order.filled_avg_price)) if alpaca_order.filled_avg_price else None,
+                commission=Decimal("0.00"),
+                slippage=Decimal("0.00"),
+                execution_time_ms=execution_time
+            )
+        except Exception as e:
+            print(f"Order submission failed: {e}")
+            raise
 
     async def cancel_order(self, order_id: str) -> bool:
         """Cancel order on Alpaca."""
-        return True
+        try:
+            self._trading_client.cancel_order_by_id(order_id)
+            return True
+        except Exception as e:
+            print(f"Cancel order failed: {e}")
+            return False
 
     async def get_positions(self) -> List[Position]:
         """Get positions from Alpaca."""
-        return []
+        try:
+            alpaca_positions = self._trading_client.get_all_positions()
+            positions = []
+            for p in alpaca_positions:
+                positions.append(Position(
+                    symbol=p.symbol,
+                    quantity=Decimal(str(p.qty)),
+                    average_entry_price=Decimal(str(p.avg_entry_price)),
+                    current_price=Decimal(str(p.current_price)),
+                    market_value=Decimal(str(p.market_value)),
+                    unrealized_pnl=Decimal(str(p.unrealized_pl)),
+                    realized_pnl=Decimal("0.00"),
+                    cost_basis=Decimal(str(p.cost_basis))
+                ))
+            return positions
+        except Exception as e:
+            print(f"Get positions failed: {e}")
+            return []
 
     async def get_portfolio(self) -> Portfolio:
         """Get portfolio from Alpaca."""
-        return Portfolio(
-            account_id="paper-account",
-            cash=Decimal("100000.00"),
-            positions=[],
-            total_value=Decimal("100000.00"),
-            daily_pnl=Decimal("0.00"),
-            total_pnl=Decimal("0.00"),
-            buying_power=Decimal("200000.00")
-        )
+        try:
+            account = self._trading_client.get_account()
+            positions = await self.get_positions()
+
+            return Portfolio(
+                account_id=account.account_number,
+                cash=Decimal(str(account.cash)),
+                positions=positions,
+                total_value=Decimal(str(account.equity)),
+                daily_pnl=Decimal(str(account.equity)) - Decimal(str(account.last_equity)),
+                total_pnl=Decimal(str(account.equity)) - Decimal("100000.00"),  # Assuming 100k start
+                buying_power=Decimal(str(account.buying_power))
+            )
+        except Exception as e:
+            print(f"Get portfolio failed: {e}")
+            return Portfolio(
+                account_id="error",
+                cash=Decimal("0.00"),
+                positions=[],
+                total_value=Decimal("0.00"),
+                daily_pnl=Decimal("0.00"),
+                total_pnl=Decimal("0.00"),
+                buying_power=Decimal("0.00")
+            )
 
     async def get_order_status(self, order_id: str) -> OrderStatus:
         """Get order status from Alpaca."""
-        return OrderStatus.FILLED
+        try:
+            order = self._trading_client.get_order_by_id(order_id)
+            status_map = {
+                "filled": OrderStatus.FILLED,
+                "partially_filled": OrderStatus.PARTIALLY_FILLED,
+                "canceled": OrderStatus.CANCELLED,
+                "pending_new": OrderStatus.PENDING,
+                "new": OrderStatus.PENDING,
+            }
+            return status_map.get(order.status.value, OrderStatus.PENDING)
+        except Exception as e:
+            print(f"Get order status failed: {e}")
+            return OrderStatus.PENDING
+
+    def get_account_info(self) -> dict:
+        """Get raw account info from Alpaca."""
+        try:
+            account = self._trading_client.get_account()
+            return {
+                "account_number": account.account_number,
+                "status": account.status.value,
+                "cash": float(account.cash),
+                "buying_power": float(account.buying_power),
+                "equity": float(account.equity),
+                "last_equity": float(account.last_equity),
+                "portfolio_value": float(account.portfolio_value),
+                "pattern_day_trader": account.pattern_day_trader,
+                "trading_blocked": account.trading_blocked,
+                "transfers_blocked": account.transfers_blocked,
+                "account_blocked": account.account_blocked,
+            }
+        except Exception as e:
+            return {"error": str(e)}
 
 
 class RiskManager:
