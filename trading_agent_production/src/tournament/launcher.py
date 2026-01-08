@@ -457,16 +457,23 @@ class EvolutionaryTournament:
         teams: List[TeamStatus]
     ) -> Dict[str, Dict]:
         """Generate strategies for all teams."""
+        try:
+            from strategies.gene_pool import get_default_parameters
+        except ImportError:
+            from src.strategies.gene_pool import get_default_parameters
+
         strategies = {}
 
         for team in teams:
             # Pick random strategy from gene pool
             strategy_type = random.choice(list(self.gene_pool.keys()))
-            strategy_config = self.gene_pool[strategy_type]
+
+            # Get default parameters for this strategy type
+            default_params = get_default_parameters(strategy_type)
 
             # Apply mutations based on phase
             mutated_params = self._mutate_parameters(
-                strategy_config.get('default_params', {}),
+                default_params,
                 self.config.mutation_rate
             )
 
