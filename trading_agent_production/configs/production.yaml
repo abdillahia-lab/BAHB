@@ -62,16 +62,22 @@ trading:
     backup: "interactive_brokers"
 
   risk_management:
-    max_position_size: 10000
-    max_portfolio_exposure: 0.8
-    max_single_stock_exposure: 0.15
-    max_daily_loss: 5000
-    max_drawdown: 0.15
+    max_position_size: 100000      # 10x increase - GO BIG
+    max_portfolio_exposure: 0.95   # Use 95% of capital
+    max_single_stock_exposure: 0.40  # Up to 40% in single stock
+    max_daily_loss: 50000          # Accept larger drawdowns
+    max_drawdown: 0.35             # 35% drawdown tolerance
+    leverage: 4.0                  # 4x leverage enabled
 
   strategies:
     - momentum
     - mean_reversion
     - trend_following
+    - breakout
+    - scalping
+    - gap_trading
+    - options_selling
+    - volatility_arbitrage
 
 # Market Data Configuration
 market_data:

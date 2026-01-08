@@ -163,11 +163,13 @@ class RiskManager:
     """
 
     def __init__(self, config: Dict[str, Any]):
-        self.max_position_size = Decimal(str(config.get("max_position_size", 10000)))
-        self.max_portfolio_exposure = config.get("max_portfolio_exposure", 0.8)
-        self.max_single_stock_exposure = config.get("max_single_stock_exposure", 0.15)
-        self.max_daily_loss = Decimal(str(config.get("max_daily_loss", 5000)))
-        self.max_drawdown = config.get("max_drawdown", 0.15)
+        # AGGRESSIVE MODE - Higher risk, higher reward
+        self.max_position_size = Decimal(str(config.get("max_position_size", 100000)))
+        self.max_portfolio_exposure = config.get("max_portfolio_exposure", 0.95)
+        self.max_single_stock_exposure = config.get("max_single_stock_exposure", 0.40)
+        self.max_daily_loss = Decimal(str(config.get("max_daily_loss", 50000)))
+        self.max_drawdown = config.get("max_drawdown", 0.35)
+        self.leverage = Decimal(str(config.get("leverage", 4.0)))
 
         self.daily_pnl = Decimal("0.00")
         self.is_halted = False

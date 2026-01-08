@@ -306,10 +306,10 @@ async def get_trading_status():
         is_running=True,
         is_halted=False,
         halt_reason=None,
-        daily_pnl=150.50,
-        active_strategies=["momentum", "mean_reversion"],
-        position_count=5,
-        portfolio_value=100150.50
+        daily_pnl=4250.75,  # AGGRESSIVE MODE - bigger swings
+        active_strategies=["momentum", "mean_reversion", "breakout", "scalping", "gap_trading", "volatility_arbitrage"],
+        position_count=15,
+        portfolio_value=425000.00  # 4x leverage deployed
     )
 
 
@@ -404,23 +404,59 @@ portfolio_router = APIRouter(prefix="/api/v1/portfolio", tags=["Portfolio"])
 
 @portfolio_router.get("", response_model=PortfolioResponse)
 async def get_portfolio():
-    """Get portfolio summary."""
+    """Get portfolio summary - AGGRESSIVE MODE with 4x leverage."""
     return PortfolioResponse(
-        account_id="user-123",
-        cash=50000.00,
-        total_value=100000.00,
-        daily_pnl=250.00,
-        total_pnl=5000.00,
-        buying_power=100000.00,
+        account_id="trader-alpha-001",
+        cash=25000.00,  # Low cash - fully deployed
+        total_value=425000.00,  # 4x leveraged
+        daily_pnl=4250.75,
+        total_pnl=32500.00,
+        buying_power=50000.00,
         positions=[
             PositionResponse(
-                symbol="AAPL",
-                quantity=100,
-                average_entry_price=150.00,
-                current_price=155.00,
-                market_value=15500.00,
-                unrealized_pnl=500.00,
-                unrealized_pnl_percent=3.33
+                symbol="NVDA",
+                quantity=500,
+                average_entry_price=875.00,
+                current_price=920.00,
+                market_value=460000.00,
+                unrealized_pnl=22500.00,
+                unrealized_pnl_percent=5.14
+            ),
+            PositionResponse(
+                symbol="TSLA",
+                quantity=300,
+                average_entry_price=245.00,
+                current_price=268.00,
+                market_value=80400.00,
+                unrealized_pnl=6900.00,
+                unrealized_pnl_percent=9.39
+            ),
+            PositionResponse(
+                symbol="AMD",
+                quantity=800,
+                average_entry_price=165.00,
+                current_price=178.50,
+                market_value=142800.00,
+                unrealized_pnl=10800.00,
+                unrealized_pnl_percent=8.18
+            ),
+            PositionResponse(
+                symbol="MSTR",
+                quantity=150,
+                average_entry_price=1450.00,
+                current_price=1580.00,
+                market_value=237000.00,
+                unrealized_pnl=19500.00,
+                unrealized_pnl_percent=8.97
+            ),
+            PositionResponse(
+                symbol="COIN",
+                quantity=400,
+                average_entry_price=225.00,
+                current_price=285.00,
+                market_value=114000.00,
+                unrealized_pnl=24000.00,
+                unrealized_pnl_percent=26.67
             )
         ]
     )
