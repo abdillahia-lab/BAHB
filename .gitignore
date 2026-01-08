@@ -64,6 +64,12 @@ reports/
 __pycache__/
 .pytest_cache/
 .mypy_cache/
+congress_data/
+**/congress_data/
+
+# Generated reports
+daily_report.json
+congress_recommendations.json
 
 # Environment
 .env
