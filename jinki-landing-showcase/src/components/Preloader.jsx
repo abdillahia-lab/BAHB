@@ -19,115 +19,30 @@ export default function Preloader({ onComplete }) {
   const [phase, setPhase] = useState('loading') // 'loading' | 'complete' | 'exiting'
 
   useEffect(() => {
-    const startTime = Date.now()
-    const MINIMUM_DURATION = 2500 // 2.5 seconds minimum for dramatic effect
+    // Simple timed preloader - no external asset dependencies
+    const DURATION = 2000 // 2 seconds total
 
-    // Assets to preload
-    const assetsToLoad = [
-      // Video
-      {
-        type: 'video',
-        url: 'https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4'
-      },
-      // Google Fonts (DM Sans)
-      {
-        type: 'font',
-        family: 'DM Sans',
-        weight: '300 900'
-      }
-    ]
-
-    let loadedAssets = 0
-    const totalAssets = assetsToLoad.length
-
-    // Progress simulation for smooth animation
-    let simulatedProgress = 0
+    // Progress animation
+    let progress = 0
     const progressInterval = setInterval(() => {
-      simulatedProgress += Math.random() * 8 // Random increments for organic feel
-      if (simulatedProgress > 90) simulatedProgress = 90 // Cap at 90% until real assets load
-      setProgress(Math.floor(simulatedProgress))
-    }, 100)
+      progress += 5
+      setProgress(Math.min(progress, 100))
 
-    // Asset loading functions
-    const loadVideo = (url) => {
-      return new Promise((resolve, reject) => {
-        const video = document.createElement('video')
-        video.preload = 'metadata'
-
-        video.addEventListener('loadedmetadata', () => {
-          resolve()
-        })
-
-        video.addEventListener('error', () => {
-          console.warn('Video preload failed, continuing...')
-          resolve() // Resolve anyway to not block preloader
-        })
-
-        video.src = url
-      })
-    }
-
-    const loadFont = (family, weight) => {
-      return new Promise((resolve) => {
-        if (document.fonts && document.fonts.load) {
-          document.fonts.load(`${weight} 16px "${family}"`).then(resolve).catch(() => {
-            console.warn('Font preload failed, continuing...')
-            resolve()
-          })
-        } else {
-          // Fallback: just wait a bit
-          setTimeout(resolve, 300)
-        }
-      })
-    }
-
-    // Load all assets
-    const loadAssets = async () => {
-      for (const asset of assetsToLoad) {
-        try {
-          if (asset.type === 'video') {
-            await loadVideo(asset.url)
-          } else if (asset.type === 'font') {
-            await loadFont(asset.family, asset.weight)
-          }
-
-          loadedAssets++
-          const realProgress = (loadedAssets / totalAssets) * 100
-
-          // Update to real progress if it's higher than simulated
-          setProgress(prev => Math.max(prev, Math.floor(realProgress)))
-        } catch (error) {
-          console.warn('Asset load error:', error)
-          loadedAssets++
-        }
-      }
-
-      // Ensure minimum display time for dramatic effect
-      const elapsed = Date.now() - startTime
-      const remainingTime = Math.max(0, MINIMUM_DURATION - elapsed)
-
-      setTimeout(() => {
+      if (progress >= 100) {
         clearInterval(progressInterval)
-        setProgress(100)
         setPhase('complete')
 
-        // Hold at 100% briefly, then exit
+        // Brief hold, then exit
         setTimeout(() => {
           setPhase('exiting')
-
-          // Notify parent after exit animation completes
           setTimeout(() => {
             if (onComplete) onComplete()
-          }, 1200) // Match exit animation duration
-        }, 400)
-      }, remainingTime)
-    }
+          }, 800)
+        }, 200)
+      }
+    }, DURATION / 20)
 
-    loadAssets()
-
-    return () => {
-      clearInterval(progressInterval)
-    }
+    return () => clearInterval(progressInterval)
   }, [onComplete])
 
   return (
