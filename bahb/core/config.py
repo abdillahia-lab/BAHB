@@ -65,6 +65,38 @@ class YOLOConfig(BaseModel):
     classes: list[str] = Field(default_factory=list)
 
 
+class YOLO26Config(BaseModel):
+    """YOLO26 model configuration (January 2026).
+
+    YOLO26 key improvements:
+    - Native NMS-free end-to-end inference (no post-processing)
+    - DFL removal for simplified edge deployment
+    - STAL (Small-Target-Aware Label Assignment) for small objects
+    - ProgLoss for improved accuracy
+    - MuSGD optimizer (SGD + Muon hybrid from Moonshot AI)
+    - Up to 43% faster CPU inference than YOLO11
+
+    Model variants (640px COCO):
+    - yolo26n: 2.4M params, mAP 40.9, CPU 38.9ms
+    - yolo26s: 9.5M params, mAP 48.6, CPU 87.2ms
+    - yolo26m: 20.4M params, mAP 53.1, CPU 220.0ms
+    - yolo26l: 24.8M params, mAP 55.0, CPU 286.2ms
+    - yolo26x: 55.7M params, mAP 57.5, CPU 525.8ms
+    """
+    enabled: bool = False  # Disabled by default, set True to use
+    weights: str = "models/yolo26l-inspection.pt"
+    weights_int8: str = "models/yolo26l-inspection-int8.engine"
+    input_size: tuple[int, int] = (640, 640)
+    confidence_threshold: float = 0.35
+    nms_threshold: float = 0.45
+    device: str = "cuda:0"
+    half_precision: bool = True
+    use_int8: bool = False
+    batch_size: int = 1
+    model_size: str = "l"  # n, s, m, l, x
+    classes: list[str] = Field(default_factory=list)
+
+
 class RFDETRConfig(BaseModel):
     """RF-DETR model configuration.
 
@@ -109,6 +141,7 @@ class QwenVLConfig(BaseModel):
 class ModelsConfig(BaseModel):
     """All AI models configuration."""
     yolov12: YOLOConfig = Field(default_factory=YOLOConfig)
+    yolo26: YOLO26Config = Field(default_factory=YOLO26Config)
     rf_detr: RFDETRConfig = Field(default_factory=RFDETRConfig)
     sam3_nano: SAM3Config = Field(default_factory=SAM3Config)
     qwen_vl: QwenVLConfig = Field(default_factory=QwenVLConfig)

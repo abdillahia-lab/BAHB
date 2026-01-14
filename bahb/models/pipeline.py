@@ -34,6 +34,7 @@ from bahb.core.types import (
     ThermalReading,
 )
 from bahb.models.yolov12 import YOLOv12Detector
+from bahb.models.yolo26 import YOLO26Detector, YOLO26Config
 from bahb.models.rf_detr import RFDETRSegmenter
 from bahb.models.sam3 import SAM3NanoSegmenter
 from bahb.models.qwen_vl import QwenVLAnalyzer
@@ -77,9 +78,13 @@ class InferencePipeline:
 
         # Initialize models
         self.yolo: Optional[YOLOv12Detector] = None
+        self.yolo26: Optional[YOLO26Detector] = None  # YOLO26 alternative
         self.rf_detr: Optional[RFDETRSegmenter] = None
         self.sam3: Optional[SAM3NanoSegmenter] = None
         self.qwen_vl: Optional[QwenVLAnalyzer] = None
+
+        # Active detector (YOLO26 preferred if enabled, fallback to YOLOv12)
+        self._active_detector = None
 
         # Thread pool for parallel inference
         self._executor = ThreadPoolExecutor(max_workers=4)
@@ -118,9 +123,24 @@ class InferencePipeline:
         # Load models in parallel
         load_tasks = []
 
-        if self.models_config.yolov12.enabled:
+        # Load YOLO26 if enabled (preferred), otherwise YOLOv12
+        if hasattr(self.models_config, 'yolo26') and self.models_config.yolo26.enabled:
+            yolo26_config = YOLO26Config(
+                weights=self.models_config.yolo26.weights,
+                input_size=self.models_config.yolo26.input_size,
+                confidence_threshold=self.models_config.yolo26.confidence_threshold,
+                nms_threshold=self.models_config.yolo26.nms_threshold,
+                device=self.models_config.yolo26.device,
+                half_precision=self.models_config.yolo26.half_precision,
+                classes=self.models_config.yolo26.classes or None,
+            )
+            self.yolo26 = YOLO26Detector(yolo26_config)
+            load_tasks.append(("YOLO26", self.yolo26))
+            self._active_detector = self.yolo26
+        elif self.models_config.yolov12.enabled:
             self.yolo = YOLOv12Detector(self.models_config.yolov12)
             load_tasks.append(("YOLOv12", self.yolo))
+            self._active_detector = self.yolo
 
         if self.models_config.rf_detr.enabled:
             self.rf_detr = RFDETRSegmenter(self.models_config.rf_detr)
@@ -167,7 +187,9 @@ class InferencePipeline:
         dummy_image = np.zeros((640, 640, 3), dtype=np.uint8)
 
         warmup_tasks = []
-        if self.yolo and self.yolo.is_loaded:
+        if self.yolo26 and self.yolo26.is_loaded:
+            warmup_tasks.append(self._warmup_model(self.yolo26, "YOLO26"))
+        elif self.yolo and self.yolo.is_loaded:
             warmup_tasks.append(self._warmup_model(self.yolo, "YOLOv12"))
         if self.rf_detr and self.rf_detr.is_loaded:
             warmup_tasks.append(self._warmup_model(self.rf_detr, "RF-DETR"))
@@ -226,17 +248,19 @@ class InferencePipeline:
 
         timing = {}
 
-        # Stage 1: Fast detection with YOLOv12
+        # Stage 1: Fast detection with YOLO26 or YOLOv12
         detections = []
-        if self.yolo and self.yolo.is_loaded:
+        detector = self._active_detector or self.yolo
+        if detector and detector.is_loaded:
             yolo_start = time.perf_counter()
 
             if self.enable_tracking:
-                detections = self.yolo.detect_with_tracking(image)
+                detections = detector.detect_with_tracking(image)
             else:
-                detections = self.yolo(image)
+                detections = detector(image)
 
-            timing["yolo"] = (time.perf_counter() - yolo_start) * 1000
+            detector_name = "yolo26" if self.yolo26 and detector == self.yolo26 else "yolo"
+            timing[detector_name] = (time.perf_counter() - yolo_start) * 1000
 
             if self._on_detection and detections:
                 self._on_detection(detections)
@@ -620,6 +644,8 @@ class InferencePipeline:
 
         if self.yolo:
             self.yolo.unload()
+        if self.yolo26:
+            self.yolo26.unload()
         if self.rf_detr:
             self.rf_detr.unload()
         if self.sam3:
