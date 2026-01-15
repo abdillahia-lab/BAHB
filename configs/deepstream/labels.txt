@@ -1,0 +1,17 @@
+transformer
+insulator
+conductor
+switchgear
+cable
+hvac_unit
+server_rack
+cooling_fan
+electrical_panel
+fire_extinguisher
+vegetation
+person
+vehicle
+damage
+corrosion
+hotspot
+leak

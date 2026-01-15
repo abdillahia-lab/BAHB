@@ -1,0 +1,270 @@
+# NVIDIA TAO 6 Training Configuration for BAHB Power Infrastructure Detection
+# Multi-Agent Deliberation: TAO Vision Foundation Models for improved accuracy
+# Expected improvement: 61.9% -> 85-95% mAP@50
+
+################################################################################
+# Model Configuration
+################################################################################
+model:
+  # Primary model: Deformable DETR with Swin Transformer backbone
+  # Selected for superior small object detection (insulators, bird nests)
+  type: "deformable_detr"
+  backbone: "swin_base_patch4_window7_224"
+
+  # Pre-trained weights
+  pretrained_backbone_path: null  # TAO will download automatically
+  resume_training_checkpoint_path: null
+
+  # Model architecture
+  num_classes: 17
+  num_queries: 300
+  hidden_dim: 256
+  nheads: 8
+  num_encoder_layers: 6
+  num_decoder_layers: 6
+  dim_feedforward: 1024
+  dropout: 0.1
+  num_feature_levels: 4
+  dec_n_points: 4
+  enc_n_points: 4
+
+  # Two-stage detection for improved accuracy
+  two_stage: false
+  with_box_refine: true
+
+################################################################################
+# Dataset Configuration
+################################################################################
+dataset:
+  # BAHB merged dataset
+  train_data_path: "/home/user/BAHB/data/merged/train"
+  val_data_path: "/home/user/BAHB/data/merged/val"
+
+  # Dataset format (convert from YOLO to COCO format for TAO)
+  format: "coco"
+  num_classes: 17
+
+  # Class mapping (from BAHB labels)
+  class_names:
+    - "transformer"
+    - "insulator"
+    - "conductor"
+    - "switchgear"
+    - "cable"
+    - "hvac_unit"
+    - "server_rack"
+    - "cooling_fan"
+    - "electrical_panel"
+    - "fire_extinguisher"
+    - "vegetation"
+    - "person"
+    - "vehicle"
+    - "damage"
+    - "corrosion"
+    - "hotspot"
+    - "leak"
+
+  # Data statistics
+  num_train_images: 13774
+  num_val_images: 4909
+
+################################################################################
+# Training Configuration
+################################################################################
+training:
+  # Basic training parameters
+  batch_size: 4                    # Per GPU, Orin NX memory limited
+  epochs: 100
+  num_gpus: 1
+
+  # Optimizer: AdamW (recommended for transformers)
+  optimizer:
+    type: "adamw"
+    lr: 0.0001                     # Lower LR for fine-tuning
+    weight_decay: 0.0001
+    lr_backbone: 0.00001           # 10x lower for pre-trained backbone
+
+  # Learning rate scheduler
+  lr_scheduler:
+    type: "multi_step"
+    milestones: [80]               # Reduce LR at epoch 80
+    gamma: 0.1
+
+  # Gradient clipping
+  clip_max_norm: 0.1
+
+  # Mixed precision training
+  use_amp: true                    # Automatic Mixed Precision for speed
+
+  # Checkpointing
+  checkpoint_interval: 10          # Save every 10 epochs
+  validation_interval: 5           # Validate every 5 epochs
+
+################################################################################
+# Data Augmentation
+################################################################################
+augmentation:
+  # Augmentation for power infrastructure
+  horizontal_flip:
+    enabled: true
+    prob: 0.5
+
+  random_resize:
+    enabled: true
+    min_size: [480, 512, 544, 576, 608, 640]
+    max_size: 1333
+
+  random_crop:
+    enabled: true
+    crop_type: "random"
+    min_crop_size: 384
+    max_crop_size: 600
+
+  color_jitter:
+    enabled: true
+    brightness: 0.3
+    contrast: 0.3
+    saturation: 0.3
+    hue: 0.1
+
+  # Infrastructure-specific
+  rotate:
+    enabled: true
+    max_angle: 10                  # Slight rotation for aerial views
+
+  # No heavy augmentation for consistent infrastructure appearance
+  mixup:
+    enabled: false
+  cutout:
+    enabled: false
+
+################################################################################
+# Input Configuration
+################################################################################
+input:
+  image_mean: [0.485, 0.456, 0.406]  # ImageNet normalization
+  image_std: [0.229, 0.224, 0.225]
+  input_height: 640
+  input_width: 640
+  channels: 3
+
+################################################################################
+# Loss Configuration
+################################################################################
+loss:
+  # Classification loss
+  cls_loss_coef: 2.0
+  cls_loss_type: "focal"           # Focal loss for class imbalance
+
+  # Bounding box losses
+  bbox_loss_coef: 5.0
+  giou_loss_coef: 2.0
+
+  # Matcher costs
+  set_cost_class: 2.0
+  set_cost_bbox: 5.0
+  set_cost_giou: 2.0
+
+  # Auxiliary losses
+  aux_loss: true                   # Intermediate layer supervision
+
+################################################################################
+# Export Configuration
+################################################################################
+export:
+  # ONNX export
+  onnx:
+    opset_version: 17
+    do_constant_folding: true
+    output_path: "/home/user/BAHB/models/tao/deformable_detr.onnx"
+
+  # TensorRT export
+  tensorrt:
+    data_type: "int8"              # INT8 for deployment
+    workspace_size: 4294967296     # 4GB
+    min_batch_size: 1
+    opt_batch_size: 1
+    max_batch_size: 4
+    calibration_images: "/home/user/BAHB/models/tensorrt/calibration_images"
+    output_path: "/home/user/BAHB/models/tensorrt/deformable_detr_int8.engine"
+
+################################################################################
+# Evaluation Configuration
+################################################################################
+evaluation:
+  # COCO-style evaluation
+  iou_types: ["bbox"]
+
+  # Per-class evaluation
+  per_class_eval: true
+
+  # Target metrics (from deliberation)
+  targets:
+    mAP50: 0.85                    # 85% minimum target
+    mAP50_95: 0.55                 # 55% minimum
+
+################################################################################
+# Hardware Configuration
+################################################################################
+hardware:
+  # DJI Manifold 3 (Jetson Orin NX)
+  device: "cuda:0"
+  num_workers: 4
+  pin_memory: true
+
+  # Memory optimization
+  gradient_checkpointing: true     # Trade compute for memory
+  find_unused_parameters: false
+
+################################################################################
+# Logging & Monitoring
+################################################################################
+logging:
+  log_dir: "/home/user/BAHB/runs/tao_deformable_detr"
+  tensorboard: true
+  wandb:
+    enabled: false
+    project: "bahb-infrastructure"
+
+  # Log frequency
+  print_freq: 50                   # Print every 50 iterations
+
+################################################################################
+# TAO-Specific Configuration
+################################################################################
+tao:
+  # TAO encryption (set to false for local development)
+  encryption: false
+
+  # TAO model registry
+  model_key: "nvidia_tao_cv"
+
+  # GPU memory optimization
+  cudnn_benchmark: true
+  deterministic: false             # Faster training
+
+################################################################################
+# Training Workflow
+################################################################################
+# 1. Convert YOLO format to COCO format:
+#    python scripts/convert_yolo_to_coco.py
+#
+# 2. Start TAO training:
+#    tao model deformable_detr train \
+#      --experiment_spec configs/tao_training_config.yaml \
+#      --results_dir runs/tao_deformable_detr \
+#      --key nvidia_tao_cv
+#
+# 3. Evaluate:
+#    tao model deformable_detr evaluate \
+#      --experiment_spec configs/tao_training_config.yaml \
+#      --results_dir runs/tao_deformable_detr \
+#      --key nvidia_tao_cv
+#
+# 4. Export to TensorRT:
+#    tao model deformable_detr export \
+#      --experiment_spec configs/tao_training_config.yaml \
+#      --results_dir runs/tao_deformable_detr \
+#      --key nvidia_tao_cv
+#
+# Expected timeline: 3-5 days for 100 epochs on Orin NX

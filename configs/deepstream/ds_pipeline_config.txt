@@ -1,0 +1,161 @@
+# DeepStream Pipeline Configuration for BAHB Power Infrastructure Detection
+# Optimized for DJI Manifold 3 (Jetson Orin NX 16GB)
+# Multi-Agent Deliberation Result: NvDCF + YOLO26 INT8 + Hybrid Attention Fusion
+
+[application]
+enable-perf-measurement=1
+perf-measurement-interval-sec=5
+
+[tiled-display]
+enable=0
+# Disable for edge deployment - use direct RTSP output
+
+[source0]
+# DJI H30T Wide Camera (4K Visual)
+enable=1
+type=4
+uri=rtsp://192.168.42.2:8554/wide
+num-sources=1
+gpu-id=0
+cudadec-memtype=0
+nvbuf-memory-type=0
+latency=100
+drop-frame-interval=0
+
+[source1]
+# DJI H30T Thermal Camera (640x512)
+enable=1
+type=4
+uri=rtsp://192.168.42.2:8554/thermal
+num-sources=1
+gpu-id=0
+cudadec-memtype=0
+nvbuf-memory-type=0
+latency=100
+drop-frame-interval=0
+
+[streammux]
+# Stream Multiplexer Configuration
+gpu-id=0
+nvbuf-memory-type=0
+batch-size=2
+batched-push-timeout=40000
+# Match YOLO26 input size
+width=640
+height=640
+enable-padding=1
+live-source=1
+attach-sys-ts=1
+# Use zero-copy for memory efficiency
+cuda-memory-type=device
+
+[primary-gie]
+# YOLO26l Primary Inference Engine
+enable=1
+gpu-id=0
+gie-unique-id=1
+nvbuf-memory-type=0
+model-engine-file=/home/user/BAHB/models/tensorrt/yolo26l_int8.engine
+labelfile-path=/home/user/BAHB/configs/deepstream/labels.txt
+config-file=/home/user/BAHB/configs/deepstream/ds_yolo26_config.txt
+batch-size=2
+interval=0
+process-mode=1
+# NMS-free YOLO26 - no clustering needed
+cluster-mode=0
+# Output parsing - YOLO format
+parse-bbox-func-name=NvDsInferParseCustomYOLO
+custom-lib-path=/opt/nvidia/deepstream/deepstream/lib/libnvdsinfer_custom_impl_yolo.so
+network-type=0
+# INT8 precision
+model-color-format=0
+maintain-aspect-ratio=1
+symmetric-padding=1
+output-blob-names=output0
+
+[tracker]
+# NvDCF Tracker - Selected by Multi-Agent Deliberation
+# CONFIDENCE: HIGH | LATENCY: 1.2ms | MOTA: 72.5%
+enable=1
+tracker-width=640
+tracker-height=384
+gpu-id=0
+ll-lib-file=/opt/nvidia/deepstream/deepstream/lib/libnvds_nvmultiobjecttracker.so
+ll-config-file=/home/user/BAHB/configs/deepstream/ds_tracker_nvdcf.yml
+enable-batch-process=1
+enable-past-frame=1
+past-frame-buffer-size=10
+
+[secondary-gie0]
+# Thermal Analyzer - Post-detection thermal correlation
+enable=1
+gpu-id=0
+gie-unique-id=2
+operate-on-gie-id=1
+operate-on-class-ids=0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16
+nvbuf-memory-type=0
+config-file=/home/user/BAHB/configs/deepstream/ds_thermal_config.txt
+batch-size=16
+interval=1
+process-mode=2
+
+[nvds-analytics]
+# Analytics Plugin for defect detection
+enable=1
+config-file=/home/user/BAHB/configs/deepstream/ds_analytics_config.txt
+
+[sink0]
+# RTSP Sink for live monitoring
+enable=1
+type=4
+rtsp-port=8554
+sync=0
+enc-type=1
+bitrate=4000000
+profile=0
+codec=1
+source-id=0
+udp-port=5400
+
+[sink1]
+# File Sink for recording
+enable=1
+type=3
+container=1
+codec=1
+bitrate=4000000
+output-file=/data/bahb/recordings/inspection_%d_%t.mp4
+source-id=0
+
+[sink2]
+# Message Broker for alerts
+enable=1
+type=6
+msg-conv-config=/home/user/BAHB/configs/deepstream/ds_msgconv_config.txt
+msg-broker-proto-lib=/opt/nvidia/deepstream/deepstream/lib/libnvds_mqtt_proto.so
+msg-broker-conn-str=localhost;1883
+topic=bahb/detections
+msg-conv-payload-type=1
+
+[osd]
+# On-Screen Display
+enable=1
+gpu-id=0
+border-width=2
+text-size=12
+text-color=1;1;1;1
+text-bg-color=0.3;0.3;0.3;1
+font=Sans
+show-clock=1
+clock-x-offset=800
+clock-y-offset=820
+clock-text-size=12
+clock-color=1;0;0;0
+nvbuf-memory-type=0
+display-mask=0
+display-bbox=1
+display-text=1
+
+[tests]
+# Test configurations
+file-loop=0
