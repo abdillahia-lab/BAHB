@@ -1,0 +1,53 @@
+{
+  "image": "substation_sample.jpg",
+  "image_size": [
+    1920,
+    1080
+  ],
+  "detections": [
+    {
+      "class_id": 0,
+      "class_name": "transformer",
+      "confidence": 0.91,
+      "bbox": [
+        400,
+        400,
+        700,
+        800
+      ]
+    },
+    {
+      "class_id": 3,
+      "class_name": "switchgear",
+      "confidence": 0.87,
+      "bbox": [
+        900,
+        500,
+        1100,
+        850
+      ]
+    },
+    {
+      "class_id": 2,
+      "class_name": "conductor",
+      "confidence": 0.83,
+      "bbox": [
+        200,
+        190,
+        1700,
+        210
+      ]
+    },
+    {
+      "class_id": 2,
+      "class_name": "conductor",
+      "confidence": 0.83,
+      "bbox": [
+        200,
+        290,
+        1700,
+        310
+      ]
+    }
+  ]
+}

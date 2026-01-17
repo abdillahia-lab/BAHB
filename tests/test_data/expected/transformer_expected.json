@@ -1,0 +1,20 @@
+{
+  "image": "transformer_sample.jpg",
+  "image_size": [
+    1920,
+    1080
+  ],
+  "detections": [
+    {
+      "class_id": 0,
+      "class_name": "transformer",
+      "confidence": 0.92,
+      "bbox": [
+        700,
+        300,
+        1200,
+        800
+      ]
+    }
+  ]
+}

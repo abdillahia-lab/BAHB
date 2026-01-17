@@ -1,0 +1,208 @@
+BAHB Docker Deployment - Complete File Manifest
+================================================
+
+Created: 2026-01-17
+Location: /home/user/BAHB/deployment/
+
+CORE DEPLOYMENT FILES
+---------------------
+✓ Dockerfile.jetson          - Multi-stage Docker image (11 KB)
+  - Base: nvcr.io/nvidia/l4t-pytorch:r36.2.0
+  - Includes: DeepStream 8, TensorRT, OpenCV CUDA, PyTorch
+  - Optimized for Jetson Orin NX (CUDA 8.7)
+
+✓ docker-compose.yml          - Service orchestration (6.1 KB)
+  - BAHB main service with GPU access
+  - MQTT broker (Mosquitto)
+  - Optional: Prometheus + Grafana
+  - Volume mounts, health checks, auto-restart
+
+✓ bahb.service               - Systemd service file (2.4 KB)
+  - Auto-start on boot
+  - Performance optimization (MAXN mode)
+  - Graceful shutdown
+  - Install to: /etc/systemd/system/
+
+✓ install.sh                 - One-line installer (15 KB, executable)
+  - Platform verification
+  - Docker + NVIDIA runtime setup
+  - Directory structure creation
+  - Image building
+  - Systemd configuration
+
+DOCUMENTATION
+-------------
+✓ README.md                  - Complete documentation (9.1 KB)
+  - Installation instructions
+  - Configuration guide
+  - Usage examples
+  - Troubleshooting
+  - Performance tuning
+
+✓ QUICKSTART.md             - 15-minute quick start (7.8 KB)
+  - Step-by-step installation
+  - Essential commands
+  - Common issues
+  - Quick troubleshooting
+
+✓ DEPLOYMENT_SUMMARY.md     - Deployment overview (this package)
+  - Architecture diagram
+  - File descriptions
+  - Configuration summary
+  - Performance expectations
+
+CONFIGURATION
+-------------
+✓ .env.example              - Environment template
+  - Aircraft configuration
+  - MQTT settings
+  - Webhook URLs
+  - Performance tuning
+  - Feature flags
+
+✓ .dockerignore             - Build optimization
+  - Excludes unnecessary files
+  - Reduces build context size
+  - Faster builds
+
+✓ mosquitto/config/mosquitto.conf - MQTT broker config
+  - MQTT port 1883
+  - WebSockets port 9001
+  - Persistence enabled
+  - Security ready
+
+UTILITIES
+---------
+✓ Makefile                  - Command shortcuts (8.7 KB)
+  - make install    - Run installer
+  - make up         - Start services
+  - make logs       - View logs
+  - make status     - Check status
+  - make optimize   - Max performance
+  - make help       - Show all commands
+
+✓ verify_deployment.sh      - Verification script (executable)
+  - Platform checks
+  - Docker/NVIDIA verification
+  - Container status
+  - CUDA/TensorRT tests
+  - Model file checks
+  - Network tests
+  - Comprehensive report
+
+DIRECTORIES (to be created)
+----------------------------
+□ models/                    - TensorRT model files
+  - yolov12l-inspection.engine
+  - rf_detr_large.engine
+  - sam3_nano_encoder.engine
+  - sam3_nano_decoder.engine
+  - Qwen2.5-VL-3B-AWQ/ (optional)
+
+□ logs/                      - Container logs
+□ recordings/                - Video recordings
+□ reports/                   - Inspection reports
+□ prometheus/                - Prometheus config (optional)
+□ grafana/                   - Grafana dashboards (optional)
+
+SYSTEM PATHS
+------------
+Application:
+  /home/user/BAHB/           - Main application directory
+  /opt/bahb/                 - Deployment symlink
+  /opt/bahb/configs/         - Configuration files
+
+Data Storage:
+  /data/bahb/                - Persistent data
+  /data/bahb/logs/           - Application logs
+  /data/bahb/recordings/     - Video recordings
+  /data/bahb/reports/        - Generated reports
+  /data/bahb/cache/          - Temporary cache
+
+NETWORK PORTS
+-------------
+8080  - WebRTC control interface
+8554  - RTSP video streaming
+1883  - MQTT broker
+9001  - MQTT WebSockets
+3000  - Grafana dashboard (optional)
+9091  - Prometheus metrics (optional)
+
+QUICK START
+-----------
+1. Run installer:
+   $ cd /home/user/BAHB/deployment
+   $ sudo ./install.sh
+
+2. Copy model files:
+   $ sudo cp *.engine /home/user/BAHB/deployment/models/
+
+3. Configure environment:
+   $ cp .env.example .env
+   $ nano .env
+
+4. Start services:
+   $ make up
+
+5. Verify deployment:
+   $ sudo ./verify_deployment.sh
+
+6. View logs:
+   $ make logs
+
+ESSENTIAL COMMANDS
+------------------
+Installation:
+  sudo ./install.sh
+
+Start/Stop:
+  make up          or  sudo systemctl start bahb
+  make down        or  sudo systemctl stop bahb
+  make restart     or  sudo systemctl restart bahb
+
+Monitoring:
+  make logs        - View all logs
+  make logs-bahb   - BAHB main only
+  make status      - Service status
+  make health      - Health checks
+
+Verification:
+  sudo ./verify_deployment.sh
+
+Performance:
+  make optimize    - Set MAXN mode
+  make stats       - Resource usage
+
+Maintenance:
+  make backup      - Backup data
+  make clean       - Clean up
+  make update      - Update BAHB
+
+Help:
+  make help        - Show all commands
+
+EXPECTED PERFORMANCE
+--------------------
+Jetson Orin NX (MAXN mode):
+  YOLOv12 Detection:     25-30 FPS @ ~15W
+  Full Pipeline:         15-20 FPS @ ~20W
+  With VLM:              5-10 FPS @ ~25W
+  Video Recording:       30 FPS 4K @ ~5W
+
+NOTES
+-----
+- First build takes 30-60 minutes
+- Requires ~10GB disk space for images
+- Requires ~20GB for recordings/data
+- Internet required for initial setup
+- Model files NOT included (must provide)
+- Optimized for Jetson Orin NX
+- Compatible with DJI Manifold 3
+
+SUPPORT
+-------
+Documentation: See README.md and QUICKSTART.md
+Verification:  Run ./verify_deployment.sh
+Help:          Run 'make help'
+
+END OF MANIFEST

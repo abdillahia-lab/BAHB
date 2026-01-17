@@ -1,0 +1,132 @@
+BAHB Monitoring System - Complete File List
+============================================
+
+Created: 2026-01-17
+Total Files: 12
+Total Lines of Code: 3,408
+
+Directory Structure:
+--------------------
+
+/home/user/BAHB/bahb/monitoring/
+├── __init__.py                 # Module exports (17 lines)
+├── watchdog.py                 # Process watchdog (495 lines)
+├── health_check.py             # Health check server (662 lines)
+├── metrics.py                  # Metrics collector (570 lines)
+├── alerts.py                   # Alert system (695 lines)
+├── thermal_monitor.py          # Thermal monitoring (522 lines)
+├── monitor_service.py          # Unified service (447 lines)
+└── README.md                   # Component documentation (12 KB)
+
+/home/user/BAHB/docs/
+├── MONITORING_QUICKSTART.md    # Quick start guide (8 KB)
+└── MONITORING_ARCHITECTURE.md  # Architecture diagrams (10 KB)
+
+/home/user/BAHB/examples/
+└── monitoring_demo.py          # Working demos (150 lines)
+
+/home/user/BAHB/configs/
+└── monitoring.yaml             # Configuration template (150 lines)
+
+/home/user/BAHB/tests/
+└── test_monitoring.py          # Unit tests (180 lines)
+
+/home/user/BAHB/
+├── MONITORING_SUMMARY.md       # Implementation summary
+└── MONITORING_FILES.txt        # This file
+
+File Locations:
+---------------
+
+Core Implementation:
+  /home/user/BAHB/bahb/monitoring/__init__.py
+  /home/user/BAHB/bahb/monitoring/watchdog.py
+  /home/user/BAHB/bahb/monitoring/health_check.py
+  /home/user/BAHB/bahb/monitoring/metrics.py
+  /home/user/BAHB/bahb/monitoring/alerts.py
+  /home/user/BAHB/bahb/monitoring/thermal_monitor.py
+  /home/user/BAHB/bahb/monitoring/monitor_service.py
+
+Documentation:
+  /home/user/BAHB/bahb/monitoring/README.md
+  /home/user/BAHB/docs/MONITORING_QUICKSTART.md
+  /home/user/BAHB/docs/MONITORING_ARCHITECTURE.md
+  /home/user/BAHB/MONITORING_SUMMARY.md
+
+Configuration:
+  /home/user/BAHB/configs/monitoring.yaml
+
+Examples:
+  /home/user/BAHB/examples/monitoring_demo.py
+
+Tests:
+  /home/user/BAHB/tests/test_monitoring.py
+
+Quick Reference:
+----------------
+
+To use in your code:
+  from bahb.monitoring import MonitoringService, MonitoringConfig
+  from bahb.monitoring import MetricsCollector, AlertSystem
+  from bahb.monitoring import ThermalMonitor, ProcessWatchdog
+
+To run standalone:
+  python -m bahb.monitoring.monitor_service
+
+To run demo:
+  python examples/monitoring_demo.py
+
+To run tests:
+  pytest tests/test_monitoring.py -v
+
+To check health:
+  curl http://localhost:8081/health
+
+To view metrics:
+  curl http://localhost:8081/metrics
+
+Features Implemented:
+---------------------
+
+✅ Process Watchdog
+   - Auto-restart with exponential backoff
+   - Memory leak detection
+   - GPU memory monitoring
+   - Alert on repeated failures
+
+✅ Health Check Server
+   - HTTP endpoints (port 8081)
+   - Camera stream connectivity
+   - Model loading status
+   - GPU availability and memory
+   - Disk space monitoring
+   - JSON health status
+
+✅ Metrics Collector
+   - Inference latency (p50, p95, p99)
+   - Throughput (FPS)
+   - Detection counts per class
+   - Thermal anomaly counts
+   - GPU utilization and temperature
+   - Memory usage
+   - Prometheus export
+
+✅ Alert System
+   - MQTT publishing
+   - Webhook notifications
+   - Alert deduplication
+   - Rate limiting
+   - Critical detection alerts
+
+✅ Thermal Monitor
+   - CPU/GPU temperature monitoring
+   - Throttling warnings
+   - Auto-reduce workload
+   - Thermal event logging
+
+✅ Unified Monitoring Service
+   - Runs all monitors together
+   - Asyncio non-blocking operation
+   - Graceful shutdown
+
+All requirements completed! ✨

@@ -1,0 +1,311 @@
+# Multi-stage Dockerfile for BAHB on Jetson Orin NX
+# Optimized for DJI Manifold 3 deployment with DeepStream 8 and TensorRT
+
+# =============================================================================
+# Stage 1: Base Image with PyTorch and CUDA
+# =============================================================================
+FROM nvcr.io/nvidia/l4t-pytorch:r36.2.0-pth2.1-py3 AS base
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    CUDA_HOME=/usr/local/cuda \
+    PATH=/usr/local/cuda/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH} \
+    OPENBLAS_CORETYPE=ARMV8
+
+# Update system and install essential packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    wget \
+    curl \
+    ca-certificates \
+    software-properties-common \
+    pkg-config \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libgtk-3-dev \
+    libatlas-base-dev \
+    gfortran \
+    python3-dev \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-good1.0-dev \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    gstreamer1.0-tools \
+    gstreamer1.0-rtsp \
+    && rm -rf /var/lib/apt/lists/*
+
+# =============================================================================
+# Stage 2: OpenCV with CUDA support
+# =============================================================================
+FROM base AS opencv-builder
+
+ARG OPENCV_VERSION=4.9.0
+ENV OPENCV_VERSION=${OPENCV_VERSION}
+
+WORKDIR /tmp
+
+# Download OpenCV and OpenCV contrib
+RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
+    wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip && \
+    unzip opencv.zip && \
+    unzip opencv_contrib.zip && \
+    rm opencv.zip opencv_contrib.zip
+
+# Build OpenCV with CUDA support
+RUN cd opencv-${OPENCV_VERSION} && \
+    mkdir build && cd build && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE \
+          -D CMAKE_INSTALL_PREFIX=/usr/local \
+          -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
+          -D WITH_CUDA=ON \
+          -D CUDA_ARCH_BIN="8.7" \
+          -D CUDA_ARCH_PTX="" \
+          -D WITH_CUDNN=ON \
+          -D OPENCV_DNN_CUDA=ON \
+          -D ENABLE_FAST_MATH=ON \
+          -D CUDA_FAST_MATH=ON \
+          -D WITH_CUBLAS=ON \
+          -D WITH_GSTREAMER=ON \
+          -D WITH_LIBV4L=ON \
+          -D BUILD_opencv_python3=ON \
+          -D BUILD_TESTS=OFF \
+          -D BUILD_PERF_TESTS=OFF \
+          -D BUILD_EXAMPLES=OFF \
+          -D PYTHON3_EXECUTABLE=$(which python3) \
+          -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+          -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
+          .. && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig && \
+    cd /tmp && rm -rf opencv-${OPENCV_VERSION} opencv_contrib-${OPENCV_VERSION}
+
+# =============================================================================
+# Stage 3: DeepStream SDK
+# =============================================================================
+FROM opencv-builder AS deepstream
+
+# Install DeepStream 8.0 dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 \
+    libssl-dev \
+    libgstreamer1.0-0 \
+    gstreamer1.0-tools \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    libgstreamer-plugins-base1.0-dev \
+    libgstrtspserver-1.0-0 \
+    libjansson4 \
+    libjson-glib-1.0-0 \
+    librabbitmq4 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download and install DeepStream SDK 8.0
+WORKDIR /tmp
+RUN wget --no-check-certificate \
+    https://developer.nvidia.com/downloads/deepstream-sdk-v80-jetson-tbz2 \
+    -O deepstream_sdk_v8.0.0_jetson.tbz2 || \
+    echo "DeepStream download requires manual intervention - using placeholder"
+
+# Extract and install DeepStream (if download succeeded)
+RUN if [ -f deepstream_sdk_v8.0.0_jetson.tbz2 ]; then \
+        tar -xvf deepstream_sdk_v8.0.0_jetson.tbz2 && \
+        cd deepstream_sdk_v8.0.0_jetson && \
+        tar -xvf binaries.tbz2 -C / && \
+        ./install.sh && \
+        ldconfig; \
+    fi && \
+    rm -rf /tmp/*
+
+# Set DeepStream environment variables
+ENV DEEPSTREAM_DIR=/opt/nvidia/deepstream/deepstream \
+    LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/nvidia/deepstream/deepstream/lib \
+    GST_PLUGIN_PATH=/opt/nvidia/deepstream/deepstream/lib/gst-plugins
+
+# =============================================================================
+# Stage 4: Python dependencies and BAHB application
+# =============================================================================
+FROM deepstream AS bahb-app
+
+# Set working directory
+WORKDIR /opt/bahb
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python packages with Jetson-specific optimizations
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
+    # Install core dependencies
+    pip3 install --no-cache-dir \
+        numpy>=1.26.0 \
+        pyyaml>=6.0.0 \
+        pydantic>=2.6.0 \
+        pydantic-settings>=2.2.0 \
+        loguru>=0.7.0 \
+        click>=8.1.0 \
+        tqdm>=4.66.0 \
+        python-dotenv>=1.0.0 \
+        aiohttp>=3.9.0 \
+        websockets>=12.0 \
+        msgpack>=1.0.0 \
+        orjson>=3.9.0 \
+        prometheus-client>=0.20.0 \
+        rich>=13.7.0 && \
+    # Install computer vision packages
+    pip3 install --no-cache-dir \
+        Pillow>=10.2.0 \
+        scikit-image>=0.22.0 && \
+    # Install YOLO and Ultralytics
+    pip3 install --no-cache-dir ultralytics>=8.1.0 && \
+    # Install PyCUDA for TensorRT integration
+    pip3 install --no-cache-dir pycuda && \
+    # Install streaming and media packages
+    pip3 install --no-cache-dir \
+        av>=11.0.0 \
+        aiortc>=1.6.0 && \
+    # Install data processing
+    pip3 install --no-cache-dir \
+        pandas>=2.2.0 \
+        scipy>=1.12.0 && \
+    # Install geospatial (lightweight versions)
+    pip3 install --no-cache-dir \
+        pyproj>=3.6.0 \
+        shapely>=2.0.0 && \
+    # Install database and messaging
+    pip3 install --no-cache-dir \
+        sqlalchemy>=2.0.0 \
+        aiosqlite>=0.19.0 \
+        paho-mqtt>=1.6.0 && \
+    # Install report generation
+    pip3 install --no-cache-dir \
+        jinja2>=3.1.0 \
+        matplotlib>=3.8.0 && \
+    # Clean up
+    rm -rf ~/.cache/pip
+
+# Install TensorRT Python bindings (if not already included)
+RUN if [ ! -d "/usr/local/lib/python$(python3 --version | cut -d' ' -f2 | cut -d'.' -f1,2)/dist-packages/tensorrt" ]; then \
+        pip3 install --no-cache-dir tensorrt; \
+    fi
+
+# Copy BAHB application code
+COPY bahb/ /opt/bahb/bahb/
+COPY configs/ /opt/bahb/configs/
+COPY scripts/ /opt/bahb/scripts/
+COPY pyproject.toml /opt/bahb/
+
+# Install BAHB package
+RUN pip3 install --no-cache-dir -e .
+
+# Create necessary directories
+RUN mkdir -p \
+    /data/bahb/logs \
+    /data/bahb/recordings \
+    /data/bahb/reports \
+    /data/bahb/cache \
+    /tmp/bahb_cache \
+    /opt/bahb/models/tensorrt
+
+# Set up health check script
+RUN echo '#!/bin/bash\n\
+python3 -c "import sys; import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); \
+s.settimeout(2); result = s.connect_ex((\"localhost\", 8080)); s.close(); sys.exit(result)"\n' \
+> /usr/local/bin/healthcheck.sh && chmod +x /usr/local/bin/healthcheck.sh
+
+# =============================================================================
+# Stage 5: Final runtime image
+# =============================================================================
+FROM bahb-app AS runtime
+
+# Labels for image metadata
+LABEL maintainer="BAHB Team" \
+      version="1.0.0" \
+      description="BAHB - Building And Hardware Baseline Inspection System for Jetson Orin NX" \
+      platform="jetson-orin-nx" \
+      deepstream-version="8.0"
+
+# Set runtime environment variables
+ENV BAHB_CONFIG=/opt/bahb/configs/production.yaml \
+    BAHB_DATA_DIR=/data/bahb \
+    BAHB_MODELS_DIR=/opt/bahb/models/tensorrt \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all \
+    CUDA_DEVICE_ORDER=PCI_BUS_ID
+
+# Create entrypoint script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+# Set Jetson to maximum performance mode\n\
+if [ -f /usr/bin/nvpmodel ]; then\n\
+    echo "Setting MAXN power mode..."\n\
+    nvpmodel -m 0 || echo "Warning: Could not set power mode"\n\
+fi\n\
+\n\
+# Set GPU clocks to maximum\n\
+if [ -f /usr/bin/jetson_clocks ]; then\n\
+    echo "Enabling maximum clocks..."\n\
+    jetson_clocks || echo "Warning: Could not set clocks"\n\
+fi\n\
+\n\
+# Verify CUDA availability\n\
+echo "Verifying CUDA..."\n\
+python3 -c "import torch; print(f\"PyTorch CUDA available: {torch.cuda.is_available()}\"); \
+print(f\"CUDA device: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else None}\")" || \
+echo "Warning: CUDA verification failed"\n\
+\n\
+# Verify TensorRT\n\
+echo "Verifying TensorRT..."\n\
+python3 -c "import tensorrt; print(f\"TensorRT version: {tensorrt.__version__}\")" || \
+echo "Warning: TensorRT not available"\n\
+\n\
+# Display system info\n\
+echo "=== System Information ==="\n\
+if [ -f /usr/bin/jetson_release ]; then\n\
+    jetson_release || true\n\
+fi\n\
+\n\
+# Start BAHB application\n\
+echo "Starting BAHB Inspection System..."\n\
+cd /opt/bahb\n\
+\n\
+# Execute the command passed to docker run, or default to bahb\n\
+if [ $# -eq 0 ]; then\n\
+    exec python3 -m bahb.main --config "${BAHB_CONFIG}"\n\
+else\n\
+    exec "$@"\n\
+fi\n' > /entrypoint.sh && chmod +x /entrypoint.sh
+
+# Set working directory
+WORKDIR /opt/bahb
+
+# Expose ports
+EXPOSE 8080/tcp      # WebRTC control
+EXPOSE 8554/tcp      # RTSP streaming
+EXPOSE 1883/tcp      # MQTT (if local broker)
+EXPOSE 9090/tcp      # Prometheus metrics
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh || exit 1
+
+# Entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Default command (can be overridden)
+CMD []

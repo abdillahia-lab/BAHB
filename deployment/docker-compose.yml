@@ -1,0 +1,246 @@
+version: '3.8'
+
+# BAHB Docker Compose Configuration for Jetson Orin NX
+# Production deployment with MQTT, monitoring, and data persistence
+
+services:
+  # =============================================================================
+  # BAHB Main Application Service
+  # =============================================================================
+  bahb:
+    container_name: bahb-main
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.jetson
+      args:
+        OPENCV_VERSION: "4.9.0"
+    image: bahb:jetson-latest
+
+    # Runtime configuration
+    runtime: nvidia
+    restart: unless-stopped
+
+    # Resource limits (adjust based on your workload)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']  # GPU 0
+              capabilities: [gpu, compute, utility, video]
+
+    # Privileged mode for hardware access
+    privileged: true
+
+    # Network configuration
+    network_mode: host  # For RTSP and WebRTC
+
+    # Environment variables
+    environment:
+      # BAHB Configuration
+      - BAHB_CONFIG=/opt/bahb/configs/production.yaml
+      - BAHB_DATA_DIR=/data/bahb
+      - BAHB_MODELS_DIR=/opt/bahb/models/tensorrt
+
+      # NVIDIA/CUDA
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - CUDA_DEVICE_ORDER=PCI_BUS_ID
+
+      # MQTT Configuration
+      - MQTT_BROKER=localhost:1883
+      - MQTT_CLIENT_ID=bahb-main
+
+      # Optional: Webhook for alerts
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+
+      # Optional: Aircraft serial number
+      - AIRCRAFT_SERIAL=${AIRCRAFT_SERIAL:-UNKNOWN}
+
+      # Logging
+      - LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+
+    # Volume mounts
+    volumes:
+      # Model files (TensorRT engines)
+      - ./models:/opt/bahb/models/tensorrt:ro
+
+      # Configuration files
+      - ../configs:/opt/bahb/configs:ro
+
+      # Data persistence
+      - bahb-data:/data/bahb
+
+      # Logs
+      - ./logs:/data/bahb/logs
+
+      # Recordings
+      - ./recordings:/data/bahb/recordings
+
+      # Reports
+      - ./reports:/data/bahb/reports
+
+      # Temporary cache
+      - /tmp/bahb_cache:/tmp/bahb_cache
+
+      # Device access for cameras and sensors
+      - /dev:/dev
+
+      # Jetson system files for hardware control
+      - /sys:/sys:ro
+      - /etc/nvpmodel.conf:/etc/nvpmodel.conf:ro
+
+    # Devices
+    devices:
+      - /dev/video0:/dev/video0  # Camera device
+      - /dev/video1:/dev/video1  # Additional camera
+      - /dev/i2c-0:/dev/i2c-0    # I2C bus
+      - /dev/i2c-1:/dev/i2c-1
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    # Dependencies
+    depends_on:
+      mqtt-broker:
+        condition: service_healthy
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+        tag: "{{.Name}}"
+
+  # =============================================================================
+  # MQTT Broker for Alerts and Communication
+  # =============================================================================
+  mqtt-broker:
+    container_name: bahb-mqtt
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+
+    ports:
+      - "1883:1883"   # MQTT
+      - "9001:9001"   # WebSockets
+
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+      - mqtt-data:/mosquitto/data
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # =============================================================================
+  # Prometheus for Metrics Collection (Optional)
+  # =============================================================================
+  prometheus:
+    container_name: bahb-prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+
+    ports:
+      - "9091:9090"
+
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+
+    profiles:
+      - monitoring
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # =============================================================================
+  # Grafana for Visualization (Optional)
+  # =============================================================================
+  grafana:
+    container_name: bahb-grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+
+    depends_on:
+      - prometheus
+
+    profiles:
+      - monitoring
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# =============================================================================
+# Volumes for Data Persistence
+# =============================================================================
+volumes:
+  bahb-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /data/bahb
+      o: bind
+
+  mqtt-data:
+    driver: local
+
+  prometheus-data:
+    driver: local
+
+  grafana-data:
+    driver: local

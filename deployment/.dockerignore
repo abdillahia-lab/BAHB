@@ -1,0 +1,194 @@
+# BAHB Docker Ignore File
+# Excludes unnecessary files from Docker build context
+
+# ==========================================
+# Version Control
+# ==========================================
+.git
+.gitignore
+.gitattributes
+
+# ==========================================
+# Documentation
+# ==========================================
+*.md
+docs/
+*.txt
+LICENSE
+
+# ==========================================
+# Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+venv/
+ENV/
+env/
+.venv
+
+# ==========================================
+# IDEs
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ==========================================
+# Data Files
+# ==========================================
+data/
+runs/
+*.log
+*.csv
+*.json
+*.xml
+
+# Training outputs
+training.log
+training_output.log
+yolo26_training.log
+
+# ==========================================
+# Model Files (handled separately)
+# ==========================================
+*.pt
+*.pth
+*.onnx
+*.engine
+*.trt
+*.bin
+*.safetensors
+models/
+weights/
+
+# ==========================================
+# Media Files
+# ==========================================
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# ==========================================
+# Datasets
+# ==========================================
+external_datasets/
+datasets/
+confusion_images/
+adversarial_test_images/
+
+# ==========================================
+# Deployment
+# ==========================================
+deployment/.env
+deployment/logs/
+deployment/recordings/
+deployment/reports/
+deployment/models/
+deployment/mosquitto/data/
+deployment/mosquitto/log/
+
+# ==========================================
+# Temporary Files
+# ==========================================
+tmp/
+temp/
+*.tmp
+*.cache
+.cache/
+
+# ==========================================
+# Test Files
+# ==========================================
+test/
+tests/
+*_test.py
+test_*.py
+
+# ==========================================
+# CI/CD
+# ==========================================
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# ==========================================
+# Competition Files (not needed in container)
+# ==========================================
+*_COMPETITION.md
+*_CHALLENGE.md
+*_CHAMPIONSHIP.md
+IMPROVEMENT_STRATEGIES.md
+SOTA_ANALYSIS.md
+HARDWARE_INTEGRATION_ANALYSIS.md
+
+# ==========================================
+# Scripts (only needed for training)
+# ==========================================
+train_*.py
+run_training.py
+run_adversarial_training.py
+generate_*.py
+download_*.sh
+robustness_testing.py
+
+# ==========================================
+# Android (not needed)
+# ==========================================
+android/
+
+# ==========================================
+# Optimization Scripts (separate process)
+# ==========================================
+optimization/
+simplification/
+
+# ==========================================
+# Keep These Files
+# ==========================================
+!requirements.txt
+!pyproject.toml
+!bahb/
+!configs/
+!scripts/run_inference.py

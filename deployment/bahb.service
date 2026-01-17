@@ -1,0 +1,84 @@
+# BAHB Systemd Service File
+# Install to: /etc/systemd/system/bahb.service
+#
+# Commands:
+#   sudo systemctl daemon-reload       # Reload after changes
+#   sudo systemctl enable bahb         # Enable auto-start on boot
+#   sudo systemctl start bahb          # Start service
+#   sudo systemctl stop bahb           # Stop service
+#   sudo systemctl restart bahb        # Restart service
+#   sudo systemctl status bahb         # Check status
+#   journalctl -u bahb -f              # View logs
+
+[Unit]
+Description=BAHB - Building And Hardware Baseline Inspection System
+Documentation=https://github.com/your-org/bahb
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+# Ensure NVIDIA drivers are loaded
+After=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Working directory
+WorkingDirectory=/opt/bahb
+
+# Environment
+Environment="BAHB_ENV=production"
+Environment="BAHB_DATA_DIR=/data/bahb"
+
+# Pre-start: Optimize Jetson performance
+ExecStartPre=-/bin/bash -c 'if [ -f /usr/bin/nvpmodel ]; then nvpmodel -m 0; fi'
+ExecStartPre=-/bin/bash -c 'if [ -f /usr/bin/jetson_clocks ]; then jetson_clocks; fi'
+
+# Pre-start: Verify NVIDIA runtime
+ExecStartPre=/usr/bin/docker info --format '{{.Runtimes.nvidia}}'
+
+# Pre-start: Create directories if they don't exist
+ExecStartPre=/bin/mkdir -p /data/bahb/logs /data/bahb/recordings /data/bahb/reports /data/bahb/cache
+
+# Start BAHB services using Docker Compose
+ExecStart=/usr/bin/docker compose -f /opt/bahb/deployment/docker-compose.yml up -d
+
+# Health check (runs 30 seconds after start)
+ExecStartPost=/bin/sleep 30
+ExecStartPost=/usr/bin/docker compose -f /opt/bahb/deployment/docker-compose.yml ps
+
+# Stop BAHB services
+ExecStop=/usr/bin/docker compose -f /opt/bahb/deployment/docker-compose.yml down
+
+# Reload configuration
+ExecReload=/usr/bin/docker compose -f /opt/bahb/deployment/docker-compose.yml restart bahb
+
+# Restart policy
+Restart=on-failure
+RestartSec=10s
+
+# Timeout settings
+TimeoutStartSec=300
+TimeoutStopSec=60
+
+# Security settings
+# Run as root to access hardware devices
+User=root
+Group=docker
+
+# Resource limits (adjust as needed)
+# Limit memory usage to prevent OOM
+# MemoryLimit=6G
+# LimitNOFILE=65536
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bahb
+
+[Install]
+WantedBy=multi-user.target
+
+# Optional: Start after specific services
+# After=network-online.target docker.service

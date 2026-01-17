@@ -1,0 +1,42 @@
+{
+  "image": "conductor_sample.jpg",
+  "image_size": [
+    1920,
+    1080
+  ],
+  "detections": [
+    {
+      "class_id": 2,
+      "class_name": "conductor",
+      "confidence": 0.85,
+      "bbox": [
+        100,
+        290,
+        1820,
+        360
+      ]
+    },
+    {
+      "class_id": 2,
+      "class_name": "conductor",
+      "confidence": 0.85,
+      "bbox": [
+        100,
+        440,
+        1820,
+        510
+      ]
+    },
+    {
+      "class_id": 2,
+      "class_name": "conductor",
+      "confidence": 0.85,
+      "bbox": [
+        100,
+        590,
+        1820,
+        660
+      ]
+    }
+  ]
+}

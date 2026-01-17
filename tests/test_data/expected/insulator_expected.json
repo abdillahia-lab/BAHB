@@ -1,0 +1,20 @@
+{
+  "image": "insulator_sample.jpg",
+  "image_size": [
+    1920,
+    1080
+  ],
+  "detections": [
+    {
+      "class_id": 1,
+      "class_name": "insulator",
+      "confidence": 0.88,
+      "bbox": [
+        920,
+        200,
+        1000,
+        800
+      ]
+    }
+  ]
+}
