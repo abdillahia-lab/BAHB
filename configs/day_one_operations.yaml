@@ -308,50 +308,21 @@ optimization:
     enable_dynamic_scaling: false
 
 # =============================================================================
-# SEARCHLIGHT S1 CONFIGURATION
+# ZENMUSE S1 SPOTLIGHT (AI Triggers Only)
 # =============================================================================
-lighting:
-  # Hardware
-  device: "dji_searchlight_s1"
-  max_lumens: 2000
-
-  # Default mode
-  default_mode: "auto"  # off, low, medium, high, max, auto
-
-  # Auto-mode ambient light thresholds (lux)
-  ambient_thresholds:
-    low: 500       # Below = high brightness
-    medium: 1000   # Below = medium brightness
-    high: 5000     # Above = light off
-
-  # Detection-triggered lighting
-  detection_triggers:
-    illuminate_on_critical: true
+# Note: Brightness, gimbal sync, and modes controlled natively by DJI Pilot 2.
+# We only add AI-triggered automation on top of DJI's built-in features.
+zenmuse_s1:
+  # AI-triggered features (what DJI doesn't do)
+  ai_triggers:
+    illuminate_on_critical_detection: true
     illuminate_on_investigation: true
-    investigation_brightness: "high"
-    investigation_beam: "spot"
+    frame_darkness_threshold: 0.3  # Auto-light if frame < 30% brightness
 
-  # Shadow compensation
-  shadow_compensation:
+  # Thermal preheat (heat target before thermal capture)
+  thermal_preheat:
     enabled: true
-    threshold: 0.3  # Darkness ratio to trigger
-
-  # Battery management
-  battery:
-    max_usage_percent: 15      # Max battery dedicated to light
-    disable_below_percent: 25  # Turn off if battery below this
-
-  # Schedule (24h format for extended ops)
-  schedule:
-    dawn_start: "05:30"
-    dawn_end: "07:00"
-    dusk_start: "18:00"
-    dusk_end: "20:00"
-
-  # Thermal imaging support
-  thermal:
-    preheat_enabled: true
-    preheat_duration_s: 3.0
+    duration_s: 2.0
 
 # =============================================================================
 # SIMULATION MODE (for testing)
