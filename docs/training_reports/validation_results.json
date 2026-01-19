@@ -1,0 +1,27 @@
+{
+  "model": "yolo26l_infrastructure",
+  "epochs_trained": 2,
+  "metrics": {
+    "mAP50": 0.6189238356082332,
+    "mAP50-95": 0.41043118410176826,
+    "precision": 0.8212882933784883,
+    "recall": 0.5661313598658901
+  },
+  "per_class_ap50": {
+    "insulator": 0.7543343198392555,
+    "insulator_damaged": 0.012895322171837979,
+    "contamination": 0.8727966377159069,
+    "tower": 0.962816462342242,
+    "conductor": 0.11804285714285713,
+    "conductor_damaged": 0.7369456518513564,
+    "damper": 0.5927912789996992,
+    "spacer": 0.5671848077777627,
+    "connector": 0.7637027251578643,
+    "transformer": 0.8077282930835498
+  },
+  "speed": {
+    "preprocess_ms": 0.43931199775952673,
+    "inference_ms": 190.92193608270534,
+    "postprocess_ms": 0.5035812913013908
+  }
+}
