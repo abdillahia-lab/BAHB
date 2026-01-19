@@ -11,6 +11,10 @@ from .inference_engine import ProductionInferenceEngine
 from .flight_ops import FlightOperationsManager
 from .ground_station import GroundStationReporter
 from .safety_monitor import SafetyMonitor, SafetyLevel, SafetyAction, SafetyThresholds
+from .lighting_control import (
+    SearchlightController, LightingAgent, LightingConfig,
+    LightMode, BeamPattern, LightTrigger
+)
 
 __all__ = [
     'PreFlightChecklist',
@@ -23,5 +27,11 @@ __all__ = [
     'SafetyMonitor',
     'SafetyLevel',
     'SafetyAction',
-    'SafetyThresholds'
+    'SafetyThresholds',
+    'SearchlightController',
+    'LightingAgent',
+    'LightingConfig',
+    'LightMode',
+    'BeamPattern',
+    'LightTrigger'
 ]
