@@ -36,6 +36,7 @@ from bahb.core.types import (
 from bahb.models.yolov12 import YOLOv12Detector
 from bahb.models.yolo26 import YOLO26Detector, YOLO26Config
 from bahb.models.rf_detr import RFDETRSegmenter
+from bahb.models.rf_detr_seg import RFDETRSegmenterM4TD, RFDETRSegConfig
 from bahb.models.sam3 import SAM3NanoSegmenter
 from bahb.models.qwen_vl import QwenVLAnalyzer
 
@@ -80,11 +81,13 @@ class InferencePipeline:
         self.yolo: Optional[YOLOv12Detector] = None
         self.yolo26: Optional[YOLO26Detector] = None  # YOLO26 alternative
         self.rf_detr: Optional[RFDETRSegmenter] = None
+        self.rf_detr_seg: Optional[RFDETRSegmenterM4TD] = None  # Primary for M4TD
         self.sam3: Optional[SAM3NanoSegmenter] = None
         self.qwen_vl: Optional[QwenVLAnalyzer] = None
 
-        # Active detector (YOLO26 preferred if enabled, fallback to YOLOv12)
+        # Active detector (RF-DETR Seg preferred for M4TD, fallback to YOLO)
         self._active_detector = None
+        self._detector_provides_segmentation = False  # True if detector outputs masks
 
         # Thread pool for parallel inference
         self._executor = ThreadPoolExecutor(max_workers=4)
@@ -123,8 +126,33 @@ class InferencePipeline:
         # Load models in parallel
         load_tasks = []
 
-        # Load YOLO26 if enabled (preferred), otherwise YOLOv12
-        if hasattr(self.models_config, 'yolo26') and self.models_config.yolo26.enabled:
+        # Priority order for detection models:
+        # 1. RF-DETR Seg (M4TD primary - provides detection + segmentation)
+        # 2. YOLO26 (alternative)
+        # 3. YOLOv12 (legacy fallback)
+        if hasattr(self.models_config, 'rf_detr_seg') and self.models_config.rf_detr_seg.enabled:
+            rf_detr_seg_config = RFDETRSegConfig(
+                model_size=self.models_config.rf_detr_seg.model_size,
+                weights=self.models_config.rf_detr_seg.weights,
+                weights_tensorrt=self.models_config.rf_detr_seg.weights_tensorrt,
+                input_size=self.models_config.rf_detr_seg.input_size,
+                num_queries=self.models_config.rf_detr_seg.num_queries,
+                device=self.models_config.rf_detr_seg.device,
+                precision=self.models_config.rf_detr_seg.precision,
+                threshold=self.models_config.rf_detr_seg.threshold,
+                mask_threshold=self.models_config.rf_detr_seg.mask_threshold,
+                tensorrt_enabled=self.models_config.rf_detr_seg.tensorrt_enabled,
+                tensorrt_workspace_gb=self.models_config.rf_detr_seg.tensorrt_workspace_gb,
+                cuda_graphs=self.models_config.rf_detr_seg.cuda_graphs,
+                pinned_memory=self.models_config.rf_detr_seg.pinned_memory,
+                infrastructure_classes=self.models_config.rf_detr_seg.classes,
+            )
+            self.rf_detr_seg = RFDETRSegmenterM4TD(rf_detr_seg_config)
+            load_tasks.append(("RF-DETR-Seg", self.rf_detr_seg))
+            self._active_detector = self.rf_detr_seg
+            self._detector_provides_segmentation = True
+            logger.info("Using RF-DETR Seg as primary detector (M4TD optimized)")
+        elif hasattr(self.models_config, 'yolo26') and self.models_config.yolo26.enabled:
             yolo26_config = YOLO26Config(
                 weights=self.models_config.yolo26.weights,
                 input_size=self.models_config.yolo26.input_size,
@@ -142,6 +170,7 @@ class InferencePipeline:
             load_tasks.append(("YOLOv12", self.yolo))
             self._active_detector = self.yolo
 
+        # Legacy RF-DETR (for non-M4TD platforms)
         if self.models_config.rf_detr.enabled:
             self.rf_detr = RFDETRSegmenter(self.models_config.rf_detr)
             load_tasks.append(("RF-DETR", self.rf_detr))
@@ -187,10 +216,16 @@ class InferencePipeline:
         dummy_image = np.zeros((640, 640, 3), dtype=np.uint8)
 
         warmup_tasks = []
-        if self.yolo26 and self.yolo26.is_loaded:
+
+        # Primary detector warmup
+        if self.rf_detr_seg and self.rf_detr_seg.is_loaded:
+            warmup_tasks.append(self._warmup_model(self.rf_detr_seg, "RF-DETR-Seg"))
+        elif self.yolo26 and self.yolo26.is_loaded:
             warmup_tasks.append(self._warmup_model(self.yolo26, "YOLO26"))
         elif self.yolo and self.yolo.is_loaded:
             warmup_tasks.append(self._warmup_model(self.yolo, "YOLOv12"))
+
+        # Secondary models
         if self.rf_detr and self.rf_detr.is_loaded:
             warmup_tasks.append(self._warmup_model(self.rf_detr, "RF-DETR"))
         if self.sam3 and self.sam3.is_loaded:
@@ -248,35 +283,44 @@ class InferencePipeline:
 
         timing = {}
 
-        # Stage 1: Fast detection with YOLO26 or YOLOv12
+        # Stage 1: Primary detection
+        # RF-DETR Seg provides both detection AND segmentation in one pass
         detections = []
-        detector = self._active_detector or self.yolo
+        segmentations = []
+
+        detector = self._active_detector
         if detector and detector.is_loaded:
-            yolo_start = time.perf_counter()
+            detect_start = time.perf_counter()
 
-            if self.enable_tracking:
-                detections = detector.detect_with_tracking(image)
+            if self._detector_provides_segmentation:
+                # RF-DETR Seg: single pass for detection + segmentation
+                detections, segmentations = detector(image)
+                timing["rf_detr_seg"] = (time.perf_counter() - detect_start) * 1000
             else:
-                detections = detector(image)
+                # YOLO: detection only
+                if self.enable_tracking and hasattr(detector, 'detect_with_tracking'):
+                    detections = detector.detect_with_tracking(image)
+                else:
+                    detections = detector(image)
 
-            detector_name = "yolo26" if self.yolo26 and detector == self.yolo26 else "yolo"
-            timing[detector_name] = (time.perf_counter() - yolo_start) * 1000
+                detector_name = "yolo26" if self.yolo26 and detector == self.yolo26 else "yolo"
+                timing[detector_name] = (time.perf_counter() - detect_start) * 1000
 
             if self._on_detection and detections:
                 self._on_detection(detections)
 
-        # Stage 2: Detailed segmentation for important objects
-        segmentations = []
-        if self.rf_detr and self.rf_detr.is_loaded and detections:
-            rfdetr_start = time.perf_counter()
+        # Stage 2: Detailed segmentation (only if detector doesn't provide it)
+        if not self._detector_provides_segmentation:
+            if self.rf_detr and self.rf_detr.is_loaded and detections:
+                rfdetr_start = time.perf_counter()
 
-            # Filter to important detections for segmentation
-            important = self._filter_important_detections(detections)
-            if important:
-                _, segs = self.rf_detr(image)
-                segmentations = segs
+                # Filter to important detections for segmentation
+                important = self._filter_important_detections(detections)
+                if important:
+                    _, segs = self.rf_detr(image)
+                    segmentations = segs
 
-            timing["rf_detr"] = (time.perf_counter() - rfdetr_start) * 1000
+                timing["rf_detr"] = (time.perf_counter() - rfdetr_start) * 1000
 
         # Stage 3: Precision masks for potential anomalies
         if self.sam3 and self.sam3.is_loaded:
@@ -648,6 +692,8 @@ class InferencePipeline:
             self.yolo26.unload()
         if self.rf_detr:
             self.rf_detr.unload()
+        if self.rf_detr_seg:
+            self.rf_detr_seg.unload()
         if self.sam3:
             self.sam3.unload()
         if self.qwen_vl:
@@ -655,3 +701,29 @@ class InferencePipeline:
 
         self._executor.shutdown(wait=True)
         logger.info("Pipeline shutdown complete")
+
+    def get_detector_info(self) -> dict:
+        """Get information about the active detector."""
+        detector = self._active_detector
+        if detector is None:
+            return {"name": "none", "loaded": False}
+
+        info = {
+            "loaded": detector.is_loaded,
+            "provides_segmentation": self._detector_provides_segmentation,
+        }
+
+        if self.rf_detr_seg and detector == self.rf_detr_seg:
+            info["name"] = "RF-DETR-Seg"
+            info["model_size"] = self.rf_detr_seg.config.model_size.value
+            info["precision"] = self.rf_detr_seg.config.precision
+            info["avg_inference_ms"] = self.rf_detr_seg.get_avg_inference_time()
+            info["throughput_fps"] = self.rf_detr_seg.get_throughput()
+        elif self.yolo26 and detector == self.yolo26:
+            info["name"] = "YOLO26"
+        elif self.yolo and detector == self.yolo:
+            info["name"] = "YOLOv12"
+        else:
+            info["name"] = "unknown"
+
+        return info

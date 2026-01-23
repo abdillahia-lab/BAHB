@@ -98,13 +98,13 @@ class YOLO26Config(BaseModel):
 
 
 class RFDETRConfig(BaseModel):
-    """RF-DETR model configuration.
+    """RF-DETR model configuration (legacy).
 
     Optimization notes:
     - Transformer decoder is memory-intensive
     - INT8 quantization supported with proper calibration
     """
-    enabled: bool = True
+    enabled: bool = False  # Disabled - use RFDETRSegConfig instead
     weights: str = "models/rf_detr_large.engine"
     weights_int8: str = "models/rf_detr_large-int8.engine"
     backbone: str = "resnet101"
@@ -114,6 +114,44 @@ class RFDETRConfig(BaseModel):
     half_precision: bool = True
     use_int8: bool = False
     threshold: float = 0.5
+
+
+class RFDETRSegConfig(BaseModel):
+    """RF-DETR Segmentation model configuration for M4TD deployment.
+
+    This is the PRIMARY detection model for Matrice 4TD platform.
+    Chosen over YOLO26 for transformer-based architecture with
+    native instance segmentation support.
+
+    Performance on Manifold 3 (Orin NX 100 TOPS):
+    - Medium: ~5ms @ FP16, 54.7% mAP
+    - Nano: ~2.5ms @ FP16, ~50% mAP
+
+    DJI Integration Note:
+    - DJI M4TD handles vehicle/person detection via AI Spot-Check
+    - BAHB uses RF-DETR Seg for 17 infrastructure-specific classes
+    """
+    enabled: bool = True
+    model_size: str = "medium"  # nano, small, medium, base, large
+    weights: str = "models/rf_detr_seg_medium_infrastructure.onnx"
+    weights_tensorrt: str = "models/rf_detr_seg_medium_infrastructure.engine"
+    input_size: tuple[int, int] = (640, 640)
+    num_queries: int = 300
+    device: str = "cuda:0"
+    precision: str = "fp16"  # fp32, fp16, int8
+    threshold: float = 0.40
+    mask_threshold: float = 0.50
+    tensorrt_enabled: bool = True
+    tensorrt_workspace_gb: float = 4.0
+    cuda_graphs: bool = True
+    pinned_memory: bool = True
+    # Infrastructure-specific classes (17)
+    classes: list[str] = Field(default_factory=lambda: [
+        "transformer", "insulator", "conductor", "switchgear",
+        "circuit_breaker", "disconnect_switch", "capacitor_bank", "surge_arrester",
+        "power_pole", "transmission_tower", "substation_structure",
+        "damage", "corrosion", "hotspot", "oil_leak", "vegetation_encroachment", "contamination"
+    ])
 
 
 class SAM3Config(BaseModel):
@@ -139,10 +177,16 @@ class QwenVLConfig(BaseModel):
 
 
 class ModelsConfig(BaseModel):
-    """All AI models configuration."""
+    """All AI models configuration.
+
+    Platform Notes:
+    - Matrice 4TD: Use rf_detr_seg as primary (yolov12/yolo26 disabled)
+    - M400 + Manifold 3: Can use either YOLO or RF-DETR
+    """
     yolov12: YOLOConfig = Field(default_factory=YOLOConfig)
     yolo26: YOLO26Config = Field(default_factory=YOLO26Config)
     rf_detr: RFDETRConfig = Field(default_factory=RFDETRConfig)
+    rf_detr_seg: RFDETRSegConfig = Field(default_factory=RFDETRSegConfig)
     sam3_nano: SAM3Config = Field(default_factory=SAM3Config)
     qwen_vl: QwenVLConfig = Field(default_factory=QwenVLConfig)
 
