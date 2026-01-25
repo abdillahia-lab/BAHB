@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /data/bahb
+export BAHB_ROOT=/data/bahb
+export PYTHONPATH=/data/bahb:$PYTHONPATH
+python3 -m bahb.main "$@"

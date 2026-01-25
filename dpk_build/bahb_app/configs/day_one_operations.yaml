@@ -1,0 +1,335 @@
+# BAHB Day-One Operations Configuration
+# Power Infrastructure Inspection - Production Deployment
+
+# =============================================================================
+# DEPLOYMENT PROFILE
+# =============================================================================
+deployment:
+  profile: "production"
+  platform: "jetson_orin_nx"
+  mission_type: "power_infrastructure_inspection"
+  regulatory_zone: "faa_part107"
+
+# =============================================================================
+# AI MODEL CONFIGURATION
+# =============================================================================
+model:
+  # Primary model
+  primary:
+    path: "models/yolo26l_infrastructure_fp16.engine"
+    format: "tensorrt"
+    precision: "fp16"
+    batch_size: 1
+    input_size: [640, 640]
+    classes: 17
+    confidence_threshold: 0.35
+    nms_threshold: 0.45
+    max_detections: 100
+
+  # Fallback models (in order of preference)
+  fallback:
+    - path: "models/yolo26l_infrastructure.onnx"
+      format: "onnx"
+      device: "cuda"
+    - path: "models/yolo26l_infrastructure.pt"
+      format: "pytorch"
+      device: "cuda"
+
+  # Model warmup
+  warmup:
+    enabled: true
+    iterations: 10
+    timeout_s: 60
+
+# =============================================================================
+# INFERENCE ENGINE SETTINGS
+# =============================================================================
+inference:
+  # Performance targets
+  target_fps: 15
+  max_latency_ms: 100
+
+  # Frame processing
+  skip_frames: 0
+  process_every_nth: 1
+
+  # Detection priorities
+  priority_map:
+    insulator_damaged: "CRITICAL"
+    conductor_damaged: "CRITICAL"
+    contamination: "HIGH"
+    vegetation: "HIGH"
+    foreign_object: "HIGH"
+    insulator: "MEDIUM"
+    conductor: "MEDIUM"
+    tower: "LOW"
+    transformer: "LOW"
+    pole: "LOW"
+    crossarm: "LOW"
+    arrester: "LOW"
+    damper: "LOW"
+    spacer: "LOW"
+    connector: "LOW"
+    clamp: "INFO"
+    ground_wire: "INFO"
+
+  # Alert thresholds by priority
+  alert_thresholds:
+    CRITICAL: 0.30
+    HIGH: 0.40
+    MEDIUM: 0.50
+    LOW: 0.60
+    INFO: 0.70
+
+# =============================================================================
+# SAFETY THRESHOLDS
+# =============================================================================
+safety:
+  # Battery thresholds (%)
+  battery:
+    normal: 50
+    caution: 30
+    warning: 20
+    critical: 15
+    emergency: 10
+
+  # Temperature thresholds (Celsius)
+  temperature:
+    cpu_caution: 70
+    cpu_warning: 80
+    cpu_critical: 85
+    gpu_caution: 75
+    gpu_warning: 85
+    gpu_critical: 90
+
+  # Signal thresholds (dBm)
+  signal:
+    caution: -80
+    warning: -90
+    critical: -100
+
+  # GPS requirements
+  gps:
+    min_satellites: 8
+    warning_satellites: 6
+    critical_satellites: 4
+    max_hdop: 2.0
+
+  # Flight envelope
+  flight_envelope:
+    max_altitude_m: 120
+    max_speed_mps: 15
+    max_distance_from_home_m: 2000
+    max_wind_speed_mps: 10
+    min_visibility_m: 1000
+
+  # Time limits (minutes)
+  time_limits:
+    max_flight_duration: 25
+    max_mission_duration: 30
+
+  # Geofence
+  geofence:
+    warning_margin_m: 50
+    critical_margin_m: 20
+
+# =============================================================================
+# PREFLIGHT CHECKLIST
+# =============================================================================
+preflight:
+  # Hardware requirements
+  hardware:
+    min_battery_percent: 80
+    min_storage_gb: 50
+    max_cpu_temp_c: 70
+    min_gps_satellites: 12
+
+  # Required checks (all must pass)
+  required_checks:
+    - battery_level
+    - storage_space
+    - gps_fix
+    - camera_connection
+    - model_loaded
+    - compass_calibration
+    - imu_health
+    - motor_arm_test
+
+  # Optional checks (warnings only)
+  optional_checks:
+    - weather_conditions
+    - airspace_check
+    - regulatory_compliance
+    - pilot_certification
+
+  # Timeouts
+  timeouts:
+    gps_fix_s: 120
+    model_load_s: 60
+    camera_init_s: 30
+
+# =============================================================================
+# CAMERA CONFIGURATION (DJI H30T)
+# =============================================================================
+camera:
+  type: "dji_h30t"
+
+  # Visible spectrum camera
+  visible:
+    resolution: [4000, 3000]
+    fps: 30
+    encoding: "h264"
+
+  # Thermal camera (optional for inspection)
+  thermal:
+    enabled: false
+    resolution: [640, 512]
+    fps: 30
+
+  # Zoom settings
+  zoom:
+    default: 1.0
+    max: 40.0
+    auto_zoom_on_detection: true
+    zoom_for_critical: 5.0
+
+  # Capture settings
+  capture:
+    auto_capture_on_detection: true
+    save_raw_frames: false
+    jpeg_quality: 95
+    include_metadata: true
+
+# =============================================================================
+# GROUND STATION COMMUNICATION
+# =============================================================================
+ground_station:
+  # Network settings
+  ip: "192.168.1.100"  # Ground station IP (update for deployment)
+  udp_port: 14550
+  tcp_port: 14551
+
+  # Communication rates
+  telemetry_rate_hz: 10
+  heartbeat_interval_s: 1.0
+
+  # Enable protocols
+  enable_udp: true
+  enable_tcp: true
+  enable_file_logging: true
+
+  # Alert configuration
+  alerts:
+    send_critical_immediately: true
+    aggregate_non_critical_s: 5.0
+    max_alerts_per_minute: 60
+
+# =============================================================================
+# MISSION CONTROL
+# =============================================================================
+mission:
+  # Default waypoint settings
+  waypoint:
+    default_altitude_m: 50
+    default_speed_mps: 5
+    default_hover_time_s: 3
+    default_gimbal_pitch_deg: -45
+
+  # Inspection patterns
+  patterns:
+    tower_orbit:
+      radius_m: 30
+      points: 8
+      altitude_offset_m: 10
+    line_follow:
+      offset_m: 15
+      altitude_m: 40
+    corridor_scan:
+      width_m: 50
+      overlap_percent: 30
+
+  # Return-to-Home settings
+  rtl:
+    altitude_m: 80
+    speed_mps: 8
+    hover_before_land_s: 5
+
+# =============================================================================
+# DATA LOGGING
+# =============================================================================
+logging:
+  # Log directories
+  directories:
+    base: "/home/user/BAHB/data"
+    missions: "missions"
+    detections: "detections"
+    telemetry: "telemetry"
+    safety: "safety_logs"
+    ground_station: "ground_station_logs"
+
+  # Log retention
+  retention:
+    days: 90
+    max_size_gb: 100
+
+  # Detection logging
+  detections:
+    save_images: true
+    save_crops: true
+    save_metadata: true
+    min_confidence_to_log: 0.25
+
+  # Telemetry logging
+  telemetry:
+    log_rate_hz: 10
+    include_raw_gps: true
+    include_imu: true
+
+# =============================================================================
+# EDGE DEPLOYMENT OPTIMIZATION
+# =============================================================================
+optimization:
+  # TensorRT settings
+  tensorrt:
+    workspace_mb: 4096
+    use_dla: false
+    dla_core: 0
+    allow_gpu_fallback: true
+
+  # Memory management
+  memory:
+    cuda_memory_fraction: 0.8
+    enable_memory_growth: true
+    clear_cache_interval_s: 300
+
+  # Power management
+  power:
+    mode: "MAXN"  # MAXN or 15W
+    enable_dynamic_scaling: false
+
+# =============================================================================
+# ZENMUSE S1 SPOTLIGHT (AI Triggers Only)
+# =============================================================================
+# Note: Brightness, gimbal sync, and modes controlled natively by DJI Pilot 2.
+# We only add AI-triggered automation on top of DJI's built-in features.
+zenmuse_s1:
+  # AI-triggered features (what DJI doesn't do)
+  ai_triggers:
+    illuminate_on_critical_detection: true
+    illuminate_on_investigation: true
+    frame_darkness_threshold: 0.3  # Auto-light if frame < 30% brightness
+
+  # Thermal preheat (heat target before thermal capture)
+  thermal_preheat:
+    enabled: true
+    duration_s: 2.0
+
+# =============================================================================
+# SIMULATION MODE (for testing)
+# =============================================================================
+simulation:
+  enabled: false
+  fake_gps: true
+  fake_telemetry: true
+  skip_hardware_checks: true
+  playback_video: null  # Path to test video if needed

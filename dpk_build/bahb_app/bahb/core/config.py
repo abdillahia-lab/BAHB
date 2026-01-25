@@ -1,0 +1,425 @@
+"""Configuration management for BAHB inspection system."""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from typing import Any, Optional
+
+import yaml
+from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
+from loguru import logger
+
+
+class CameraStreamConfig(BaseModel):
+    """Individual camera stream configuration."""
+    enabled: bool = True
+    resolution: tuple[int, int] = (1920, 1080)
+    fps: int = 30
+    codec: str = "h265"
+
+
+class ThermalCameraConfig(BaseModel):
+    """Thermal camera specific configuration."""
+    enabled: bool = True
+    resolution: tuple[int, int] = (640, 512)
+    fps: int = 30
+    fov: float = 40.6
+    sensitivity: float = 0.03
+    temperature_range: tuple[float, float] = (-40, 550)
+    palette: str = "ironbow"
+    emissivity: float = 0.95
+
+
+class H30TConfig(BaseModel):
+    """DJI H30T camera configuration."""
+    wide: CameraStreamConfig = Field(default_factory=CameraStreamConfig)
+    zoom: CameraStreamConfig = Field(default_factory=CameraStreamConfig)
+    thermal: ThermalCameraConfig = Field(default_factory=ThermalCameraConfig)
+    streams: dict[str, str] = Field(default_factory=lambda: {
+        "wide": "rtsp://192.168.42.2:8554/wide",
+        "zoom": "rtsp://192.168.42.2:8554/zoom",
+        "thermal": "rtsp://192.168.42.2:8554/thermal",
+    })
+
+
+class YOLOConfig(BaseModel):
+    """YOLOv12 model configuration.
+
+    Optimization notes (arXiv:2502.15737):
+    - INT8 recommended for best speed/accuracy on Orin NX (65fps vs 35fps FP16)
+    - NMS-free engines reduce latency by 1.8x (arXiv:2405.14458)
+    """
+    enabled: bool = True
+    weights: str = "models/yolov12l-inspection.engine"
+    weights_int8: str = "models/yolov12l-inspection-int8.engine"
+    input_size: tuple[int, int] = (1280, 720)
+    confidence_threshold: float = 0.35
+    nms_threshold: float = 0.45
+    device: str = "cuda:0"
+    half_precision: bool = True
+    use_int8: bool = False  # Use INT8 quantized model
+    batch_size: int = 1
+    nms_free: bool = True  # Skip Python NMS if engine includes it
+    classes: list[str] = Field(default_factory=list)
+
+
+class YOLO26Config(BaseModel):
+    """YOLO26 model configuration (January 2026).
+
+    YOLO26 key improvements:
+    - Native NMS-free end-to-end inference (no post-processing)
+    - DFL removal for simplified edge deployment
+    - STAL (Small-Target-Aware Label Assignment) for small objects
+    - ProgLoss for improved accuracy
+    - MuSGD optimizer (SGD + Muon hybrid from Moonshot AI)
+    - Up to 43% faster CPU inference than YOLO11
+
+    Model variants (640px COCO):
+    - yolo26n: 2.4M params, mAP 40.9, CPU 38.9ms
+    - yolo26s: 9.5M params, mAP 48.6, CPU 87.2ms
+    - yolo26m: 20.4M params, mAP 53.1, CPU 220.0ms
+    - yolo26l: 24.8M params, mAP 55.0, CPU 286.2ms
+    - yolo26x: 55.7M params, mAP 57.5, CPU 525.8ms
+    """
+    enabled: bool = False  # Disabled by default, set True to use
+    weights: str = "models/yolo26l-inspection.pt"
+    weights_int8: str = "models/yolo26l-inspection-int8.engine"
+    input_size: tuple[int, int] = (640, 640)
+    confidence_threshold: float = 0.35
+    nms_threshold: float = 0.45
+    device: str = "cuda:0"
+    half_precision: bool = True
+    use_int8: bool = False
+    batch_size: int = 1
+    model_size: str = "l"  # n, s, m, l, x
+    classes: list[str] = Field(default_factory=list)
+
+
+class RFDETRConfig(BaseModel):
+    """RF-DETR model configuration (legacy).
+
+    Optimization notes:
+    - Transformer decoder is memory-intensive
+    - INT8 quantization supported with proper calibration
+    """
+    enabled: bool = False  # Disabled - use RFDETRSegConfig instead
+    weights: str = "models/rf_detr_large.engine"
+    weights_int8: str = "models/rf_detr_large-int8.engine"
+    backbone: str = "resnet101"
+    input_size: tuple[int, int] = (640, 640)
+    num_queries: int = 300
+    device: str = "cuda:0"
+    half_precision: bool = True
+    use_int8: bool = False
+    threshold: float = 0.5
+
+
+class RFDETRSegConfig(BaseModel):
+    """RF-DETR Segmentation model configuration for M4TD deployment.
+
+    This is the PRIMARY detection model for Matrice 4TD platform.
+    Chosen over YOLO26 for transformer-based architecture with
+    native instance segmentation support.
+
+    Performance on Manifold 3 (Orin NX 100 TOPS):
+    - Medium: ~5ms @ FP16, 54.7% mAP
+    - Nano: ~2.5ms @ FP16, ~50% mAP
+
+    DJI Integration Note:
+    - DJI M4TD handles vehicle/person detection via AI Spot-Check
+    - BAHB uses RF-DETR Seg for 17 infrastructure-specific classes
+    """
+    enabled: bool = True
+    model_size: str = "medium"  # nano, small, medium, base, large
+    weights: str = "models/rf_detr_seg_medium_infrastructure.onnx"
+    weights_tensorrt: str = "models/rf_detr_seg_medium_infrastructure.engine"
+    input_size: tuple[int, int] = (640, 640)
+    num_queries: int = 300
+    device: str = "cuda:0"
+    precision: str = "fp16"  # fp32, fp16, int8
+    threshold: float = 0.40
+    mask_threshold: float = 0.50
+    tensorrt_enabled: bool = True
+    tensorrt_workspace_gb: float = 4.0
+    cuda_graphs: bool = True
+    pinned_memory: bool = True
+    # Infrastructure-specific classes (17)
+    classes: list[str] = Field(default_factory=lambda: [
+        "transformer", "insulator", "conductor", "switchgear",
+        "circuit_breaker", "disconnect_switch", "capacitor_bank", "surge_arrester",
+        "power_pole", "transmission_tower", "substation_structure",
+        "damage", "corrosion", "hotspot", "oil_leak", "vegetation_encroachment", "contamination"
+    ])
+
+
+class SAM3Config(BaseModel):
+    """SAM3 Nano configuration."""
+    enabled: bool = True
+    encoder_weights: str = "models/sam3_nano_encoder.engine"
+    decoder_weights: str = "models/sam3_nano_decoder.engine"
+    input_size: tuple[int, int] = (1024, 1024)
+    device: str = "cuda:0"
+    points_per_batch: int = 64
+
+
+class QwenVLConfig(BaseModel):
+    """Qwen2.5-VL-3B-AWQ configuration."""
+    enabled: bool = True
+    model_path: str = "models/Qwen2.5-VL-3B-AWQ"
+    device: str = "cuda:0"
+    max_new_tokens: int = 512
+    temperature: float = 0.1
+    quantization: str = "awq"
+    flash_attention: bool = True
+    context_length: int = 4096
+
+
+class ModelsConfig(BaseModel):
+    """All AI models configuration.
+
+    Platform Notes:
+    - Matrice 4TD: Use rf_detr_seg as primary (yolov12/yolo26 disabled)
+    - M400 + Manifold 3: Can use either YOLO or RF-DETR
+    """
+    yolov12: YOLOConfig = Field(default_factory=YOLOConfig)
+    yolo26: YOLO26Config = Field(default_factory=YOLO26Config)
+    rf_detr: RFDETRConfig = Field(default_factory=RFDETRConfig)
+    rf_detr_seg: RFDETRSegConfig = Field(default_factory=RFDETRSegConfig)
+    sam3_nano: SAM3Config = Field(default_factory=SAM3Config)
+    qwen_vl: QwenVLConfig = Field(default_factory=QwenVLConfig)
+
+
+class ThermalZoneConfig(BaseModel):
+    """Temperature zone thresholds."""
+    normal_range: tuple[float, float] = (20, 60)
+    warning_range: tuple[float, float] = (60, 80)
+    critical_range: tuple[float, float] = (80, 150)
+
+
+class ThermalAnalysisConfig(BaseModel):
+    """Thermal analysis configuration."""
+    enabled: bool = True
+    baseline_temp: float = 25.0
+    hotspot_threshold: float = 15.0
+    critical_threshold: float = 40.0
+    cold_spot_threshold: float = -10.0
+    zones: dict[str, ThermalZoneConfig] = Field(default_factory=dict)
+
+
+class InspectionProfileConfig(BaseModel):
+    """Individual inspection profile."""
+    enabled: bool = True
+    detection_classes: list[str] = Field(default_factory=list)
+    thermal_enabled: bool = True
+    min_hover_time: float = 3.0
+
+
+class MappingConfig(BaseModel):
+    """3D mapping configuration."""
+    enabled: bool = True
+    overlap: int = 80
+    sidelap: int = 70
+    gsd: float = 0.5
+    point_cloud_enabled: bool = True
+    mesh_enabled: bool = True
+
+
+class StreamingConfig(BaseModel):
+    """Streaming configuration."""
+    webrtc_enabled: bool = True
+    webrtc_port: int = 8080
+    rtmp_enabled: bool = False
+    rtmp_url: str = ""
+    recording_enabled: bool = True
+    recording_format: str = "mp4"
+    recording_bitrate: int = 20000000
+
+
+class AlertConfig(BaseModel):
+    """Alert system configuration."""
+    enabled: bool = True
+    mqtt_enabled: bool = True
+    mqtt_broker: str = ""
+    mqtt_topic: str = "bahb/alerts"
+    webhook_enabled: bool = True
+    webhook_url: str = ""
+
+
+class SafetyConfig(BaseModel):
+    """Safety configuration."""
+    obstacle_avoidance: bool = True
+    geofence_enabled: bool = True
+    geofence_max_distance: float = 500.0
+    battery_warning_level: int = 30
+    battery_critical_level: int = 20
+    max_wind_speed: float = 12.0
+
+
+class OptimizationConfig(BaseModel):
+    """Edge optimization configuration.
+
+    Based on research findings:
+    - arXiv:2502.15737: INT8 achieves 65fps on Orin NX
+    - arXiv:2405.14458: NMS-free inference reduces latency
+    - arXiv:2501.15014: Stream overlap increases throughput ~30%
+    - arXiv:2511.19495: Optimal order is Pruning → KD → Quantization
+    """
+    tensorrt_enabled: bool = True
+    tensorrt_workspace_size: int = 4294967296  # 4GB
+    precision: str = "fp16"  # Options: fp32, fp16, int8
+    int8_enabled: bool = False  # Enable INT8 quantization
+    int8_calibration_images: int = 500
+    cuda_streams: int = 4
+    stream_overlap: bool = True  # Enable H2D/compute/D2H overlap
+    async_inference: bool = True
+    prefetch_frames: int = 2
+    # NMS-free detection (YOLOv10+ style)
+    nms_free_enabled: bool = True
+    detect_builtin_nms: bool = True
+    # Adaptive VLM scheduling (arXiv:2502.07855)
+    adaptive_vlm_enabled: bool = True
+    vlm_base_interval: int = 5
+    vlm_low_fps_threshold: float = 15.0
+    vlm_low_fps_interval: int = 15
+    # Buffer pooling for reduced allocation overhead
+    buffer_pool_enabled: bool = True
+    # Memory budget (MB) for AI models
+    memory_budget_mb: int = 12288  # 12GB for AI on 16GB Orin
+
+
+class Config(BaseSettings):
+    """Main configuration class for BAHB system."""
+
+    # System
+    name: str = "BAHB-Inspection"
+    version: str = "1.0.0"
+    platform: str = "generic"  # matrice_4td, m400, generic
+    log_level: str = "INFO"
+    data_dir: Path = Path("/data/bahb")
+    cache_dir: Path = Path("/tmp/bahb_cache")
+    max_workers: int = 8
+
+    # Hardware
+    gpu_memory_fraction: float = 0.9
+    power_mode: str = "MAXN"
+
+    # Components
+    camera: H30TConfig = Field(default_factory=H30TConfig)
+    models: ModelsConfig = Field(default_factory=ModelsConfig)
+    thermal: ThermalAnalysisConfig = Field(default_factory=ThermalAnalysisConfig)
+    mapping: MappingConfig = Field(default_factory=MappingConfig)
+    streaming: StreamingConfig = Field(default_factory=StreamingConfig)
+    alerts: AlertConfig = Field(default_factory=AlertConfig)
+    safety: SafetyConfig = Field(default_factory=SafetyConfig)
+    optimization: OptimizationConfig = Field(default_factory=OptimizationConfig)
+
+    # Inspection profiles
+    profiles: dict[str, InspectionProfileConfig] = Field(default_factory=dict)
+
+    model_config = {
+        "env_prefix": "BAHB_",
+        "env_nested_delimiter": "__",
+        "extra": "ignore",  # Allow extra fields in YAML without error
+    }
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> "Config":
+        """Load configuration from YAML file."""
+        path = Path(path)
+        if not path.exists():
+            logger.warning(f"Config file not found: {path}, using defaults")
+            return cls()
+
+        with open(path) as f:
+            data = yaml.safe_load(f)
+
+        # Expand environment variables
+        data = cls._expand_env_vars(data)
+
+        return cls.model_validate(cls._flatten_config(data))
+
+    @classmethod
+    def _expand_env_vars(cls, data: Any) -> Any:
+        """Recursively expand environment variables in config."""
+        if isinstance(data, dict):
+            return {k: cls._expand_env_vars(v) for k, v in data.items()}
+        elif isinstance(data, list):
+            return [cls._expand_env_vars(item) for item in data]
+        elif isinstance(data, str) and data.startswith("${") and data.endswith("}"):
+            var_name = data[2:-1]
+            return os.environ.get(var_name, "")
+        return data
+
+    @classmethod
+    def _flatten_config(cls, data: dict) -> dict:
+        """Flatten nested YAML structure to match Pydantic model."""
+        result = {}
+
+        # Top-level system settings
+        if "system" in data:
+            result.update(data["system"])
+
+        # Hardware settings
+        if "hardware" in data:
+            hw = data["hardware"]
+            if "manifold" in hw:
+                result["gpu_memory_fraction"] = hw["manifold"].get("gpu_memory_fraction", 0.9)
+                result["power_mode"] = hw["manifold"].get("power_mode", "MAXN")
+
+        # Camera settings
+        if "camera" in data and "h30t" in data["camera"]:
+            result["camera"] = data["camera"]["h30t"]
+
+        # Model settings
+        if "models" in data:
+            result["models"] = data["models"]
+
+        # Other sections
+        for key in ["thermal", "mapping", "streaming", "alerts", "safety", "optimization"]:
+            if key in data:
+                result[key] = data[key]
+
+        # Inspection profiles
+        if "inspection" in data and "profiles" in data["inspection"]:
+            result["profiles"] = data["inspection"]["profiles"]
+
+        return result
+
+    def ensure_directories(self) -> None:
+        """Create necessary directories."""
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        (self.data_dir / "inspections").mkdir(exist_ok=True)
+        (self.data_dir / "models").mkdir(exist_ok=True)
+        (self.data_dir / "reports").mkdir(exist_ok=True)
+        (self.data_dir / "recordings").mkdir(exist_ok=True)
+
+    def get_model_path(self, model_name: str) -> Path:
+        """Get full path for a model file."""
+        model_config = getattr(self.models, model_name, None)
+        if model_config and hasattr(model_config, "weights"):
+            return self.data_dir / model_config.weights
+        return self.data_dir / "models" / model_name
+
+
+def load_config(config_path: Optional[str] = None) -> Config:
+    """Load configuration from file or environment."""
+    if config_path:
+        return Config.from_yaml(config_path)
+
+    # Check default locations
+    default_paths = [
+        Path("configs/production.yaml"),
+        Path("/etc/bahb/config.yaml"),
+        Path.home() / ".bahb" / "config.yaml",
+    ]
+
+    for path in default_paths:
+        if path.exists():
+            logger.info(f"Loading config from: {path}")
+            return Config.from_yaml(path)
+
+    logger.warning("No config file found, using defaults")
+    return Config()

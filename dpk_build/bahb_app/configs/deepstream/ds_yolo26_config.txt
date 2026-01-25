@@ -1,0 +1,109 @@
+# YOLO26l Primary Detector Configuration for DeepStream
+# Multi-Agent Deliberation Result: YOLO26l + INT8 Quantization
+# Confidence: HIGH | Expected: 55.5 FPS @ 99.2% accuracy
+
+[property]
+# GPU Configuration
+gpu-id=0
+net-scale-factor=0.0039215697906911373
+# 1/255 for [0,255] -> [0,1] normalization
+
+# Model Configuration - YOLO26l INT8
+model-engine-file=/home/user/BAHB/models/tensorrt/yolo26l_int8.engine
+model-color-format=0
+# 0=RGB, required for YOLO
+
+# Input Configuration
+infer-dims=3;640;640
+# NCHW format: channels=3, height=640, width=640
+
+# Batch Configuration
+batch-size=2
+# Process visual + thermal simultaneously
+
+# Network Configuration
+network-mode=1
+# 0=FP32, 1=INT8, 2=FP16
+# Selected: INT8 (Multi-Agent Deliberation)
+
+# NMS-Free YOLO26 - Critical for edge deployment
+cluster-mode=0
+# 0=no clustering (NMS-free)
+# YOLO26 uses STAL + NMS-free architecture
+
+# Output Configuration
+num-detected-classes=17
+# Power infrastructure classes:
+# 0: transformer
+# 1: insulator
+# 2: conductor
+# 3: switchgear
+# 4: cable
+# 5: hvac_unit
+# 6: server_rack
+# 7: cooling_fan
+# 8: electrical_panel
+# 9: fire_extinguisher
+# 10: vegetation
+# 11: person
+# 12: vehicle
+# 13: damage
+# 14: corrosion
+# 15: hotspot
+# 16: leak
+
+# Detection Thresholds
+pre-cluster-threshold=0.25
+# NMS-free threshold (no NMS, just confidence filtering)
+
+# Output Parsing
+parse-bbox-func-name=NvDsInferParseCustomYOLO
+custom-lib-path=/opt/nvidia/deepstream/deepstream/lib/libnvdsinfer_custom_impl_yolo.so
+output-blob-names=output0
+
+# Memory Optimization
+workspace-size=4294967296
+# 4GB workspace for INT8
+
+# Maintain aspect ratio
+maintain-aspect-ratio=1
+symmetric-padding=1
+
+# Interval (process every frame)
+interval=0
+
+# Layer-level precision (from TensorRT optimization)
+# Detection heads in FP16 for accuracy
+force-implicit-batch-dim=0
+
+[class-attrs-all]
+# Default class attributes
+pre-cluster-threshold=0.25
+topk=200
+nms-iou-threshold=0.0
+# NMS-free: set to 0
+
+# Per-class thresholds (optional fine-tuning)
+[class-attrs-0]
+# transformer - large objects, high confidence
+pre-cluster-threshold=0.30
+
+[class-attrs-1]
+# insulator - small objects, lower threshold for STAL benefit
+pre-cluster-threshold=0.20
+
+[class-attrs-13]
+# damage - critical defects, lower threshold
+pre-cluster-threshold=0.15
+
+[class-attrs-14]
+# corrosion - critical defects, lower threshold
+pre-cluster-threshold=0.15
+
+[class-attrs-15]
+# hotspot - thermal anomalies, correlate with thermal
+pre-cluster-threshold=0.20
+
+[class-attrs-16]
+# leak - critical defects, lower threshold
+pre-cluster-threshold=0.15

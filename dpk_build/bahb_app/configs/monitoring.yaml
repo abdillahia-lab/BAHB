@@ -1,0 +1,166 @@
+# BAHB Monitoring System Configuration
+
+# Health Check Server
+health_check:
+  enabled: true
+  port: 8081
+  host: "0.0.0.0"
+  check_interval_seconds: 5.0
+  min_disk_space_gb: 10.0
+
+# Metrics Collection
+metrics:
+  enabled: true
+  prometheus_enabled: true
+  collection_interval_seconds: 1.0
+
+# Alert System
+alerts:
+  enabled: true
+
+  # MQTT Configuration
+  mqtt:
+    enabled: true
+    broker: "localhost"
+    port: 1883
+    topic: "bahb/alerts"
+    username: ""  # Optional
+    password: ""  # Optional
+    tls_enabled: false
+
+  # Webhook Configuration
+  webhook:
+    enabled: true
+    url: "https://api.example.com/webhooks/bahb"
+    headers:
+      Authorization: "Bearer YOUR_API_KEY"
+      Content-Type: "application/json"
+    timeout_seconds: 5.0
+
+  # Local Alerts
+  local:
+    enabled: true
+    sound_enabled: true
+
+  # Alert Rules
+  rules:
+    critical_damage:
+      enabled: true
+      rate_limit_seconds: 30
+
+    thermal_hotspot:
+      enabled: true
+      rate_limit_seconds: 60
+
+    oil_leak:
+      enabled: true
+      rate_limit_seconds: 30
+
+    gpu_memory_high:
+      enabled: true
+      rate_limit_seconds: 300
+
+    disk_space_low:
+      enabled: true
+      rate_limit_seconds: 600
+
+    camera_disconnected:
+      enabled: true
+      rate_limit_seconds: 60
+
+# Thermal Monitoring
+thermal_monitor:
+  enabled: true
+  check_interval_seconds: 2.0
+
+  # Temperature Thresholds (Celsius)
+  thresholds:
+    warm: 60.0
+    hot: 75.0
+    critical: 85.0
+    throttle: 90.0
+
+  # Auto-management
+  auto_throttle: true
+  reduce_fps_on_throttle: true
+  target_fps_reduction: 0.5  # Reduce to 50% on throttle
+
+# Process Watchdog
+watchdog:
+  enabled: true
+
+  # Restart Policy
+  max_restarts: 5
+  restart_window_seconds: 300  # 5 minutes
+  initial_backoff_seconds: 1.0
+  max_backoff_seconds: 60.0
+  backoff_multiplier: 2.0
+
+  # Health Checks
+  health_check_interval_seconds: 5.0
+  process_timeout_seconds: 30.0
+
+  # Memory Monitoring
+  memory_leak_threshold_mb: 1000.0
+  memory_growth_threshold_mb_per_min: 50.0
+  memory_check_interval_seconds: 60.0
+
+  # GPU Monitoring
+  gpu_memory_threshold_mb: 14000.0  # For 16GB Orin NX
+  gpu_memory_check_interval_seconds: 10.0
+
+  # Alerting
+  alert_on_crash: true
+  alert_on_repeated_failures: 3
+  alert_on_memory_leak: true
+
+# Monitored Components
+components:
+  # Camera Streams
+  camera_streams:
+    - "rtsp://192.168.42.2:8554/wide"
+    - "rtsp://192.168.42.2:8554/zoom"
+    - "rtsp://192.168.42.2:8554/thermal"
+
+  # Model Paths
+  model_paths:
+    - "/home/user/BAHB/models/yolo26l-inspection.pt"
+    - "/home/user/BAHB/models/yolo26l-inspection-int8.engine"
+    - "/home/user/BAHB/models/rf_detr_large.engine"
+    - "/home/user/BAHB/models/sam3_nano_encoder.engine"
+
+  # Data Paths
+  recording_path: "/data/bahb/recordings"
+  model_dir: "/data/bahb/models"
+  cache_dir: "/tmp/bahb_cache"
+
+# Critical Thresholds
+thresholds:
+  # Performance
+  min_fps: 15.0
+  max_inference_latency_ms: 50.0
+
+  # Resources
+  min_gpu_memory_mb: 1000.0
+  min_disk_space_gb: 10.0
+  max_cpu_percent: 95.0
+  max_memory_percent: 95.0
+
+  # Thermal
+  max_gpu_temperature_celsius: 85.0
+  max_cpu_temperature_celsius: 85.0
+
+# Logging
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level:8} | {name}:{function}:{line} - {message}"
+  rotation: "100 MB"
+  retention: "7 days"
+  compression: "zip"
+
+  # Log files
+  log_dir: "/data/bahb/logs"
+  monitoring_log: "monitoring.log"
+  alerts_log: "alerts.log"
+  thermal_log: "thermal.log"
+  metrics_log: "metrics.log"

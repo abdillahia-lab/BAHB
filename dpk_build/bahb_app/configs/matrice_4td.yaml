@@ -1,0 +1,310 @@
+# BAHB Configuration for DJI Matrice 4TD with Manifold 3
+# Optimized for RF-DETR Seg inference on 100 TOPS Orin NX
+#
+# IMPORTANT: Feature Separation Guide
+# =====================================
+# DJI M4TD Built-in AI (DO NOT DUPLICATE):
+#   - Vehicle/person detection (AI Spot-Check)
+#   - Smart Track (object following)
+#   - Thermal measurement (-20°C to 550°C)
+#   - Fire detection
+#   - Basic thermal palettes
+#   - IR-cut filter, NIR illumination
+#
+# BAHB Custom Detection (OUR VALUE-ADD):
+#   - Power infrastructure classes (17 types)
+#   - Instance segmentation masks
+#   - Anomaly classification (corona, leaks, vegetation)
+#   - Multi-model fusion (RF-DETR + Thermal + VLM)
+#   - Natural language analysis & reports
+#   - Agentic workflows for RPIC assistance
+
+system:
+  name: "BAHB-M4TD-Inspection"
+  version: "2.0.0"
+  platform: "matrice_4td"
+  log_level: "INFO"
+  data_dir: "/data/bahb"
+
+hardware:
+  # DJI Matrice 4TD Platform
+  aircraft: "matrice_4td"
+
+  # Manifold 3 Edge Compute (100 TOPS)
+  manifold:
+    model: "manifold_3"
+    compute_module: "orin_nx"
+    tops: 100
+    gpu_memory_fraction: 0.85
+    power_mode: "MAXN"  # 15W default, up to 25W
+    thermal_throttle_temp: 85  # Celsius
+
+# Camera Configuration
+# M4TD uses integrated Zenmuse camera (not H30T)
+camera:
+  platform: "m4td_integrated"
+
+  wide:
+    enabled: true
+    resolution: [4096, 2160]  # 4K
+    fps: 30
+    codec: "h265"
+
+  thermal:
+    enabled: true
+    resolution: [640, 512]
+    fps: 30
+    # DJI handles basic thermal - we add infrastructure analysis
+    dji_thermal_sdk: true  # Use DJI TSDK for temperature data
+
+    # BAHB thermal analysis thresholds (beyond DJI's basic display)
+    infrastructure_thresholds:
+      transformer_warning: 65  # Celsius
+      transformer_critical: 85
+      insulator_warning: 45
+      insulator_critical: 60
+      conductor_warning: 70
+      conductor_critical: 90
+      connection_warning: 55
+      connection_critical: 75
+
+  laser_rangefinder:
+    enabled: true
+    max_range: 1200  # meters
+    accuracy: 0.2    # meters
+
+# AI Models Configuration
+models:
+  # Primary Detection: RF-DETR Seg (user choice over YOLO26)
+  rf_detr_seg:
+    enabled: true
+    model_size: "medium"  # Best accuracy/speed for Orin NX
+    weights: "models/rf_detr_seg_medium_infrastructure.onnx"
+    weights_tensorrt: "models/rf_detr_seg_medium_infrastructure.engine"
+    input_size: [640, 640]
+    precision: "fp16"  # FP16 for stability, INT8 optional
+    threshold: 0.40
+    mask_threshold: 0.50
+
+    # TensorRT optimization
+    tensorrt_enabled: true
+    tensorrt_workspace_gb: 4.0
+    cuda_graphs: true
+    pinned_memory: true
+
+    # Infrastructure-specific classes (17 total)
+    # These are NOT covered by DJI's vehicle/person detection
+    classes:
+      # Power Equipment (0-7)
+      - transformer
+      - insulator
+      - conductor
+      - switchgear
+      - circuit_breaker
+      - disconnect_switch
+      - capacitor_bank
+      - surge_arrester
+      # Support Structures (8-10)
+      - power_pole
+      - transmission_tower
+      - substation_structure
+      # Defects/Anomalies (11-16)
+      - damage
+      - corrosion
+      - hotspot
+      - oil_leak
+      - vegetation_encroachment
+      - contamination
+
+  # RF-DETR (legacy config - now using rf_detr_seg above)
+  rf_detr:
+    enabled: false
+
+  # YOLOv12 (disabled - using RF-DETR Seg per user request)
+  yolov12:
+    enabled: false
+
+  # YOLO26 (disabled - using RF-DETR Seg per user request)
+  yolo26:
+    enabled: false
+
+  # SAM3 Nano - precision masks for anomalies
+  sam3_nano:
+    enabled: true
+    encoder_weights: "models/sam3_nano_encoder.engine"
+    decoder_weights: "models/sam3_nano_decoder.engine"
+    input_size: [1024, 1024]
+    device: "cuda:0"
+    # Only triggered for anomaly detections (saves compute)
+    on_anomaly_only: true
+
+  # Qwen2.5-VL - natural language analysis
+  qwen_vl:
+    enabled: true
+    model_path: "models/Qwen2.5-VL-3B-AWQ"
+    device: "cuda:0"
+    max_new_tokens: 512
+    temperature: 0.1
+    quantization: "awq"
+    flash_attention: true
+    # Adaptive scheduling (arXiv:2502.07855)
+    adaptive_interval: true
+    base_interval: 5   # Every 5th frame normally
+    anomaly_interval: 1  # Every frame when anomaly detected
+
+# DJI Native Feature Integration
+# These use DJI's built-in AI - BAHB just displays/logs results
+dji_integration:
+  # Use DJI's vehicle/person detection for situational awareness
+  ai_spot_check:
+    enabled: true
+    use_for_obstacle_warning: true
+    log_detections: true
+    display_on_rc: false  # DJI already shows this
+
+  # Use DJI's Smart Track for follow-inspection
+  smart_track:
+    enabled: true
+    trigger_on_anomaly: false  # Manual trigger only
+
+  # Use DJI Thermal SDK for temperature data
+  thermal_sdk:
+    enabled: true
+    temperature_format: "celsius"
+    export_r_jpeg: true  # Radiometric JPEG for post-processing
+
+  # DJI's fire detection
+  fire_detection:
+    enabled: true
+    alert_bahb: true  # Forward alerts to BAHB system
+
+# Thermal Analysis (BAHB value-add on top of DJI)
+thermal:
+  enabled: true
+
+  # Use DJI's temperature data, add infrastructure analysis
+  analysis_mode: "infrastructure_focused"
+
+  # Delta-T thresholds (comparing to ambient or similar components)
+  delta_t_warning: 15  # Celsius above reference
+  delta_t_critical: 30
+
+  # Hotspot detection tuned for power equipment
+  hotspot_detection:
+    min_area_pixels: 100
+    grouping_distance: 20
+
+  # Automatic correlation with RF-DETR detections
+  correlate_with_detections: true
+
+# Optimization for M4TD / Manifold 3
+optimization:
+  tensorrt_enabled: true
+  tensorrt_workspace_size: 4294967296  # 4GB
+  precision: "fp16"
+
+  # INT8 calibration (optional - for maximum speed)
+  int8_enabled: false
+  int8_calibration_images: 500
+
+  # CUDA optimization
+  cuda_streams: 4
+  stream_overlap: true
+  async_inference: true
+
+  # Adaptive VLM scheduling
+  adaptive_vlm_enabled: true
+  vlm_base_interval: 5
+  vlm_low_fps_threshold: 20.0
+  vlm_low_fps_interval: 15
+
+  # Memory budget (Orin NX 16GB, leave room for system)
+  memory_budget_mb: 12288
+
+# RC Plus 2 Display Configuration
+# Designed to COMPLEMENT DJI's built-in display, not duplicate
+rc_display:
+  websocket_port: 8080
+
+  # BAHB-specific overlay (DJI shows video/thermal/vehicle detection)
+  overlay:
+    enabled: true
+
+    # Infrastructure detection boxes (our value-add)
+    show_infrastructure_boxes: true
+    box_color_by_class: true
+    show_confidence: true
+
+    # Anomaly highlighting (critical value)
+    show_anomalies: true
+    anomaly_flash_critical: true
+    anomaly_color: "#FF4444"
+
+    # Segmentation masks (optional - can be heavy)
+    show_masks: false  # Toggle via RC
+    mask_opacity: 0.3
+
+    # Thermal correlation (our analysis on DJI's thermal)
+    show_thermal_hotspots: true
+    show_delta_t: true
+
+  # Status panel (compact, non-intrusive)
+  status_panel:
+    position: "top_right"
+    show_fps: true
+    show_detection_count: true
+    show_anomaly_count: true
+    show_model_status: true
+
+  # Anomaly list (scrollable)
+  anomaly_list:
+    position: "right"
+    max_visible: 5
+    show_thumbnail: true
+    show_severity: true
+    show_action_button: true
+
+# Agentic Workflows
+agents:
+  enabled: true
+
+  # Perception Agent - RF-DETR Seg + thermal fusion
+  perception:
+    enabled: true
+    model: "rf_detr_seg"
+    thermal_correlation: true
+
+  # Investigator Agent - detailed inspection on anomalies
+  investigator:
+    enabled: true
+    trigger_on_severity: "medium"
+    orbit_radius: 5  # meters
+    capture_angles: 4
+
+  # RPIC Advisor Agent - recommendations
+  rpic_advisor:
+    enabled: true
+    confidence_thresholds:
+      auto_action: 0.90    # No human needed
+      recommend: 0.70      # Suggest action
+      require_approval: 0.50  # Must confirm
+
+# Reporting
+reporting:
+  auto_generate: true
+  formats: ["pdf", "html", "json"]
+  include_thumbnails: true
+  include_thermal_images: true
+  include_segmentation_masks: true
+  include_vlm_analysis: true
+
+# Safety (leverages DJI's built-in systems)
+safety:
+  # Use DJI's obstacle avoidance
+  dji_obstacle_avoidance: true
+
+  # BAHB additions
+  auto_rth_on_critical_anomaly: false  # Alert RPIC instead
+  geofence_enabled: true
+  battery_warning_level: 30
+  battery_critical_level: 20
