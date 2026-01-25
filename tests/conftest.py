@@ -130,7 +130,7 @@ def batch_images(sample_image: NDArray) -> list[NDArray]:
     for i in range(4):
         img = sample_image.copy()
         # Add variation
-        img = cv2.add(img, np.uint8(i * 10))
+        img = cv2.add(img, np.full_like(img, i * 10, dtype=np.uint8))
         batch.append(img)
     return batch
 
@@ -202,7 +202,6 @@ def mock_yolo_model():
     ]
 
     mock.return_value = detections
-    mock.__call__.return_value = detections
 
     return mock
 

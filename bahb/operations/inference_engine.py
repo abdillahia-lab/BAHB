@@ -274,9 +274,58 @@ class ProductionInferenceEngine:
         self.model = ort.InferenceSession(self.onnx_path, providers=providers)
 
     def _load_tensorrt(self):
-        """Load TensorRT engine."""
-        # Placeholder - TensorRT loading requires additional setup
-        raise NotImplementedError("TensorRT loading requires target device")
+        """Load TensorRT engine for optimized inference on NVIDIA devices."""
+        try:
+            import tensorrt as trt
+            import pycuda.driver as cuda
+            import pycuda.autoinit  # noqa: F401
+
+            logger = trt.Logger(trt.Logger.WARNING)
+
+            with open(self.tensorrt_path, "rb") as f:
+                engine_data = f.read()
+
+            runtime = trt.Runtime(logger)
+            self.engine = runtime.deserialize_cuda_engine(engine_data)
+            self.context = self.engine.create_execution_context()
+
+            # Allocate device memory for inputs/outputs
+            self._allocate_buffers()
+            self._tensorrt_loaded = True
+
+        except ImportError:
+            raise NotImplementedError(
+                "TensorRT or PyCUDA not available. Install with: "
+                "pip install tensorrt pycuda"
+            )
+        except Exception as e:
+            raise RuntimeError(f"Failed to load TensorRT engine: {e}")
+
+    def _allocate_buffers(self):
+        """Allocate CUDA buffers for TensorRT inference."""
+        import pycuda.driver as cuda
+
+        self.inputs = []
+        self.outputs = []
+        self.bindings = []
+        self.stream = cuda.Stream()
+
+        for i in range(self.engine.num_io_tensors):
+            name = self.engine.get_tensor_name(i)
+            dtype = trt.nptype(self.engine.get_tensor_dtype(name))
+            shape = self.engine.get_tensor_shape(name)
+            size = trt.volume(shape)
+
+            # Allocate host and device buffers
+            host_mem = cuda.pagelocked_empty(size, dtype)
+            device_mem = cuda.mem_alloc(host_mem.nbytes)
+
+            self.bindings.append(int(device_mem))
+
+            if self.engine.get_tensor_mode(name) == trt.TensorIOMode.INPUT:
+                self.inputs.append({'host': host_mem, 'device': device_mem, 'shape': shape})
+            else:
+                self.outputs.append({'host': host_mem, 'device': device_mem, 'shape': shape})
 
     def register_detection_callback(self, callback: Callable[[InferenceResult], None]):
         """Register callback for all detection results."""
