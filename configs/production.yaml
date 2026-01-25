@@ -66,45 +66,48 @@ camera:
 
 # AI Models Configuration
 models:
-  # YOLOv12 - Fast Detection
-  yolov12:
+  # Primary Detector - YOLOv11-L (Trained on BAHB Infrastructure)
+  primary_detector:
     enabled: true
-    weights: "models/yolov12l-inspection.engine"  # TensorRT optimized
-    input_size: [1280, 720]
+    weights: "runs/yolov11l_bahb_v3/weights/best.pt"
+    fallback_weights: "runs/yolo26l_infrastructure/weights/best.pt"
+    input_size: [640, 640]
     confidence_threshold: 0.35
     nms_threshold: 0.45
     device: "cuda:0"
     half_precision: true
     batch_size: 1
+    # 17 Infrastructure classes (10 with training data)
     classes:
-      - transformer
-      - insulator
-      - conductor
-      - switchgear
-      - cable
-      - hvac_unit
-      - server_rack
-      - cooling_fan
-      - electrical_panel
-      - fire_extinguisher
-      - vegetation
-      - person
-      - vehicle
-      - damage
-      - corrosion
-      - hotspot
-      - leak
+      - insulator           # High: 91,915 samples
+      - insulator_damaged   # Low: 244 samples
+      - contamination       # Missing: 0 samples
+      - tower               # Low: 196 samples
+      - conductor           # Missing: 0 samples
+      - conductor_damaged   # Missing: 0 samples
+      - damper              # Medium: 6,437 samples
+      - spacer              # Rare: 72 samples
+      - connector           # High: 16,369 samples
+      - transformer         # High: 10,328 samples
+      - arrester            # Medium: 6,678 samples
+      - breaker             # Medium: 8,825 samples
+      - bushing             # Missing: 0 samples
+      - disconnector        # High: 27,349 samples
+      - vegetation          # Missing: 0 samples
+      - bird_nest           # Missing: 0 samples
+      - foreign_object      # Missing: 0 samples
 
-  # RF-DETR - Transformer-based Segmentation
+  # RF-DETR - Transformer-based Detection (Train on GPU machine)
   rf_detr:
-    enabled: true
-    weights: "models/rf_detr_large.engine"
-    backbone: "resnet101"
+    enabled: false  # Enable after training completes
+    weights: "runs/rf_detr_medium/best.pt"
+    backbone: "resnet50"
     input_size: [640, 640]
     num_queries: 300
     device: "cuda:0"
     half_precision: true
     threshold: 0.5
+    # Training: python train_rf_detr_seg.py --data data/rf_detr --epochs 100
 
   # SAM3 Nano - Precision Segmentation
   sam3_nano:
