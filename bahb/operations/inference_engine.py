@@ -199,15 +199,38 @@ class ProductionInferenceEngine:
 
     def _find_model_path(self) -> str:
         """Find the best available model path."""
+        # Support deployment on different platforms via BAHB_ROOT env var
+        bahb_root = os.environ.get('BAHB_ROOT', '/home/user/BAHB')
+
+        # Also check Manifold 3 deployment path
+        manifold_root = '/data/bahb'
+
         candidates = [
-            '/home/user/BAHB/runs/yolo26l_infrastructure/weights/best.pt',
-            '/home/user/BAHB/runs/yolo26l_infrastructure/weights/last.pt',
-            '/home/user/BAHB/models/yolo26l.pt'
+            # Configured path first
+            self.model_path if self.model_path else None,
+            # Manifold 3 deployment paths
+            f'{manifold_root}/runs/yolov11l_bahb_v3/weights/best.pt',
+            f'{manifold_root}/runs/yolo26l_infrastructure/weights/best.pt',
+            f'{manifold_root}/models/yolo26l.pt',
+            # Development paths
+            f'{bahb_root}/runs/yolov11l_bahb_v3/weights/best.pt',
+            f'{bahb_root}/runs/yolo26l_infrastructure/weights/best.pt',
+            f'{bahb_root}/runs/yolo26l_infrastructure/weights/last.pt',
+            f'{bahb_root}/models/yolo26l.pt',
+            # Relative paths (for portable deployment)
+            'runs/yolov11l_bahb_v3/weights/best.pt',
+            'runs/yolo26l_infrastructure/weights/best.pt',
+            'models/yolo26l.pt',
         ]
+
         for path in candidates:
-            if os.path.exists(path):
+            if path and os.path.exists(path):
+                logger.info(f"Found model at: {path}")
                 return path
-        raise FileNotFoundError("No model file found")
+
+        # List what was searched for debugging
+        logger.error(f"No model found. Searched: {[p for p in candidates if p]}")
+        raise FileNotFoundError(f"No model file found. Set BAHB_ROOT env var or provide model_path")
 
     def _determine_device(self, device: str) -> str:
         """Determine the best available device."""
@@ -280,12 +303,12 @@ class ProductionInferenceEngine:
             import pycuda.driver as cuda
             import pycuda.autoinit  # noqa: F401
 
-            logger = trt.Logger(trt.Logger.WARNING)
+            trt_logger = trt.Logger(trt.Logger.WARNING)  # Don't shadow module logger
 
             with open(self.tensorrt_path, "rb") as f:
                 engine_data = f.read()
 
-            runtime = trt.Runtime(logger)
+            runtime = trt.Runtime(trt_logger)
             self.engine = runtime.deserialize_cuda_engine(engine_data)
             self.context = self.engine.create_execution_context()
 
@@ -445,6 +468,29 @@ class ProductionInferenceEngine:
             input_tensor = np.expand_dims(input_tensor, 0)
             outputs = self.model.run(None, {'images': input_tensor})
             return outputs
+
+        elif self.current_mode in (InferenceMode.TENSORRT_FP16, InferenceMode.TENSORRT_INT8, InferenceMode.TENSORRT_FP32):
+            # TensorRT inference
+            import pycuda.driver as cuda
+
+            # Preprocess
+            input_tensor = frame.transpose(2, 0, 1).astype(np.float32) / 255.0
+            input_tensor = np.expand_dims(input_tensor, 0).ravel()
+
+            # Copy input to device
+            np.copyto(self.inputs[0]['host'], input_tensor)
+            cuda.memcpy_htod_async(self.inputs[0]['device'], self.inputs[0]['host'], self.stream)
+
+            # Run inference
+            self.context.execute_async_v2(bindings=self.bindings, stream_handle=self.stream.handle)
+
+            # Copy outputs back
+            for out in self.outputs:
+                cuda.memcpy_dtoh_async(out['host'], out['device'], self.stream)
+            self.stream.synchronize()
+
+            # Return raw outputs for postprocessing
+            return [out['host'].reshape(out['shape']) for out in self.outputs]
 
         else:
             raise ValueError(f"Unsupported inference mode: {self.current_mode}")
