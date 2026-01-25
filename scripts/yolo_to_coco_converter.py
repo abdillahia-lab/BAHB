@@ -15,7 +15,7 @@ from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, asdict
-import cv2
+from PIL import Image
 from tqdm import tqdm
 import numpy as np
 from datetime import datetime
@@ -205,13 +205,13 @@ class YOLOtoCOCOConverter:
             image_files = tqdm(image_files, desc="Converting")
 
         for img_path in image_files:
-            # Read image dimensions
-            img = cv2.imread(str(img_path))
-            if img is None:
+            # Read image dimensions using PIL (much faster - only reads header)
+            try:
+                with Image.open(img_path) as img:
+                    width, height = img.size
+            except Exception:
                 self.stats.images_without_labels += 1
                 continue
-
-            height, width = img.shape[:2]
 
             # Find corresponding label file
             label_path = Path(labels_dir) / (img_path.stem + '.txt')
