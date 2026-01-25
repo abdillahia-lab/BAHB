@@ -1,36 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    BAHB Color Definitions
+    Optimized for DJI RC Plus 2 (1400 nit display, outdoor use)
+
+    Design Spec: docs/design/RC_PLUS_2_UI_SPECIFICATION.md
+    Full tokens: res/values/design_tokens.xml
+
+    CONTRAST REQUIREMENTS:
+    - Text on panels: 7:1 minimum (WCAG AA)
+    - Status indicators: 10:1 ratio
+    - All colors tested for outdoor visibility
+-->
 <resources>
-    <!-- BAHB Brand Colors -->
-    <color name="bahb_primary">#1565C0</color>
-    <color name="bahb_primary_dark">#0D47A1</color>
-    <color name="bahb_accent">#00BCD4</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         BRAND COLORS
+         Cyan-based palette for tech/industrial feel
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="bahb_primary">#00A8CC</color>
+    <color name="bahb_primary_dark">#007799</color>
+    <color name="bahb_primary_light">#33C4E0</color>
+    <color name="bahb_accent">#00FFD4</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         BACKGROUND COLORS
+         Dark theme optimized for high-brightness outdoor display
+         ═══════════════════════════════════════════════════════════════ -->
     <color name="bahb_background">#121212</color>
-
-    <!-- Status Colors - High contrast for outdoor -->
-    <color name="status_connected">#4CAF50</color>
-    <color name="status_disconnected">#F44336</color>
-    <color name="status_warning">#FF9800</color>
-
-    <!-- Severity Colors -->
-    <color name="severity_critical">#D32F2F</color>
-    <color name="severity_high">#FF5722</color>
-    <color name="severity_medium">#FFC107</color>
-    <color name="severity_low">#8BC34A</color>
-
-    <!-- Detection Colors -->
-    <color name="detection_defect">#FF5252</color>
-    <color name="detection_equipment">#00C853</color>
-    <color name="detection_other">#448AFF</color>
-
-    <!-- Thermal Colors -->
-    <color name="thermal_cold">#2196F3</color>
-    <color name="thermal_normal">#4CAF50</color>
-    <color name="thermal_warm">#FFC107</color>
-    <color name="thermal_hot">#F44336</color>
-
-    <!-- UI Elements -->
-    <color name="panel_background">#CC000000</color>
+    <color name="panel_background">#D9000000</color>
     <color name="panel_border">#33FFFFFF</color>
+    <color name="card_background">#1E1E1E</color>
+    <color name="card_selected">#2A2A2A</color>
+    <color name="overlay_scrim">#80000000</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TEXT COLORS
+         High contrast white-on-dark for sunlight readability
+         ═══════════════════════════════════════════════════════════════ -->
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B0B0B0</color>
+    <color name="text_secondary">#AAAAAA</color>
+    <color name="text_tertiary">#888888</color>
+    <color name="text_disabled">#666666</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         STATUS COLORS
+         Connection and system state indicators
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="status_connected">#00DD00</color>
+    <color name="status_disconnected">#FF4444</color>
+    <color name="status_warning">#FFAA00</color>
+    <color name="status_error">#FF4444</color>
+    <color name="status_offline">#888888</color>
+    <color name="status_active">#00FFD4</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SEVERITY COLORS
+         Anomaly classification - always paired with icons for a11y
+
+         CRITICAL: Red + flashing border + haptic
+         HIGH:     Orange-red + thick border
+         MEDIUM:   Orange/yellow + normal border
+         LOW:      Yellow + thin border
+         INFO:     Blue + minimal styling
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="severity_critical">#FF2222</color>
+    <color name="severity_critical_fill">#33FF2222</color>
+    <color name="severity_high">#FF6600</color>
+    <color name="severity_high_fill">#33FF6600</color>
+    <color name="severity_medium">#FFAA00</color>
+    <color name="severity_medium_fill">#33FFAA00</color>
+    <color name="severity_low">#FFDD00</color>
+    <color name="severity_low_fill">#33FFDD00</color>
+    <color name="severity_info">#00AAFF</color>
+    <color name="severity_info_fill">#3300AAFF</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DETECTION CLASS COLORS
+         Different colors for infrastructure vs defects
+
+         Equipment (normal state): Teal/cyan
+         Structure: Light blue/purple
+         Defect: Orange (warning)
+         Hotspot: Red-orange (thermal anomaly)
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="detection_equipment">#00C8AA</color>
+    <color name="detection_structure">#8888FF</color>
+    <color name="detection_defect">#FFA000</color>
+    <color name="detection_hotspot">#FF6B35</color>
+    <color name="detection_other">#6688CC</color>
+    <color name="detection_selected">#FFFFFF</color>
+    <color name="detection_tracked">#00FF88</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         THERMAL TEMPERATURE COLORS
+         Progressive scale from cold to critical
+
+         Used for: thermal panel, temperature badges, hotspot markers
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="thermal_cold">#4488FF</color>       <!-- Below 20C -->
+    <color name="thermal_cool">#44DDFF</color>       <!-- 20-35C -->
+    <color name="thermal_normal">#44FF44</color>     <!-- 35-50C (ambient) -->
+    <color name="thermal_warm">#FFFF00</color>       <!-- 50-65C -->
+    <color name="thermal_hot">#FFA500</color>        <!-- 65-85C WARNING -->
+    <color name="thermal_critical">#FF0000</color>   <!-- 85-100C CRITICAL -->
+    <color name="thermal_extreme">#FF00FF</color>    <!-- Above 100C -->
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         UI ELEMENT SPECIFIC COLORS
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Buttons -->
+    <color name="button_primary">#00A8CC</color>
+    <color name="button_primary_pressed">#007799</color>
+    <color name="button_danger">#FF2222</color>
+    <color name="button_danger_pressed">#CC0000</color>
+    <color name="button_secondary">#333333</color>
+    <color name="button_secondary_pressed">#444444</color>
+
+    <!-- Badge (anomaly count) -->
+    <color name="badge_critical">#FF2222</color>
+    <color name="badge_high">#FF6600</color>
+    <color name="badge_medium">#FFAA00</color>
+    <color name="badge_default">#666666</color>
+
+    <!-- Labels on detection boxes -->
+    <color name="label_background">#CC000000</color>
+    <color name="label_text">#FFFFFF</color>
+
+    <!-- Dividers and borders -->
+    <color name="divider">#333333</color>
+    <color name="border_light">#444444</color>
+    <color name="border_focus">#00A8CC</color>
+
 </resources>

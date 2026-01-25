@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    BAHB RC Plus 2 Design Tokens
+    Generated from: docs/design/RC_PLUS_2_UI_SPECIFICATION.md
+    Platform: DJI RC Plus 2 (7" 1920x1200, 1400 nits)
+
+    IMPORTANT: These tokens COMPLEMENT DJI's built-in UI.
+    Never override DJI's flight-critical displays.
+-->
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         BRAND COLORS - Primary BAHB identity
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="bahb_primary">#00A8CC</color>
+    <color name="bahb_primary_dark">#007799</color>
+    <color name="bahb_primary_light">#33C4E0</color>
+    <color name="bahb_accent">#00FFD4</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         BACKGROUND COLORS - Dark theme for outdoor visibility
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="bahb_background">#121212</color>
+    <color name="panel_background">#D9000000</color>  <!-- 85% opacity black -->
+    <color name="panel_background_light">#CC000000</color>  <!-- 80% opacity -->
+    <color name="card_background">#1E1E1E</color>
+    <color name="card_background_selected">#2A2A2A</color>
+    <color name="card_background_hover">#333333</color>
+    <color name="overlay_scrim">#80000000</color>  <!-- 50% opacity for modals -->
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TEXT COLORS - High contrast for readability
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#AAAAAA</color>
+    <color name="text_tertiary">#888888</color>
+    <color name="text_disabled">#666666</color>
+    <color name="text_on_primary">#000000</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SEVERITY COLORS - Anomaly classification
+         Use with icon + border style for colorblind accessibility
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="severity_critical">#FF2222</color>
+    <color name="severity_critical_bg">#33FF2222</color>  <!-- 20% opacity fill -->
+    <color name="severity_high">#FF6600</color>
+    <color name="severity_high_bg">#33FF6600</color>
+    <color name="severity_medium">#FFAA00</color>
+    <color name="severity_medium_bg">#33FFAA00</color>
+    <color name="severity_low">#FFDD00</color>
+    <color name="severity_low_bg">#33FFDD00</color>
+    <color name="severity_info">#00AAFF</color>
+    <color name="severity_info_bg">#3300AAFF</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         STATUS COLORS - System state indicators
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="status_connected">#00DD00</color>
+    <color name="status_connecting">#FFAA00</color>
+    <color name="status_warning">#FFAA00</color>
+    <color name="status_error">#FF4444</color>
+    <color name="status_offline">#888888</color>
+    <color name="status_active">#00FFD4</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DETECTION CLASS COLORS - Infrastructure type identification
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="detection_equipment">#00C8AA</color>   <!-- transformer, insulator, switchgear -->
+    <color name="detection_structure">#8888FF</color>   <!-- tower, pole, substation -->
+    <color name="detection_defect">#FFA000</color>      <!-- damage, corrosion, leak -->
+    <color name="detection_hotspot">#FF6B35</color>     <!-- thermal anomaly -->
+    <color name="detection_selected">#FFFFFF</color>    <!-- currently selected -->
+    <color name="detection_tracked">#00FF88</color>     <!-- actively tracked -->
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TEMPERATURE SCALE COLORS - Thermal visualization
+         ═══════════════════════════════════════════════════════════════ -->
+    <color name="thermal_cold">#4488FF</color>          <!-- < 20C -->
+    <color name="thermal_cool">#44DDFF</color>          <!-- 20-35C -->
+    <color name="thermal_normal">#44FF44</color>        <!-- 35-50C -->
+    <color name="thermal_warm">#FFFF00</color>          <!-- 50-65C -->
+    <color name="thermal_hot">#FFA500</color>           <!-- 65-85C -->
+    <color name="thermal_critical">#FF0000</color>      <!-- 85-100C -->
+    <color name="thermal_extreme">#FF00FF</color>       <!-- > 100C -->
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         LAYOUT DIMENSIONS - Structural measurements
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Top Status Bar -->
+    <dimen name="status_bar_height">48dp</dimen>
+    <dimen name="status_bar_padding_horizontal">16dp</dimen>
+
+    <!-- Bottom Info Bar -->
+    <dimen name="bottom_bar_height">40dp</dimen>
+
+    <!-- Left Control Panel -->
+    <dimen name="control_panel_width">72dp</dimen>
+    <dimen name="control_panel_padding">8dp</dimen>
+    <dimen name="control_button_size">56dp</dimen>
+    <dimen name="control_button_spacing">8dp</dimen>
+    <dimen name="control_badge_size">24dp</dimen>
+
+    <!-- Right Anomaly Panel (slide-out) -->
+    <dimen name="anomaly_panel_width">280dp</dimen>
+    <dimen name="anomaly_panel_padding">12dp</dimen>
+    <dimen name="anomaly_card_min_height">72dp</dimen>
+    <dimen name="anomaly_card_spacing">8dp</dimen>
+    <dimen name="severity_indicator_width">6dp</dimen>
+
+    <!-- Thermal Info Panel (top-right corner) -->
+    <dimen name="thermal_panel_width">200dp</dimen>
+    <dimen name="thermal_panel_height">140dp</dimen>
+    <dimen name="thermal_panel_margin">16dp</dimen>
+
+    <!-- VLM Analysis Panel (bottom slide-up) -->
+    <dimen name="vlm_panel_height_collapsed">180dp</dimen>
+    <dimen name="vlm_panel_height_expanded">320dp</dimen>
+
+    <!-- Modal Dialogs -->
+    <dimen name="modal_width_max">600dp</dimen>
+    <dimen name="modal_padding">24dp</dimen>
+    <dimen name="alert_thumbnail_height">200dp</dimen>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DETECTION OVERLAY DIMENSIONS - Box rendering
+         ═══════════════════════════════════════════════════════════════ -->
+    <dimen name="box_stroke_normal">3dp</dimen>
+    <dimen name="box_stroke_selected">4dp</dimen>
+    <dimen name="box_stroke_critical">5dp</dimen>
+    <dimen name="box_corner_accent_length">20dp</dimen>
+    <dimen name="box_corner_radius">4dp</dimen>
+    <dimen name="label_padding_horizontal">8dp</dimen>
+    <dimen name="label_padding_vertical">4dp</dimen>
+    <dimen name="label_offset_above">8dp</dimen>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TOUCH TARGETS - Accessibility compliance (Android guidelines)
+         ═══════════════════════════════════════════════════════════════ -->
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="touch_target_preferred">56dp</dimen>
+    <dimen name="touch_target_large">72dp</dimen>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SPACING SCALE - Consistent rhythm
+         ═══════════════════════════════════════════════════════════════ -->
+    <dimen name="spacing_xxs">2dp</dimen>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_xxl">32dp</dimen>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CORNER RADIUS SCALE
+         ═══════════════════════════════════════════════════════════════ -->
+    <dimen name="radius_xs">2dp</dimen>
+    <dimen name="radius_sm">4dp</dimen>
+    <dimen name="radius_md">8dp</dimen>
+    <dimen name="radius_lg">12dp</dimen>
+    <dimen name="radius_xl">16dp</dimen>
+    <dimen name="radius_full">999dp</dimen>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TYPOGRAPHY - Text sizes (sp for accessibility scaling)
+         ═══════════════════════════════════════════════════════════════ -->
+    <dimen name="text_display_large">32sp</dimen>
+    <dimen name="text_display_medium">24sp</dimen>
+    <dimen name="text_title_large">20sp</dimen>
+    <dimen name="text_title_medium">18sp</dimen>
+    <dimen name="text_body_large">16sp</dimen>
+    <dimen name="text_body_medium">14sp</dimen>
+    <dimen name="text_label_large">14sp</dimen>
+    <dimen name="text_label_medium">12sp</dimen>
+    <dimen name="text_caption">10sp</dimen>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ANIMATION DURATIONS - Consistent timing
+         ═══════════════════════════════════════════════════════════════ -->
+    <integer name="anim_duration_fast">150</integer>
+    <integer name="anim_duration_normal">250</integer>
+    <integer name="anim_duration_slow">400</integer>
+    <integer name="anim_duration_emphasis">600</integer>
+
+    <!-- Critical alert flash cycle -->
+    <integer name="anim_critical_pulse_duration">800</integer>
+
+    <!-- Panel slide timing -->
+    <integer name="anim_panel_slide_in">250</integer>
+    <integer name="anim_panel_slide_out">200</integer>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         OPACITY VALUES (0-255)
+         ═══════════════════════════════════════════════════════════════ -->
+    <integer name="opacity_disabled">102</integer>       <!-- 40% -->
+    <integer name="opacity_inactive">128</integer>       <!-- 50% -->
+    <integer name="opacity_scrim">179</integer>          <!-- 70% -->
+    <integer name="opacity_panel_bg">217</integer>       <!-- 85% -->
+    <integer name="opacity_label_bg">204</integer>       <!-- 80% -->
+    <integer name="opacity_full">255</integer>           <!-- 100% -->
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         STRING RESOURCES - UI Text (subset)
+         ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Status Messages -->
+    <string name="status_ai_connected">AI Connected</string>
+    <string name="status_ai_disconnected">AI Disconnected</string>
+    <string name="status_ai_error">AI Error</string>
+    <string name="status_inspecting">INSPECTING</string>
+    <string name="status_ready">READY</string>
+    <string name="status_idle">IDLE</string>
+
+    <!-- Panel Headers -->
+    <string name="panel_anomalies">ANOMALIES</string>
+    <string name="panel_thermal">THERMAL</string>
+    <string name="panel_ai_analysis">AI ANALYSIS</string>
+
+    <!-- Button Labels -->
+    <string name="btn_start_inspection">Start</string>
+    <string name="btn_stop_inspection">Stop</string>
+    <string name="btn_capture">Capture</string>
+    <string name="btn_investigate">Investigate</string>
+    <string name="btn_acknowledge">Acknowledge</string>
+    <string name="btn_dismiss">Dismiss</string>
+    <string name="btn_confirm">Confirm</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- Alert Messages -->
+    <string name="alert_critical_title">CRITICAL ALERT</string>
+    <string name="alert_investigate_now">INVESTIGATE NOW</string>
+    <string name="alert_continue_flight">Continue Flight</string>
+
+    <!-- Thermal Labels -->
+    <string name="thermal_max">Max:</string>
+    <string name="thermal_min">Min:</string>
+    <string name="thermal_mean">Mean:</string>
+    <string name="thermal_delta">Delta-T:</string>
+    <string name="thermal_hotspots">Hotspots:</string>
+
+    <!-- Accessibility Content Descriptions -->
+    <string name="cd_start_inspection">Start infrastructure inspection</string>
+    <string name="cd_stop_inspection">Stop inspection</string>
+    <string name="cd_capture_snapshot">Capture snapshot with current detection</string>
+    <string name="cd_toggle_thermal">Toggle thermal overlay</string>
+    <string name="cd_toggle_anomalies">Show or hide anomaly panel</string>
+    <string name="cd_severity_critical">Critical severity</string>
+    <string name="cd_severity_high">High severity</string>
+    <string name="cd_severity_medium">Medium severity</string>
+    <string name="cd_severity_low">Low severity</string>
+
+</resources>
