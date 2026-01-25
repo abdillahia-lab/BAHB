@@ -295,6 +295,7 @@ class Config(BaseSettings):
     # System
     name: str = "BAHB-Inspection"
     version: str = "1.0.0"
+    platform: str = "generic"  # matrice_4td, m400, generic
     log_level: str = "INFO"
     data_dir: Path = Path("/data/bahb")
     cache_dir: Path = Path("/tmp/bahb_cache")
@@ -317,9 +318,11 @@ class Config(BaseSettings):
     # Inspection profiles
     profiles: dict[str, InspectionProfileConfig] = Field(default_factory=dict)
 
-    class Config:
-        env_prefix = "BAHB_"
-        env_nested_delimiter = "__"
+    model_config = {
+        "env_prefix": "BAHB_",
+        "env_nested_delimiter": "__",
+        "extra": "ignore",  # Allow extra fields in YAML without error
+    }
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "Config":
