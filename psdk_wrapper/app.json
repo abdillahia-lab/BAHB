@@ -1,0 +1,38 @@
+{
+    "user_app_id": "YOUR_APP_ID",
+    "firmware_version": "01.00.00.00",
+    "is_ai_rendering": "true",
+    "platform": "manifold3",
+    "name":{
+        "name_cn": "BAHB-Inspect",
+        "name_en": "BAHB-Inspect",
+        "name_jp": "BAHB-Inspect",
+        "name_fr": "BAHB-Inspect"
+    },
+    "description": {
+        "description_cn": [
+            "BAHB基础设施检测系统",
+            "AI驱动的无人机巡检"
+        ],
+        "description_en": [
+            "BAHB Infrastructure Inspector",
+            "AI-powered drone inspection system"
+        ],
+        "description_jp": [
+            "BAHBインフラ検査システム"
+        ],
+        "description_fr": [
+            "Systeme inspection BAHB"
+        ]
+    },
+    "maintainer": {
+        "maintainer_cn": "BAHB Team",
+        "maintainer_en": "BAHB Team",
+        "maintainer_jp": "BAHB Team",
+        "maintainer_fr": "BAHB Team"
+    },
+    "ver_min": "00.00.00.00",
+    "ver_max": "99.99.99.99",
+    "bin": "build/bin/bahb_psdk_wrapper",
+    "userconfig": []
+}
