@@ -1,13 +1,13 @@
 {
-    "user_app_id": "YOUR_APP_ID",
+    "user_app_id": "177764",
     "firmware_version": "01.00.00.00",
     "is_ai_rendering": "true",
     "platform": "manifold3",
     "name":{
-        "name_cn": "BAHB-Inspect",
-        "name_en": "BAHB-Inspect",
-        "name_jp": "BAHB-Inspect",
-        "name_fr": "BAHB-Inspect"
+        "name_cn": "Jinki-BAHB",
+        "name_en": "Jinki-BAHB",
+        "name_jp": "Jinki-BAHB",
+        "name_fr": "Jinki-BAHB"
     },
     "description": {
         "description_cn": [

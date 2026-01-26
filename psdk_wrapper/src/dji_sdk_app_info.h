@@ -1,10 +1,5 @@
 /**
- * DJI SDK Application Info - User must fill in their credentials from DJI Developer Portal
- *
- * To get these credentials:
- * 1. Go to https://developer.dji.com/user/apps
- * 2. Create a new Payload SDK application
- * 3. Copy the App ID, App Key, and App License here
+ * DJI SDK Application Info - BAHB for Manifold 3
  */
 
 #ifndef DJI_SDK_APP_INFO_H
@@ -14,12 +9,11 @@
 extern "C" {
 #endif
 
-/* TODO: Replace these with your actual DJI Developer credentials */
-#define USER_APP_NAME               "BAHB-Inspect"
-#define USER_APP_ID                 "YOUR_APP_ID"
-#define USER_APP_KEY                "7053382160ece36ce4294e75"
-#define USER_APP_LICENSE            "YOUR_APP_LICENSE"
-#define USER_DEVELOPER_ACCOUNT      "YOUR_EMAIL"
+#define USER_APP_NAME               "Jinki"
+#define USER_APP_ID                 "177764"
+#define USER_APP_KEY                "978c01b54dc0a594829e5006c0e5ca3"
+#define USER_APP_LICENSE            "i1VuI4T+Hlk/TfZYbP77eTjoc9kg5FgfEI4lQnAiTV8nA7U5TEsWHzfVXfir+lTowLRo4NT7uWMzoPoW1BbDfg=="
+#define USER_DEVELOPER_ACCOUNT      "abdillahi.a@icloud.com"
 #define USER_BAUD_RATE              "460800"
 
 #ifdef __cplusplus
