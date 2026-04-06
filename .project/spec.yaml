@@ -1,0 +1,62 @@
+specVersion: v2
+meta:
+  name: BAHB
+  image: project-bahb
+  description: Autonomous Drone Inspection System for Data Centers & Substations
+  labels: []
+  createdOn: "2026-04-06"
+  defaultBranch: main
+layout:
+- path: code/
+  type: code
+  storage: git
+- path: data/
+  type: data
+  storage: gitlfs
+- path: models/
+  type: models
+  storage: gitlfs
+execution:
+  apps:
+  - name: JupyterLab
+    type: jupyterlab
+    class: webapp
+    start: jupyter lab --allow-root --ip=0.0.0.0 --no-browser --ServerApp.root_dir=/project/code --ServerApp.token='' --ServerApp.password=''
+    health: curl -s http://localhost:8888/api/status
+    stop: jupyter lab stop
+    icon: webapp/jupyter.svg
+    webapp_options:
+      autolaunch: true
+      port: "8888"
+      url_command: jupyter lab list 2>&1 | head -n 2 | tail -n 1 | cut -d' ' -f1 | cut -d'?' -f2
+  - name: Visual Studio Code
+    type: vs-code
+    class: native
+  resources:
+    gpu:
+      requested: 1
+    sharedMemoryMB: 16384
+  secrets: []
+  mounts:
+  - type: project
+    target: /project/
+    description: Project directory
+    options: rw
+environment:
+  base:
+    registry: nvcr.io
+    image: nvidia/pytorch:24.02-py3
+  build:
+    commands:
+    - apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1
+    - pip install --upgrade pip
+    - pip install -r /project/code/requirements.txt
+  variables:
+  - name: PYTHONPATH
+    value: /project/code
+  - name: CUDA_VISIBLE_DEVICES
+    value: "0"
+  - name: TORCH_HOME
+    value: /project/models/torch
+  - name: HF_HOME
+    value: /project/models/huggingface

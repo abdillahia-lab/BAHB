@@ -1,0 +1,25 @@
+# System dependencies for BAHB
+# OpenCV dependencies
+libgl1-mesa-glx
+libglib2.0-0
+libsm6
+libxext6
+libxrender-dev
+# GStreamer for video streaming
+gstreamer1.0-tools
+gstreamer1.0-plugins-base
+gstreamer1.0-plugins-good
+gstreamer1.0-plugins-bad
+gstreamer1.0-plugins-ugly
+libgstreamer1.0-dev
+# OpenMP for parallel processing
+libgomp1
+# FFmpeg for video processing
+ffmpeg
+libavcodec-dev
+libavformat-dev
+libswscale-dev
+# Additional utilities
+wget
+curl
+git-lfs

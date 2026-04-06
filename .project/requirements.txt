@@ -1,0 +1,50 @@
+# BAHB Python dependencies for AI Workbench
+# This file mirrors the root requirements.txt
+
+# Core ML Frameworks
+torch>=2.2.0
+torchvision>=0.17.0
+onnxruntime-gpu>=1.17.0
+
+# Computer Vision
+opencv-python>=4.9.0
+opencv-contrib-python>=4.9.0
+Pillow>=10.2.0
+scikit-image>=0.22.0
+
+# AI Models
+ultralytics>=8.1.0
+transformers>=4.38.0
+accelerate>=0.27.0
+safetensors>=0.4.0
+timm>=0.9.0
+
+# Data Processing
+numpy>=1.26.0
+pandas>=2.2.0
+scipy>=1.12.0
+
+# Configuration & Serialization
+pyyaml>=6.0.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+
+# Async & Networking
+aiohttp>=3.9.0
+httpx>=0.27.0
+
+# Logging & Monitoring
+loguru>=0.7.0
+rich>=13.7.0
+
+# Visualization
+matplotlib>=3.8.0
+
+# Utilities
+click>=8.1.0
+tqdm>=4.66.0
+python-dotenv>=1.0.0
+
+# Jupyter support
+jupyterlab>=4.0.0
+ipywidgets>=8.0.0
