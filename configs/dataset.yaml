@@ -1,0 +1,26 @@
+# BAHB Infrastructure Detection Dataset
+# Used by YOLO training scripts
+# Container path (for DGX Spark Docker deployment)
+path: /workspace/data/processed
+train: train/images
+val: val/images
+
+nc: 17
+names:
+  0: insulator
+  1: insulator_damaged
+  2: contamination
+  3: tower
+  4: conductor
+  5: conductor_damaged
+  6: damper
+  7: spacer
+  8: connector
+  9: transformer
+  10: arrester
+  11: breaker
+  12: bushing
+  13: disconnector
+  14: vegetation
+  15: bird_nest
+  16: foreign_object
