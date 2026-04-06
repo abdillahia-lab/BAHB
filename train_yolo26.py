@@ -28,10 +28,10 @@ from ultralytics import YOLO
 import torch
 
 
-# Paths
-PROJECT_ROOT = Path("/home/user/BAHB")
-DATASET_YAML = PROJECT_ROOT / "data" / "merged" / "dataset.yaml"
-OUTPUT_DIR = PROJECT_ROOT / "runs" / "yolo26"
+# Paths (overridable via environment variables for container deployment)
+PROJECT_ROOT = Path(os.environ.get("BAHB_PROJECT_ROOT", "/home/user/BAHB"))
+DATASET_YAML = Path(os.environ.get("BAHB_DATASET_YAML", str(PROJECT_ROOT / "data" / "merged" / "dataset.yaml")))
+OUTPUT_DIR = Path(os.environ.get("BAHB_OUTPUT_DIR", str(PROJECT_ROOT / "runs" / "yolo26")))
 PROGRESS_FILE = OUTPUT_DIR / "training_progress.json"
 
 

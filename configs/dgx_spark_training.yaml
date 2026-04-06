@@ -1,0 +1,119 @@
+# DGX Spark Training Configuration
+# Hardware: NVIDIA DGX Spark (GB10: Grace CPU + Blackwell GPU)
+# Memory: 128GB unified LPDDR5X
+# Compute: ~1 PFLOP AI performance
+#
+# These are recommended starting values. Tune batch sizes after
+# monitoring GPU memory usage via nvidia-smi during initial runs.
+
+################################################################################
+# Hardware Profile
+################################################################################
+hardware:
+  platform: "dgx-spark"
+  gpu: "blackwell-gb10"
+  memory_gb: 128
+  unified_memory: true
+  compute_capability: "12.0"
+
+################################################################################
+# Common Training Defaults
+################################################################################
+training_defaults:
+  device: "0"
+  num_workers: 16           # Grace has many ARM cores
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 4
+  use_amp: true
+  amp_dtype: "bfloat16"     # Blackwell native BF16 preferred over FP16
+
+################################################################################
+# YOLO26 Configuration
+################################################################################
+yolo26:
+  model_size: "x"           # Largest variant — affordable with 128GB
+  batch_size: 64            # Up from 2 on Orin NX
+  image_size: 1280          # Up from 640 — better small object detection
+  epochs: 200
+  patience: 50
+  optimizer: "auto"         # MuSGD (SGD + Muon hybrid)
+  lr0: 0.01
+  cos_lr: true
+  close_mosaic: 20
+  save_period: 5
+  # Augmentation (more aggressive with larger batches)
+  mosaic: 1.0
+  mixup: 0.15
+  copy_paste: 0.1
+
+################################################################################
+# RF-DETR Segmentation Configuration
+################################################################################
+rf_detr:
+  model_size: "large"       # Can afford large model with 128GB
+  batch_size: 32            # Up from 2 on Orin NX
+  gradient_accumulation: 2  # Effective batch 64
+  image_size: [800, 800]    # Higher resolution
+  epochs: 150
+  learning_rate: 1e-4
+  backbone_lr: 1e-5
+  num_queries: 500          # More queries for dense scenes
+  warmup_epochs: 10
+  save_every: 5
+  eval_every: 5
+
+################################################################################
+# Adversarial Robustness Training
+################################################################################
+adversarial:
+  batch_size: 32
+  image_size: 1280
+  epochs: 100
+  pgd_steps: 10             # More PGD steps affordable with faster GPU
+  epsilon: 0.031            # 8/255
+  use_amp: true
+
+################################################################################
+# Full Pipeline (train_bahb.py)
+################################################################################
+full_pipeline:
+  batch_size: 32
+  image_size: 640
+  epochs: 50
+  patience: 15
+
+################################################################################
+# Memory Management
+################################################################################
+memory:
+  pytorch_cuda_alloc_conf: "expandable_segments:True"
+  max_split_size_mb: 512
+  # With 128GB unified memory, aggressive memory management
+  # from the Jetson config is not needed
+
+################################################################################
+# Export After Training
+################################################################################
+export:
+  formats: ["onnx", "engine"]
+  onnx:
+    opset: 17
+    simplify: true
+  tensorrt:
+    workspace_gb: 16        # Up from 4GB on Orin
+    precision: "fp16"
+    # INT8 calibration for edge deployment
+    int8_calibration: true
+    calibration_images: 1000
+  # NOTE: TensorRT .engine files built on Blackwell are NOT portable
+  # to Jetson (Ampere). Use ONNX as the portable format, then
+  # rebuild .engine on the target device.
+
+################################################################################
+# Monitoring
+################################################################################
+monitoring:
+  tensorboard: true
+  log_interval: 10          # Log every 10 batches
+  save_period: 5            # Checkpoint every 5 epochs

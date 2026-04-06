@@ -1,0 +1,90 @@
+version: '3.8'
+
+# BAHB Training on DGX Spark (GB10 Blackwell)
+# Usage:
+#   docker compose -f deployment/docker-compose.dgx-spark.yml build
+#   docker compose -f deployment/docker-compose.dgx-spark.yml run --rm bahb-training \
+#     python3 train_yolo26.py --model x --epochs 200 --batch 64 --imgsz 1280
+
+services:
+  # =============================================================================
+  # BAHB Training Service
+  # =============================================================================
+  bahb-training:
+    container_name: bahb-dgx-training
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.dgx-spark
+    image: bahb:dgx-spark-latest
+
+    # GPU access
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
+
+    # Shared memory — critical for PyTorch DataLoader with num_workers > 0
+    # Default Docker shm (64MB) causes crashes with large batch sizes
+    shm_size: '32g'
+
+    # Ports for monitoring
+    ports:
+      - "6006:6006"    # TensorBoard
+      - "8081:8081"    # Health check
+
+    # Environment
+    env_file:
+      - .env.dgx-spark
+
+    # Volume mounts
+    volumes:
+      # Training datasets (read-only to prevent accidental corruption)
+      - ${DATA_DIR:-/data/bahb}/data:/workspace/data:ro
+
+      # Training outputs — checkpoints, logs, plots (read-write)
+      - ${DATA_DIR:-/data/bahb}/runs:/workspace/runs
+
+      # Pretrained weights cache
+      - ${DATA_DIR:-/data/bahb}/models:/workspace/models
+
+      # Training logs
+      - ${DATA_DIR:-/data/bahb}/logs:/workspace/logs
+
+      # Configuration files
+      - ../configs:/workspace/configs:ro
+
+    # Interactive shell support
+    stdin_open: true
+    tty: true
+
+    # Training jobs are finite — don't auto-restart
+    restart: "no"
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+
+  # =============================================================================
+  # TensorBoard — runs alongside training for remote monitoring
+  # =============================================================================
+  tensorboard:
+    container_name: bahb-dgx-tensorboard
+    image: nvcr.io/nvidia/pytorch:25.03-py3
+    ports:
+      - "6007:6006"
+    volumes:
+      - ${DATA_DIR:-/data/bahb}/runs:/workspace/runs:ro
+    command: >
+      bash -c "pip install -q tensorboard &&
+      tensorboard --logdir=/workspace/runs --host=0.0.0.0 --port=6006"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"

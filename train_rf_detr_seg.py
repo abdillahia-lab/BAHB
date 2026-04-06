@@ -38,7 +38,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from tqdm import tqdm
 
 # Check for required packages
@@ -622,7 +622,7 @@ class Trainer:
         )
 
         # Gradient scaler for mixed precision
-        self.scaler = GradScaler() if config.use_amp else None
+        self.scaler = GradScaler('cuda') if config.use_amp else None
 
         # EMA
         if config.use_ema:
@@ -729,7 +729,7 @@ class Trainer:
 
             # Forward pass with mixed precision
             if self.config.use_amp:
-                with autocast():
+                with autocast('cuda'):
                     outputs = self.model(images)
                     losses = self.criterion(outputs, targets)
                     loss = losses['loss_total'] / self.config.gradient_accumulation
